@@ -60,7 +60,7 @@ h2 {
     font-size: 1rem;
     font-weight: 400;
     margin-bottom: 0.5rem;
-}
+}   
 
 .login-form input[type="text"] {
     box-sizing: border-box;
@@ -89,6 +89,15 @@ h2 {
     border-color: var(--dark-green);
     outline: none;
     box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+.hidden {
+    display: none;
+}
+
+.welcome-image {
+    max-width: 100%;
+    height: auto;   
 }
 
 .password-container {
