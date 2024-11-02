@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <!-- <meta http-equiv = "X-UA-Compatible" content = "IE=edge"> -->
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+    <title>IT Helpdesk Login</title>
+    <link rel = "icon" href = "C:\Users\Gavril\Documents\COLLEGE\COLLEGE School Stuff\3rd year\1st Semester\CS 191\Project Code\boysen-the-no1-paint.ico" type="image/x-icon">
+    <link rel = "stylesheet" href = "login.css">
+    <script src = "login.js" defer></script>
+</head>
+
+<body>
+    <h2>Sign in to Help Desk</h2>
+
+    <div class="login-container">
+        <form id="loginForm" class="login-form"> <!-- ID: loginForm-->
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" list="usernames" required>
+
+            <datalist id="usernames">
+                <option value="Lorraine Castrillon"></option>
+                <option value="Weng Castrillon"></option>
+                <option value="Gavril Coronel"></option>
+                <option value="Marcus Pilapil"></option>
+            </datalist>
+
+            <div class="password-container">
+                <label for="password">Password</label>
+                <a href="#" class="forgot-password">Forget password?</a>
+            </div>
+            <input type="password" id="password" name="password" required>  
+            
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+
+</body>
+</html>
