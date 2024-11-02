@@ -114,6 +114,40 @@ h2 {
     text-decoration: none;
 }
 
+/*
+#sign-in {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--dark-green);
+    color: white;
+
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+
+#sign-in:hover {
+    background-color: var(--hover-button);
+}
+
+#sign-out {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--dark-green);
+    color: white;
+
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+
+#sign-out:hover {
+    background-color: var(--hover-button);
+}
+*/
+
 button {
     border: none;
     border-radius: 8px;
@@ -127,5 +161,5 @@ button {
 }
 
 button:hover {
-    background-color: #244935;
+    background-color: var(--hover-button);
 }

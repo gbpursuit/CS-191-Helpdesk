@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Show the post-login content
         postLoginContent.classList.remove('hidden'); // This shows the content after login
-        postLoginContent.style.display = 'flex';
+        // postLoginContent.style.display = 'flex';
         /*
         // Get the input values
         const username = document.getElementById('username').value;
