@@ -35,11 +35,13 @@ body {
     height: 100vh;
 }
 
-
 h2 {
     margin-bottom: 30px;
     color: var(--dark-green);
 }
+
+/* .class for classes */
+/* #id for id */
 
 .login-container {
     background-color: var(--v1-gray);
