@@ -7,9 +7,23 @@ DOMContentLoaded - Initial HTML is fully loaded and parsed - Ensuring DOM is rea
 */
 
 document.addEventListener("DOMContentLoaded", function() {
+    const password = document.getElementById('forgotPassword');
+    const forgot = document.getElementById('forgotContainer');
+
+    password.addEventListener('click', function(event){
+        event.preventDefault();
+        loginContainer.remove();
+        header.remove();
+        forgot.classList.remove('forgot-container');
+        forgot.style.display = visible;
+    })
+
+
     const loginContainer = document.getElementById('loginContainer');
     const setup = document.getElementById('newSetup'); // Use `sideBar` here
     const header = document.querySelector('h2');
+
+    
 
     loginContainer.addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission

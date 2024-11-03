@@ -129,6 +129,26 @@ h2 {
     background-color: var(--hover-button);
 }
 
+/* ----------------- Forgot Password Implmentation --------------------- */
+
+.forgot-container {
+    visibility: hidden;
+}
+
+#forgotContainer {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+
+    padding: 35px;
+    max-width: 350px;
+    width:100%;
+    text-align: center;
+}
+
+
+/* ----------------- Side Bar Button Implmentation --------------------- */
+
 .setup {
     visibility: hidden;
 }
@@ -175,8 +195,6 @@ ul li:hover {
 #sideBar ul a i {
     margin-right: 1rem;
 }
-
-/* -------------------------------------- */
 
 .check-button, .label-text {
     display: none;
