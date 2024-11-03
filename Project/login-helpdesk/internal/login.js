@@ -7,32 +7,30 @@ DOMContentLoaded - Initial HTML is fully loaded and parsed - Ensuring DOM is rea
 */
 
 document.addEventListener("DOMContentLoaded", function() {
-    const password = document.getElementById('forgotPassword');
-    const forgot = document.getElementById('forgotContainer');
+    const toggleSwitch = document.querySelector(".toggle-switch");
+    const body = document.body;
 
-    password.addEventListener('submit', function(event){
-        event.preventDefault();
-        loginContainer.remove();
-        header.remove();
-        forgot.classList.remove('forgot-container');
-        forgot.style.display = visible;
+    toggleSwitch.addEventListener('click', function() {
+        body.classList.toggle("dark-mode");
     })
 
 
-    const loginContainer = document.getElementById('loginContainer');
-    const setup = document.getElementById('newSetup'); // Use `sideBar` here
-    const header = document.querySelector('h2');
 
-    
+    const password = document.getElementById('forgotPassword');
+    const forgot = document.getElementById('forgotContainer');
+    const login = document.getElementById('login');
+    const setup = document.getElementById('newSetup'); // Use `sideBar` here
+
+    password.addEventListener('click', function(event){
+        event.preventDefault();
+        login.remove();
+        forgot.classList.remove('forgot-container');
+        forgot.style.visibility = 'visible';
+    })
 
     loginContainer.addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission
-
-        // Remove the login form and header
-        loginContainer.remove();
-        header.remove();
-
-        // Show the sidebar content
+        login.remove();
         setup.classList.remove('newSetup'); 
         setup.style.visibility = 'visible';
 
@@ -67,3 +65,4 @@ document.addEventListener("DOMContentLoaded", function() {
         */
     });
 });
+

@@ -9,35 +9,41 @@
     <script src="login.js" defer></script>
 </head>
 <body>
-    <h2>Sign in to Help Desk</h2>
 
-    <div id="loginContainer" class="login-container">
-        <form id="loginForm" class="login-form">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" list="usernames" required>
+    <div id = "login">
+        <h2>Sign in to Help Desk</h2>
 
-            <datalist id="usernames">
-                <option value="Lorraine Castrillon"></option>
-                <option value="Weng Castrillon"></option>
-                <option value="Gavril Coronel"></option>
-                <option value="Marcus Pilapil"></option>
-            </datalist>
+        <div id="loginContainer" class="login-container">
+            <form id="loginForm" class="login-form">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" list="usernames" required>
 
-            <div class="password-container">
-                <label for="password">Password</label>
-                <a href="#" id ="forgotPassword" class="forgot-password">Forget password?</a>
-            </div>
-            <input type="password" id="password" name="password" required>
-            
-            <button id="sign-in" type="submit">Sign In</button>
-        </form>
+                <datalist id="usernames">
+                    <option value="Lorraine Castrillon"></option>
+                    <option value="Weng Castrillon"></option>
+                    <option value="Gavril Coronel"></option>
+                    <option value="Marcus Pilapil"></option>
+                </datalist>
+
+                <div class="password-container">
+                    <label for="password">Password</label>
+                    <a href="#" id ="forgotPassword" class="forgot-password">Forget password?</a>
+                </div>
+                <input type="password" id="password" name="password" required>
+                
+                <button id="sign-in" type="submit">Sign In</button>
+            </form>
+        </div>
     </div>
+
+    <!-- Forgot Password -->
 
     <div id = "forgotContainer" class = "forgot-container">
         <form id = "forgotForm" class = "forgot-form">
         </form>
     </div>
 
+    <!-- Side Bar -->
     <div id = "newSetup" class = "setup">
         <input type = "checkbox" id="check" class = "check-button">
         <label for = "check"> 
@@ -48,8 +54,21 @@
         <div id="sideBar" class="side-bar">
             <header>IT HELPDESK</header>
             <ul>
-                <li><a href="#"><i class="fa-regular fa-dashboard"></i>Dashboard</a></li>
-                <li><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
+                <li class = "transition"><a href="#"><i class="fa-regular fa-dashboard"></i>Dashboard</a></li>
+                <li class = "transition"><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
+                <li class = "mode"><a href="#">
+                    <div class = "moon-sun">
+                        <i class="fa-solid fa-moon icon moon"></i>
+                        <i class="fa-regular fa-sun icon sun"></i>
+                    </div>
+                    <span class = "toggle-mode">Dark Mode</span>
+
+                    <div class = "toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                    </a>
+                </li>
+                <li class = "transition bottom-item"><a href="#"><i class="fa-regular fa-dashboard"></i>Logout</a></li>
             </ul>
         </div>
     </div>

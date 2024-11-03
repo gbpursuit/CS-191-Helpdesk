@@ -1,6 +1,8 @@
-/* Google Fonts */ 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-*{
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Global Reset */
+* {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
@@ -11,23 +13,21 @@
     scroll-behavior: smooth;
 }
 
-/* CSS Variables that are accessible throughout the entire document */
+/* CSS Variables */
 :root {
-    --dark-green: #2f4d33; 
-    --hover-button:  #244935;
+    --dark-green: #2f4d33;
+    --hover-button: #244935;
     --light-green: #90EE90;
     --v1-gray: #E3E9E8;
     --v2-gray: #ccc;
     --hot-pink: #d44a41;
     --bg-color: #f0f2f5;
+    --text-color: black;
 }
 
-img {
-    width: 100%
-}
-
+/* General Styles */
 body {
-    color: black;
+    color: var(--text-color);
     background-color: var(--bg-color);
     display: flex;
     flex-direction: column;
@@ -36,13 +36,15 @@ body {
     height: 100vh;
 }
 
-h2 {
-    margin-bottom: 30px;
-    color: var(--dark-green);
+img {
+    width: 100%;
 }
 
-/* .class for classes */
-/* #id for id */
+#login h2 {
+    margin-bottom: 30px;
+    color: var(--dark-green);
+    text-align: center;
+}
 
 .login-container {
     background-color: var(--v1-gray);
@@ -94,21 +96,14 @@ h2 {
     box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
 }
 
-.welcome-image {
-    max-width: 100%;
-    height: auto;   
-}
-
 .password-container {
-    display: flex;          
-    align-items: center;   
-    justify-content: space-between; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .forgot-password {
-    display: block;
     font-size: 11px;
-    text-align: right;
     color: var(--hot-pink);
     text-decoration: none;
 }
@@ -118,7 +113,6 @@ h2 {
     border-radius: 8px;
     background-color: var(--dark-green);
     color: white;
-
     font-size: 16px;
     padding: 10px;
     width: 100%;
@@ -129,8 +123,7 @@ h2 {
     background-color: var(--hover-button);
 }
 
-/* ----------------- Forgot Password Implmentation --------------------- */
-
+/* Forgot Password Implementation */
 .forgot-container {
     visibility: hidden;
 }
@@ -139,21 +132,18 @@ h2 {
     background-color: var(--v1-gray);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-
     padding: 35px;
     max-width: 350px;
-    width:100%;
+    width: 100%;
     text-align: center;
 }
 
-
-/* ----------------- Side Bar Button Implmentation --------------------- */
-
+/* Sidebar Implementation */
 .setup {
     visibility: hidden;
 }
 
-#sideBar {
+.setup #sideBar {
     position: fixed;
     top: 0;
     left: -250px;
@@ -162,9 +152,10 @@ h2 {
     background: var(--bg-color);
     box-shadow: 0px 4px 2px rgba(0, 0, 0, 0.5);
     transition: left 0.3s ease;
+    display: flex;
+    flex-direction: column; /* Makes the sidebar a column flex container */
 }
-
-#sideBar header {
+.setup #sideBar header {
     font-size: 22px;
     font-weight: 600;
     color: var(--dark-green);
@@ -172,30 +163,76 @@ h2 {
     line-height: 70px;
 }
 
+#sideBar ul {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+}
+
 #sideBar ul a {
     font-size: 15px;
     font-weight: 400;
     line-height: 65px;
-    height: 100%;
-    width: 100%;
     color: black;
-
     display: block;
     padding-left: 40px;
     box-sizing: border-box;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(0, 0, 0, 0);
+    cursor: default;
 }
 
-ul li:hover {
+ul li.transition:hover {
     padding-left: 10px;
-    transition: .3s;
+    transition: 0.3s;
 }
 
 #sideBar ul a i {
     margin-right: 1rem;
 }
 
+#sideBar .bottom-item {
+    margin-top: auto;
+}
+
+#sideBar .mode a {
+    display: flex;
+    align-items: center;
+}
+
+#sideBar .toggle-mode {
+    font-size: 15px;
+    margin-left: 4px;
+}
+
+#sideBar .mode .moon-sun {
+    height: 50px;
+    width: 1.6rem;
+    display: flex;
+    align-items: center;
+}
+
+#sideBar .mode i {
+    position: absolute;
+}
+
+#sideBar .mode i.sun {
+    opacity: 0;
+}
+
+#sideBar .toggle-switch {
+    position: relative;
+    display: flex;
+    height: 24px;
+    width: 40px;
+    justify-content: center;
+    align-items: center;
+    background: var(--v1-gray);
+    border-radius: 12px;
+    margin-left: 15px;
+}
+
+/* Open SideBar */
 .check-button, .label-text {
     display: none;
 }
@@ -210,7 +247,6 @@ label #btn {
     font-size: 25px;
     padding: 6px 12px;
     border-radius: 3px;
-
     position: absolute;
     cursor: pointer;
     color: var(--dark-green);
@@ -225,4 +261,51 @@ label #btn {
 #check:checked ~ label #btn {
     left: 260px;
     opacity: 0.75;
+}
+
+/* Dark Mode Implementation */
+body.dark-mode {
+    --dark-green: #88e788;
+    --hover-button: #98e398;
+    --light-green: #2f4d33;
+    --v1-gray: #333;
+    --v2-gray: #555;
+    --hot-pink: #ff7070;
+    --bg-color: #1e1e1e;
+    --text-color: #ffffff;
+    --sidebar-bg-color: #1e1e1e;
+    --sidebar-text-color: #ffffff;
+    --sidebar-header-color: var(--dark-green);
+}
+
+.switch::before {
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    background: var(--v2-gray);
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: left 0.3s ease, background 0.3s ease;
+}
+
+#sideBar header {
+    color: var(--sidebar-header-color);
+}
+
+#sideBar ul a {
+    color: var(--sidebar-text-color);
+    border-top: 1px solid rgba(255, 255, 255, 0);
+}
+
+body.dark-mode #sideBar .toggle-switch {
+    background: var(--v2-gray); 
+}
+
+body.dark-mode .switch::before {
+    left: 22px;
+    background: var(--dark-green);
 }
