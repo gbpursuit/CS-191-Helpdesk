@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const password = document.getElementById('forgotPassword');
     const forgot = document.getElementById('forgotContainer');
 
-    password.addEventListener('click', function(event){
+    password.addEventListener('submit', function(event){
         event.preventDefault();
         loginContainer.remove();
         header.remove();
@@ -45,8 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log('Username:', username);
         console.log('Password:', password);
 
-        // You can add your logic here, such as sending the data to a server
-        // For example, using fetch to send a POST request:
+        example lang to
         
         fetch('/your-login-endpoint', {
             method: 'POST',
