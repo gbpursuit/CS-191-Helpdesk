@@ -8,19 +8,20 @@ DOMContentLoaded - Initial HTML is fully loaded and parsed - Ensuring DOM is rea
 
 document.addEventListener("DOMContentLoaded", function() {
     const loginContainer = document.getElementById('loginContainer');
-    const postLoginContent = document.getElementById('postLoginContent');
+    const setup = document.getElementById('newSetup'); // Use `sideBar` here
     const header = document.querySelector('h2');
 
     loginContainer.addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission
 
-        // Remove the login form completely
-        loginContainer.remove(); // This removes the entire login form
+        // Remove the login form and header
+        loginContainer.remove();
         header.remove();
 
-        // Show the post-login content
-        postLoginContent.classList.remove('hidden'); // This shows the content after login
-        // postLoginContent.style.display = 'flex';
+        // Show the sidebar content
+        setup.classList.remove('newSetup'); 
+        setup.style.visibility = 'visible';
+
         /*
         // Get the input values
         const username = document.getElementById('username').value;

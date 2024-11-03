@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Helpdesk Login</title>
     <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="login.js" defer></script>
 </head>
 <body>
@@ -28,22 +29,25 @@
             </div>
             <input type="password" id="password" name="password" required>
             
-            <button id = "sign-in" type="submit">Sign In</button>
+            <button id="sign-in" type="submit">Sign In</button>
         </form>
     </div>
 
-    <!-- Try lang -->
-    <div id="postLoginContent" class="hidden">
-        <h3>Welcome! You have successfully signed in.</h3>
-        <p>Thank you for logging in. You can now access the help desk services.</p>
-        <img src="your-image-url.jpg" alt="Welcome Image" class="welcome-image">
-        <h4>Available Services:</h4>
-        <ul>
-            <li>Technical Support</li>
-            <li>Account Management</li>
-            <li>Product Information</li>
-        </ul>
-        <button id = "sign-out" onclick="location.reload()">Sign Out</button>
+    <div id = "newSetup" class = "setup">
+        <input type = "checkbox" id="check" class = "check-button">
+        <label for = "check"> 
+            <span class="label-text">check</span> <!-- Text Label for check -->
+            <i class = "fas fa-bars" id = "btn"></i>
+        </label>
+    
+        <div id="sideBar" class="side-bar">
+            <header>IT HELPDESK</header>
+            <ul>
+                <li><a href="#"><i class="fa-regular fa-dashboard"></i>Dashboard</a></li>
+                <li><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
+            </ul>
+        </div>
     </div>
+
 </body>
 </html>
