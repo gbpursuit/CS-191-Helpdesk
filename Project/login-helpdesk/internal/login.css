@@ -209,6 +209,7 @@ ul li.transition:hover {
     background: var(--v1-gray);
     padding-left: 10px;
     transition: 0.3s;
+    color: var(--dark-green);
 }
 
 #sideBar ul a i {
