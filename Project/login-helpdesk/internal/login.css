@@ -40,10 +40,26 @@ img {
     width: 100%;
 }
 
+/* Login Page */
 #login h2 {
     margin-bottom: 30px;
     color: var(--dark-green);
     text-align: center;
+}
+
+#login #darkmode {
+    position: fixed; 
+    bottom: 28px;
+    left: 10px; 
+    cursor: pointer;
+}
+
+#login #darkmode i {
+    position: absolute;
+}
+
+#login #darkmode i.sun {
+    opacity: 0; /* Initially hide the sun icon */
 }
 
 .login-container {
@@ -140,7 +156,7 @@ img {
 
 /* Sidebar Implementation */
 .setup {
-    visibility: visible;
+    visibility: hidden;
 }
 
 .setup #sideBar {
@@ -301,6 +317,10 @@ body.dark-mode {
     transition: left 0.3s ease, background 0.3s ease;
 }
 
+.switch-login::before {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
 #sideBar header {
     color: var(--sidebar-header-color);
 }
@@ -310,10 +330,12 @@ body.dark-mode {
     border-top: 1px solid rgba(255, 255, 255, 0);
 }
 
+body.dark-mode #login #darkmode i.sun,
 body.dark-mode #sideBar .mode i.sun {
     opacity: 1;
 }
 
+body.dark-mode #login #darkmode i.moon,
 body.dark-mode #sideBar .mode i.moon {
     opacity: 0;
 }
@@ -326,3 +348,5 @@ body.dark-mode .switch::before {
     left: 22px;
     background: var(--dark-green);
 }
+
+

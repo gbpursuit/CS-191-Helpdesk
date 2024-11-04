@@ -14,7 +14,11 @@ document.addEventListener("DOMContentLoaded", function() {
         body.classList.toggle("dark-mode");
     })
 
+    const loginSwitch = document.querySelector(".dark-mode");
 
+    loginSwitch.addEventListener('click', function() {
+        body.classList.toggle("dark-mode");
+    })
 
     const password = document.getElementById('forgotPassword');
     const forgot = document.getElementById('forgotContainer');
