@@ -9,7 +9,7 @@
     <script src="login.js" defer></script>
 </head>
 <body>
-    <div id = "login">
+    <div id="login">
         <h2>Sign in to Help Desk</h2>
         <div id="darkmode" class="dark-mode">
             <i class="fa-solid fa-moon icon moon"></i>
@@ -21,7 +21,6 @@
             <form id="loginForm" class="login-form">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" list="usernames" required>
-
                 <datalist id="usernames">
                     <option value="Lorraine Castrillon"></option>
                     <option value="Weng Castrillon"></option>
@@ -31,7 +30,7 @@
 
                 <div class="password-container">
                     <label for="password">Password</label>
-                    <a href="#" id ="forgotPassword" class="forgot-password">Forget password?</a>
+                    <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a>
                 </div>
                 <input type="password" id="password" name="password" required>
                 
@@ -40,37 +39,41 @@
         </div>
     </div>
 
-    <!-- Forgot Password -->
-
-    <div id = "forgotContainer" class = "forgot-container">
-        <form id = "forgotForm" class = "forgot-form">
+    <div id="forgotContainer" class="forgot-container">
+        <form id="forgotForm" class="forgot-form">
         </form>
     </div>
 
+    <!-- Dashboard Container -->
+    <div id="dashboardContainer" class = "dashboard-container">
+        <h2>Dashboard</h2>
+        <p>Your summary will go here.</p>
+    </div>
+
     <!-- Side Bar -->
-    <div id = "newSetup" class = "setup">
-        <input type = "checkbox" id="check" class = "check-button">
-        <label for = "check"> 
-            <span class="label-text">check</span> <!-- Text Label for check -->
-            <i class = "fas fa-bars" id = "btn"></i>
+    <div id="newSetup" class="setup">
+        <input type="checkbox" id="check" class="check-button">
+        <label for="check"> 
+            <span class="label-text">check</span>
+            <i class="fas fa-bars" id="btn"></i>
         </label>
     
         <div id="sideBar" class="side-bar">
             <header>IT HELPDESK</header>
             <ul>
-                <li class = "transition"><a href="#"><i class="fa-solid fa-house"></i>Dashboard</a></li>
-                <li class = "transition"><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
-                <li class = "mode bottom-item"><a href="#">
-                    <div class = "moon-sun">
+                <li class="transition"><a href="#"><i class="fa-solid fa-house"></i>Dashboard</a></li>
+                <li class="transition"><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
+                <li class="mode bottom-item"><a href="#">
+                    <div class="moon-sun">
                         <i class="fa-solid fa-moon icon moon"></i>
                         <i class="fa-regular fa-sun icon sun"></i>
                     </div>
-                    <span class = "toggle-mode">Dark Mode</span>
+                    <span class="toggle-mode">Dark Mode</span>
 
-                    <div class = "toggle-switch">
+                    <div class="toggle-switch">
                         <span class="switch"></span>
                     </div>
-                    </a>
+                </a>
                 </li>
             </ul>
         </div>

@@ -66,40 +66,27 @@ img {
     background-color: var(--v1-gray);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-
     padding: 35px;
     max-width: 350px;
-    width:100%;
+    width: 100%;
     text-align: center;
 }
 
 .login-form label {
     color: var(--dark-green);
     text-align: left;
-
     display: block;
     font-size: 1rem;
     font-weight: 400;
     margin-bottom: 0.5rem;
-}   
-
-.login-form input[type="text"] {
-    box-sizing: border-box;
-    border: 1px solid var(--v2-gray);                       
-    border-radius: 8px;
-    
-    margin-bottom: 1rem;
-    padding: 0.4rem;
-    width: 100%;
-    font-size: 1rem;
 }
 
+.login-form input[type="text"],
 .login-form input[type="password"] {
     box-sizing: border-box;
-    border: 1px solid var(--v2-gray);                       
+    border: 1px solid var(--v2-gray);
     border-radius: 8px;
-    
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     padding: 0.4rem;
     width: 100%;
     font-size: 1rem;
@@ -156,7 +143,7 @@ img {
 
 /* Sidebar Implementation */
 .setup {
-    visibility: hidden;
+    visibility: visible;
 }
 
 .setup #sideBar {
@@ -205,11 +192,11 @@ img {
     cursor: default;
 }
 
-ul li.transition:hover {
+ul li.transition:hover{
     background: var(--v1-gray);
-    padding-left: 10px;
+    padding-left: 10px; /* Padding might be better applied to the <li> */
     transition: 0.3s;
-    color: var(--dark-green);
+    color: var(--hover-button);
 }
 
 #sideBar ul a i {
@@ -331,6 +318,10 @@ body.dark-mode {
     border-top: 1px solid rgba(255, 255, 255, 0);
 }
 
+body.dark-mode #sideBar ul li.transition:hover a {
+    color: var(--dark-green);
+}
+
 body.dark-mode #login #darkmode i.sun,
 body.dark-mode #sideBar .mode i.sun {
     opacity: 1;
@@ -350,4 +341,30 @@ body.dark-mode .switch::before {
     background: var(--dark-green);
 }
 
+/* Dashboard Container */
+.dashboard-container {
+    visibility: hidden;
+}
 
+/* #dashboardContainer {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 35px;
+    margin: 20px;
+    max-width: 800px; 
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; 
+}  */
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container, .dashboard-container {
+        padding: 20px; /* Adjust padding for smaller screens */
+        max-width: 90%; /* Full width on smaller screens */
+    }
+}
