@@ -16,7 +16,7 @@
 /* CSS Variables */
 :root {
     --dark-green: #2f4d33;
-    --hover-button: #244935;
+    --hover-button: #204330;
     --light-green: #90EE90;
     --v1-gray: #E3E9E8;
     --v2-gray: #ccc;
@@ -140,7 +140,7 @@ img {
 
 /* Sidebar Implementation */
 .setup {
-    visibility: hidden;
+    visibility: visible;
 }
 
 .setup #sideBar {
@@ -179,10 +179,18 @@ img {
     padding-left: 40px;
     box-sizing: border-box;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#sideBar ul .transition a{
+    cursor: pointer;
+}
+
+#sideBar ul .mode a{
     cursor: default;
 }
 
 ul li.transition:hover {
+    background: var(--v1-gray);
     padding-left: 10px;
     transition: 0.3s;
 }
@@ -230,6 +238,7 @@ ul li.transition:hover {
     background: var(--v1-gray);
     border-radius: 12px;
     margin-left: 15px;
+    cursor: pointer;
 }
 
 /* Open SideBar */
@@ -265,8 +274,8 @@ label #btn {
 
 /* Dark Mode Implementation */
 body.dark-mode {
-    --dark-green: #88e788;
-    --hover-button: #98e398;
+    --dark-green: #7ede7e;
+    --hover-button: #8ddb8d;
     --light-green: #2f4d33;
     --v1-gray: #333;
     --v2-gray: #555;
@@ -299,6 +308,14 @@ body.dark-mode {
 #sideBar ul a {
     color: var(--sidebar-text-color);
     border-top: 1px solid rgba(255, 255, 255, 0);
+}
+
+body.dark-mode #sideBar .mode i.sun {
+    opacity: 1;
+}
+
+body.dark-mode #sideBar .mode i.moon {
+    opacity: 0;
 }
 
 body.dark-mode #sideBar .toggle-switch {
