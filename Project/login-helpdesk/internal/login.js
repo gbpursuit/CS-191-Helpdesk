@@ -10,33 +10,48 @@ document.addEventListener("DOMContentLoaded", function() {
     const toggleSwitch = document.querySelector(".toggle-switch");
     const body = document.body;
 
+    // Toggle dark mode
     toggleSwitch.addEventListener('click', function() {
         body.classList.toggle("dark-mode");
-    })
+    });
 
     const loginSwitch = document.querySelector(".dark-mode");
-
     loginSwitch.addEventListener('click', function() {
         body.classList.toggle("dark-mode");
-    })
+    });
 
     const password = document.getElementById('forgotPassword');
     const forgot = document.getElementById('forgotContainer');
     const login = document.getElementById('login');
-    const setup = document.getElementById('newSetup'); // Use `sideBar` here
+    const loginContainer = document.getElementById('loginContainer');
+    const setup = document.getElementById('newSetup'); // Sidebar container
+    const dashboardContainer = document.getElementById('dashboardContainer'); // Dashboard container
+    const topBar = document.querySelector('.top-bar'); // Top bar
 
+    // Initially hide the dashboard and sidebar
+    setup.style.display = 'none';
+    dashboardContainer.style.display = 'none';
+    topBar.style.display = 'none';
+
+    // Show the forgot password form when "Forgot password?" is clicked
     password.addEventListener('click', function(event){
         event.preventDefault();
-        login.remove();
-        forgot.classList.remove('forgot-container');
+        login.style.display = 'none';
         forgot.style.visibility = 'visible';
-    })
+    });
 
+    // Handle the login form submission
     loginContainer.addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission
-        login.remove();
-        setup.classList.remove('newSetup'); 
-        setup.style.visibility = 'visible';
+
+        // Here you can add validation or authentication checks
+
+        // Hide the login form and show the dashboard and sidebar
+        login.style.display = 'none';
+        forgot.style.display = 'none';
+        dashboardContainer.style.display = 'block';
+        setup.style.display = 'block';
+        topBar.style.display = 'flex'; // Show the top bar after login
 
         /*
         // Get the input values
@@ -47,8 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log('Username:', username);
         console.log('Password:', password);
 
-        example lang to
-        
+        // Example for sending login credentials to a server
         fetch('/your-login-endpoint', {
             method: 'POST',
             headers: {
@@ -58,10 +72,13 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => {
             if (response.ok) {
-                // Handle success
+                // On successful login
+                login.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                setup.style.display = 'block';
                 console.log('Login successful!');
             } else {
-                // Handle error
+                // Handle login failure
                 console.log('Login failed!');
             }
         })
@@ -69,4 +86,3 @@ document.addEventListener("DOMContentLoaded", function() {
         */
     });
 });
-
