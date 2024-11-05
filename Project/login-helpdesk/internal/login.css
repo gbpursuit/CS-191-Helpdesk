@@ -255,7 +255,7 @@ ul li.transition:hover{
 }
 
 label[for="check"]{
-    font-size: 25px;
+    font-size: 15px;
     padding: 7px 10px;
     border-radius: 3px;
     position: absolute;
@@ -374,15 +374,13 @@ body.dark-mode .switch::before {
     flex-direction: row;
     align-items: center;
     gap: 1rem;
+    margin-right: 5px;
 }
-
-
-
 
 /* Sidebar open - expanded position for topbar */
 #check:checked ~ .top-bar {
     left: 251px; /* Shift left to align with open sidebar */
-    width: calc(100% - 260px); /* Adjust width to match open sidebar */
+    width: calc(100% - 251px); /* Adjust width to match open sidebar */
 }
 
 
