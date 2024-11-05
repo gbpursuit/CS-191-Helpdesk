@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const dashboardContainer = document.getElementById('dashboardContainer'); // Dashboard container
     const topBar = document.querySelector('.top-bar'); // Top bar
 
-    login.style.display = 'none';
     dashboardContainer.style.display = 'none';
 
     // Show the forgot password form when "Forgot password?" is clicked
