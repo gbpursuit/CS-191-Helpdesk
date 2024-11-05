@@ -153,7 +153,7 @@ img {
     width: 250px;
     height: 100%;
     background: var(--bg-color);
-    box-shadow: 0px 4px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2); 
     transition: left 0.3s ease;
     display: flex;
     flex-direction: column; /* Makes the sidebar a column flex container */
@@ -255,10 +255,9 @@ ul li.transition:hover{
 }
 
 label #btn {
-    top: 15px;
-    left: 15px;
+    top: 8px;
     font-size: 25px;
-    padding: 6px 12px;
+    padding: 7px 20px;
     border-radius: 3px;
     position: absolute;
     cursor: pointer;
@@ -273,7 +272,6 @@ label #btn {
 
 #check:checked ~ label #btn {
     left: 260px;
-    opacity: 0.75;
 }
 
 /* Dark Mode Implementation */
@@ -343,9 +341,9 @@ body.dark-mode .switch::before {
 
 .top-bar {
     position: fixed;
-    width: calc(100% - 80px); /* Adjust width to account for closed sidebar */
+    width: calc(100%); /* Adjust width to account for closed sidebar */
     top: 0;
-    left: 80px; /* Align to default sidebar width */
+    left: 0px; /* Align to default sidebar width */
     z-index: 1000;
     transition: left 0.3s ease, width 0.3s ease;
 }
@@ -355,18 +353,22 @@ body.dark-mode .switch::before {
     align-items: center;
     justify-content: space-between;
     background: var(--bg-color);
-    box-shadow: 0 8px 11px rgba(14, 55, 54, 0.1);
-    padding: 10px 20px;
+    /* box-shadow: 0 8px 11px rgba(14, 55, 54, 0.1); */
+    padding: 15px 60px;
 }
 
-/* .top-bar a {
 
-} */
+.top-bar .top-bar-right {
+    display: flex;
+    flex-direction: row;
+    column-gap: 0.5rem;
+    align-items: center;
+}
 
 /* Sidebar open - expanded position for topbar */
 #check:checked ~ .top-bar {
-    left: 320px; /* Shift left to align with open sidebar */
-    width: calc(100% - 320px); /* Adjust width to match open sidebar */
+    left: 251px; /* Shift left to align with open sidebar */
+    width: calc(100% - 260px); /* Adjust width to match open sidebar */
 }
 
 
@@ -392,9 +394,10 @@ body.dark-mode .switch::before {
 
 /* Add a black background color to the top navigation */
 .top-bar {
-    background-color: #333;
+    background-color: var(--dark-green);
     overflow: hidden;
-  }
+    box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1); 
+}
   
   /* Style the links inside the navigation bar */
   .top-bar a {
@@ -406,17 +409,6 @@ body.dark-mode .switch::before {
     font-size: 17px;
   }
   
-  /* Change the color of links on hover */
-  .top-bar a:hover {
-    background-color: #ddd;
-    color: black;
-  }
-  
-  /* Add a color to the active/current link */
-  .top-bar a.active {
-    background-color: #04AA6D;
-    color: white;
-}
 
 
 
