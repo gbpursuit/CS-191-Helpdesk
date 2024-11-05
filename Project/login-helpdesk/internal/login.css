@@ -341,17 +341,32 @@ body.dark-mode .switch::before {
     background: var(--dark-green);
 }
 
-header {
+.top-bar {
     position: fixed;
-    width: 100%;
+    width: calc(100% - 80px); /* Adjust width to account for closed sidebar */
     top: 0;
-    right: 0;
+    left: 80px; /* Align to default sidebar width */
     z-index: 1000;
+    transition: left 0.3s ease, width 0.3s ease;
+}
+
+.top-bar header      {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--sidebar-text-color);
-    box-shadow: 0 8px 11px rgba(14 55 54 0.1);
+    background: var(--bg-color);
+    box-shadow: 0 8px 11px rgba(14, 55, 54, 0.1);
+    padding: 10px 20px;
+}
+
+/* .top-bar a {
+
+} */
+
+/* Sidebar open - expanded position for topbar */
+#check:checked ~ .top-bar {
+    left: 320px; /* Shift left to align with open sidebar */
+    width: calc(100% - 320px); /* Adjust width to match open sidebar */
 }
 
 

@@ -28,10 +28,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const dashboardContainer = document.getElementById('dashboardContainer'); // Dashboard container
     const topBar = document.querySelector('.top-bar'); // Top bar
 
-    // Initially hide the dashboard and sidebar
-    setup.style.display = 'none';
+    login.style.display = 'none';
     dashboardContainer.style.display = 'none';
-    topBar.style.display = 'none';
 
     // Show the forgot password form when "Forgot password?" is clicked
     password.addEventListener('click', function(event){
@@ -49,40 +47,9 @@ document.addEventListener("DOMContentLoaded", function() {
         // Hide the login form and show the dashboard and sidebar
         login.style.display = 'none';
         forgot.style.display = 'none';
-        dashboardContainer.style.display = 'block';
-        setup.style.display = 'block';
+        //dashboardContainer.style.display = 'block';
+        setup.style.visibility = 'visible'
         topBar.style.display = 'flex'; // Show the top bar after login
 
-        /*
-        // Get the input values
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        // Here you can handle what happens when the form is submitted
-        console.log('Username:', username);
-        console.log('Password:', password);
-
-        // Example for sending login credentials to a server
-        fetch('/your-login-endpoint', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        })
-        .then(response => {
-            if (response.ok) {
-                // On successful login
-                login.style.display = 'none';
-                dashboardContainer.style.display = 'block';
-                setup.style.display = 'block';
-                console.log('Login successful!');
-            } else {
-                // Handle login failure
-                console.log('Login failed!');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-        */
     });
 });
