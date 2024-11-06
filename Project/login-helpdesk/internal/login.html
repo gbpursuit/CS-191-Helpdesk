@@ -46,64 +46,26 @@
     
     <!-- ============================================================== -->
 
-    <!-- Dashboard Container -->
-    <div id="dashboardContainer" class = "dashboard-container">
-        <h2>IT Management - Helpdesk</h2>
-            <!-- Search and Filter -->
-            <div class="search-filter">
-                <input type="text" placeholder="Search for task" class="search-input">
-                <button class="filter-button">Filter</button>
-                <!-- <button class="new-task-button">New Task</button> -->
-            </div>
-
-            <!-- Task Table -->
-            <table class="task-table">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>ID</th>
-                        <th>Trx Date</th>
-                        <th>IT in Charge</th>
-                        <th>Task Type</th>
-                        <th>Task Description</th>
-                        <th>Severity</th>
-                        <th>Requested by</th>
-                        <th>Approved by</th>
-                        <th>Date Information</th>
-                    </tr>
-                </thead>
-            </table>
-
-            <!-- Pagination
-            <div class="pagination">
-                <button class="pagination-button">Previous</button>
-                <span>1</span>
-                <span>2</span>
-                <button class="pagination-button">Next</button>
-            </div> -->
-    </div>
-
-    <!-- Side Bar -->
+    <!-- Side Bar, Top Bar, and DashBoard Container -->
     <div id="newSetup" class="setup">
         <input type="checkbox" id="check" class="check-button">
-        <div id = "topbar" class="top-bar">
+        <div id="topbar" class="top-bar">
             <header>
                 <label for="check"> 
                     <span class="label-text">check</span>
                     <i class="fas fa-bars" id="btn"></i>
                 </label>
                 <div class="top-bar-left">
-                    <span class="welcome-message">Welcome! <strong>User Full Name</strong></span>
+                    <span class="welcome-message">Welcome! <strong id="userFullName">Username</strong></span>
                 </div>
                 <div class="top-bar-right">
                     <i class="fa-solid fa-bell notification-icon"></i>
                     <div class="user-profile">
-                        <span class="username">Lorraine Castrillon</span>
+                        <span class="page-name" id="pagename">Username</span>
                     </div>
                 </div>
-                
             </header>
-        </div>    
+        </div>
     
         <div id="sideBar" class="side-bar">
             <header>IT HELPDESK</header>
@@ -124,6 +86,48 @@
                 </li>
             </ul>
         </div>
+
+        <div id = "mainContainer" class = "main-container">
+            <div id="dashboardContainer" class = "dashboard-container">
+                <h2>IT Management - Helpdesk</h2>
+
+                <div id = "dashElements" class = "dash-elements">
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <input type="text" placeholder="Search for task" class="search-input">
+                        <button class="filter-button">Filter</button>
+                        <!-- <button class="new-task-button">New Task</button> -->
+                    </div>
+        
+                    <!-- Task Table -->
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>ID</th>
+                                <th>Trx Date</th>
+                                <th>IT in Charge</th>
+                                <th>Task Type</th>
+                                <th>Task Description</th>
+                                <th>Severity</th>
+                                <th>Requested by</th>
+                                <th>Approved by</th>
+                                <th>Date Information</th>
+                            </tr>
+                        </thead>
+                    </table>
+        
+                    <!-- Pagination
+                    <div class="pagination">
+                        <button class="pagination-button">Previous</button>
+                        <span>1</span>
+                        <span>2</span>
+                        <button class="pagination-button">Next</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </body>

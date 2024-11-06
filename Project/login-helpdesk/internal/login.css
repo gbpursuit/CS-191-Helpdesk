@@ -142,10 +142,6 @@ img {
 }
 
 /* Sidebar Implementation */
-.setup {
-    visibility: hidden;
-}
-
 .setup #sideBar {
     position: fixed;
     top: 0;
@@ -157,6 +153,7 @@ img {
     transition: left 0.3s ease;
     display: flex;
     flex-direction: column; /* Makes the sidebar a column flex container */
+    z-index: 1000;
 }
 .setup #sideBar header {
     font-size: 22px;
@@ -379,35 +376,37 @@ body.dark-mode .switch::before {
 
 /* Sidebar open - expanded position for topbar */
 #check:checked ~ .top-bar {
-    left: 251px; /* Shift left to align with open sidebar */
-    width: calc(100% - 251px); /* Adjust width to match open sidebar */
+    left: 242px; /* Shift left to align with open sidebar */
+    width: calc(100% - 242px); /* Adjust width to match open sidebar */
 }
 
-
 /* Dashboard Container */
-/* .dashboard-container {
-    visibility: hidden;
-} */
-
-/* #dashboardContainer {
-    background-color: var(--v1-gray);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    padding: 35px;
-    margin: 20px;
-    max-width: 800px; 
-    width: 100%;
+.main-container {
+    position: relative;
     display: flex;
     flex-direction: column;
-    align-items: top;
-    justify-content: top;
-    text-align: top; 
-} */
+    height: 100vh;
+}
+
+.dashboard-container {
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--v1-gray);
+    padding: 50px 30px 20px;
+}
+
+.dashboard-container .dash-elements {
+    visibility: hidden;
+}
+
+#check:checked ~ .main-container{
+    left: 251px;
+}
 
 /* Add a black background color to the top navigation */
 h2 {
     margin: 0;
-    color: #333;
+    color: var(--dark-green);
 }
 
 /* .search-filter {
