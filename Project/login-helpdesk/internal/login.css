@@ -277,6 +277,7 @@ label[for="check"]{
 /* ======================== Top Bar ========================== */  
 
 .top-bar {
+    flex: 1;
     position: fixed;
     width: 100%;
     top: 0;
@@ -335,20 +336,27 @@ label[for="check"]{
 }
 
 .dashboard-container .dash-elements {
-    visibility: hidden; /* make hidden muna para di magulong tignan */
+    visibility: visible; /* make hidden muna para di magulong tignan */
 }
 
 #check:checked ~ .dashboard-container{
     left: 251px;
 }
 
-/* .search-filter {
-    width: 100%;
+/* Search and Filter Button */
+
+.search-filter {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     margin: 20px 0;
-} */
+}
+
+.left-section {
+    display: flex;
+    gap: 10px; 
+}
 
 .search-input {
     padding: 8px;
@@ -357,22 +365,34 @@ label[for="check"]{
     width: 200px;
 }
 
-.filter-button, .new-task-button {
+.filter-select {
     padding: 8px 12px;
-    border: none;
+    color: var(--dark-green);
+    border: 1px solid var(--light-gray);
     border-radius: 5px;
     cursor: pointer;
+    width: 100px;
 }
 
-.filter-button {
-    background-color: var(--button-blue);
-    color: black;
-}
+/* New Task Button */
 
 .new-task-button {
-    background-color: var(--button-green);
-    color: black;
+    padding: 8px 12px;
+    background-color: var(--hover-button);
+    color: white;
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
 }
+
+.new-task-button:hover {
+    background-color: var(--dark-green);
+    color: white;
+    transition-duration: 0.4s;
+}
+
+/* Task Table */
 
 .task-table {
     width: 100%;
@@ -382,13 +402,12 @@ label[for="check"]{
 
 .task-table th, .task-table td {
     border: 1px solid var(--light-gray);
+    font-size: smaller;
+    background-color: var(--bg-color);
     padding: 10px;
     text-align: left;
 }
 
-.task-table th {
-    background-color: var(--light-green);
-}
 
 /* 
 .pagination {

@@ -94,11 +94,19 @@
             <div id = "dashElements" class = "dash-elements">
                 <!-- Search and Filter -->
                 <div class="search-filter">
-                    <input type="text" placeholder="Search for task" class="search-input">
-                    <button class="filter-button">Filter</button>
-                    <!-- <button class="new-task-button">New Task</button> -->
+                    <div class="left-section">
+                        <input type="text" placeholder="Search for task" class="search-input">
+                        <select class="filter-select" aria-label="Filter options">
+                            <option value="">Filter by</option>
+                            <option value="status">Status</option>
+                            <option value="date">Date</option>
+                            <option value="severity">Severity</option>
+                            <option value="taskType">Task Type</option>
+                        </select>
+                    </div>
+                    <button class="new-task-button"></i>New Task</button>
                 </div>
-    
+                
                 <!-- Task Table -->
                 <table class="task-table">
                     <thead>
