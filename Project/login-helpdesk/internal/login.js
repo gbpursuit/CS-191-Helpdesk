@@ -24,12 +24,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const login = document.getElementById('login');
     const loginContainer = document.getElementById('loginContainer');
 
-    const topBar = document.getElementById('topbar'); // Top bar
-    const setup = document.getElementById('newSetup'); // Sidebar container
-    const mainContainer = document.getElementById('mainContainer'); // Dashboard container
+    const loginNew = document.getElementById('loginToNew'); // New Page after Login
 
-    // Initial Setup
-    setup.style.display = 'none'
+    // Initial setup
+    loginNew.style.display = 'none'
 
     // Handle the login form submission
     loginContainer.addEventListener('submit', function(event) {
@@ -37,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         login.style.display = 'none';
         forgot.style.display = 'none';
-        setup.style.display = 'block'
+        loginNew.style.display = 'block'
 
         const userData = {
             fullName: "Gavril Coronel",

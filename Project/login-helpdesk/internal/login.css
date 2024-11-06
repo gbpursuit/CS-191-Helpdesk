@@ -40,7 +40,8 @@ img {
     width: 100%;
 }
 
-/* Login Page */
+/* ======================== Login Page ========================== */  
+
 #login h2 {
     margin-bottom: 30px;
     color: var(--dark-green);
@@ -126,7 +127,8 @@ img {
     background-color: var(--hover-button);
 }
 
-/* Forgot Password Implementation */
+/* ======================== Forgot Password ========================== */  
+
 .forgot-container {
     visibility: hidden;
 }
@@ -141,8 +143,9 @@ img {
     text-align: center;
 }
 
-/* Sidebar Implementation */
-.setup #sideBar {
+/* ======================== Side Bar ========================== */  
+
+.side-bar {
     position: fixed;
     top: 0;
     left: -250px;
@@ -155,7 +158,7 @@ img {
     flex-direction: column; /* Makes the sidebar a column flex container */
     z-index: 1000;
 }
-.setup #sideBar header {
+.side-bar header {
     font-size: 22px;
     font-weight: 600;
     color: var(--dark-green);
@@ -163,14 +166,14 @@ img {
     line-height: 70px;
 }
 
-#sideBar ul {
+.side-bar ul {
     display: flex;
     flex-direction: column;
     height: 100%;
     padding: 0;
 }
 
-#sideBar ul a {
+.side-bar ul a {
     font-size: 15px;
     font-weight: 400;
     line-height: 65px;
@@ -181,11 +184,11 @@ img {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-#sideBar ul .transition a{
+.side-bar ul .transition a{
     cursor: pointer;
 }
 
-#sideBar ul .mode a{
+.side-bar ul .mode a{
     cursor: default;
 }
 
@@ -196,40 +199,40 @@ ul li.transition:hover{
     color: var(--hover-button);
 }
 
-#sideBar ul a i {
+.side-bar ul a i {
     margin-right: 1rem;
 }
 
-#sideBar .bottom-item {
+.side-bar .bottom-item {
     margin-top: auto;
 }
 
-#sideBar .mode a {
+.side-bar .mode a {
     display: flex;
     align-items: center;
 }
 
-#sideBar .toggle-mode {
+.side-bar .toggle-mode {
     font-size: 15px;
     margin-left: 4px;
 }
 
-#sideBar .mode .moon-sun {
+.side-bar .mode .moon-sun {
     height: 50px;
     width: 1.6rem;
     display: flex;
     align-items: center;
 }
 
-#sideBar .mode i {
+.side-bar .mode i {
     position: absolute;
 }
 
-#sideBar .mode i.sun {
+.side-bar .mode i.sun {
     opacity: 0;
 }
 
-#sideBar .toggle-switch {
+.side-bar .toggle-switch {
     position: relative;
     display: flex;
     height: 24px;
@@ -263,7 +266,7 @@ label[for="check"]{
     margin-right: 15px;
 }
 
-#check:checked ~ #sideBar {
+#check:checked ~ .side-bar {
     left: 0;
 }
 
@@ -271,72 +274,8 @@ label[for="check"]{
     left: 260px;
 }
 
-/* Dark Mode Implementation */
-body.dark-mode {
-    --dark-green: #7ede7e;
-    --hover-button: #8ddb8d;
-    --light-green: #2f4d33;
-    --v1-gray: #333;
-    --v2-gray: #555;
-    --hot-pink: #ff7070;
-    --bg-color: #1e1e1e;
-    --text-color: #ffffff;
-    --sidebar-bg-color: #1e1e1e;
-    --sidebar-text-color: #ffffff;
-    --sidebar-header-color: var(--dark-green);
-}
+/* ======================== Top Bar ========================== */  
 
-.switch::before {
-    content: '';
-    position: absolute;
-    height: 15px;
-    width: 15px;
-    background: var(--v2-gray);
-    border-radius: 50%;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    cursor: pointer;
-    transition: left 0.3s ease, background 0.3s ease;
-}
-
-.switch-login::before {
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-#sideBar header {
-    color: var(--sidebar-header-color);
-}
-
-#sideBar ul a {
-    color: var(--sidebar-text-color);
-    border-top: 1px solid rgba(255, 255, 255, 0);
-}
-
-body.dark-mode #sideBar ul li.transition:hover a {
-    color: var(--dark-green);
-}
-
-body.dark-mode #login #darkmode i.sun,
-body.dark-mode #sideBar .mode i.sun {
-    opacity: 1;
-}
-
-body.dark-mode #login #darkmode i.moon,
-body.dark-mode #sideBar .mode i.moon {
-    opacity: 0;
-}
-
-body.dark-mode #sideBar .toggle-switch {
-    background: var(--v2-gray); 
-}
-
-body.dark-mode .switch::before {
-    left: 22px;
-    background: var(--dark-green);
-}
-
-  
 .top-bar {
     position: fixed;
     width: 100%;
@@ -374,39 +313,33 @@ body.dark-mode .switch::before {
     margin-right: 5px;
 }
 
-/* Sidebar open - expanded position for topbar */
 #check:checked ~ .top-bar {
-    left: 242px; /* Shift left to align with open sidebar */
-    width: calc(100% - 242px); /* Adjust width to match open sidebar */
+    left: 242px;
+    width: calc(100% - 242px); 
 }
 
-/* Dashboard Container */
-.main-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
+/* ======================== Dashboard Container ========================== */  
 
 .dashboard-container {
+    position: relative;
     height: 100vh;
     width: 100vw;
     background-color: var(--v1-gray);
     padding: 50px 30px 20px;
+    transition: left 0.3s ease, width 0.3s ease;
+}
+
+.dashboard-container h2 {
+    margin: 0;
+    color: var(--dark-green);
 }
 
 .dashboard-container .dash-elements {
-    visibility: hidden;
+    visibility: hidden; /* make hidden muna para di magulong tignan */
 }
 
-#check:checked ~ .main-container{
+#check:checked ~ .dashboard-container{
     left: 251px;
-}
-
-/* Add a black background color to the top navigation */
-h2 {
-    margin: 0;
-    color: var(--dark-green);
 }
 
 /* .search-filter {
@@ -473,6 +406,73 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
 } */
+
+/* ======================== Dark Mode ========================== */  
+
+body.dark-mode {
+    --dark-green: #7ede7e;
+    --hover-button: #8ddb8d;
+    --light-green: #2f4d33;
+    --v1-gray: #333;
+    --v2-gray: #555;
+    --hot-pink: #ff7070;
+    --bg-color: #1e1e1e;
+    --text-color: #ffffff;
+    --sidebar-bg-color: #1e1e1e;
+    --sidebar-text-color: #ffffff;
+    --sidebar-header-color: var(--dark-green);
+}
+
+.switch::before {
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    background: var(--v2-gray);
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: left 0.3s ease, background 0.3s ease;
+}
+
+.switch-login::before {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#sideBar header {
+    color: var(--sidebar-header-color);
+}
+
+#sideBar ul a {
+    color: var(--sidebar-text-color);
+    border-top: 1px solid rgba(255, 255, 255, 0);
+}
+
+body.dark-mode #sideBar ul li.transition:hover a {
+    color: var(--dark-green);
+}
+
+body.dark-mode #login #darkmode i.sun,
+body.dark-mode #sideBar .mode i.sun {
+    opacity: 1;
+}
+
+body.dark-mode #login #darkmode i.moon,
+body.dark-mode #sideBar .mode i.moon {
+    opacity: 0;
+}
+
+body.dark-mode #sideBar .toggle-switch {
+    background: var(--v2-gray); 
+}
+
+body.dark-mode .switch::before {
+    left: 22px;
+    background: var(--dark-green);
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

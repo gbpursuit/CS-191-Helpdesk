@@ -9,6 +9,7 @@
     <script src="login.js" defer></script>
 </head>
 <body>
+    <!-- Login Form Container -->
     <div id="login">
         <h2>Sign in to Help Desk</h2>
         <div id="darkmode" class="dark-mode">
@@ -28,6 +29,7 @@
                     <option value="Marcus Pilapil"></option>
                 </datalist>
 
+                <!-- Forgot Password Container -->
                 <div class="password-container">
                     <label for="password">Password</label>
                     <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a>
@@ -44,10 +46,8 @@
         </form>
     </div>
     
-    <!-- ============================================================== -->
-
     <!-- Side Bar, Top Bar, and DashBoard Container -->
-    <div id="newSetup" class="setup">
+    <div id="loginToNew" class="login-new">
         <input type="checkbox" id="check" class="check-button">
         <div id="topbar" class="top-bar">
             <header>
@@ -87,47 +87,44 @@
             </ul>
         </div>
 
-        <div id = "mainContainer" class = "main-container">
-            <div id="dashboardContainer" class = "dashboard-container">
-                <h2>IT Management - Helpdesk</h2>
+        <div id="dashboardContainer" class = "dashboard-container">
+            <h2>IT Management - Helpdesk</h2>
 
-                <div id = "dashElements" class = "dash-elements">
-                    <!-- Search and Filter -->
-                    <div class="search-filter">
-                        <input type="text" placeholder="Search for task" class="search-input">
-                        <button class="filter-button">Filter</button>
-                        <!-- <button class="new-task-button">New Task</button> -->
-                    </div>
-        
-                    <!-- Task Table -->
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Status</th>
-                                <th>ID</th>
-                                <th>Trx Date</th>
-                                <th>IT in Charge</th>
-                                <th>Task Type</th>
-                                <th>Task Description</th>
-                                <th>Severity</th>
-                                <th>Requested by</th>
-                                <th>Approved by</th>
-                                <th>Date Information</th>
-                            </tr>
-                        </thead>
-                    </table>
-        
-                    <!-- Pagination
-                    <div class="pagination">
-                        <button class="pagination-button">Previous</button>
-                        <span>1</span>
-                        <span>2</span>
-                        <button class="pagination-button">Next</button>
-                    </div> -->
+            <div id = "dashElements" class = "dash-elements">
+                <!-- Search and Filter -->
+                <div class="search-filter">
+                    <input type="text" placeholder="Search for task" class="search-input">
+                    <button class="filter-button">Filter</button>
+                    <!-- <button class="new-task-button">New Task</button> -->
                 </div>
+    
+                <!-- Task Table -->
+                <table class="task-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Trx Date</th>
+                            <th>IT in Charge</th>
+                            <th>Task Type</th>
+                            <th>Task Description</th>
+                            <th>Severity</th>
+                            <th>Requested by</th>
+                            <th>Approved by</th>
+                            <th>Date Information</th>
+                        </tr>
+                    </thead>
+                </table>
+    
+                <!-- Pagination
+                <div class="pagination">
+                    <button class="pagination-button">Previous</button>
+                    <span>1</span>
+                    <span>2</span>
+                    <button class="pagination-button">Next</button>
+                </div> -->
             </div>
         </div>
-
     </div>
 
 </body>
