@@ -22,11 +22,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // Login -> User Page
     const login = document.getElementById('login');
     const loginContainer = document.getElementById('loginContainer');
-
     const loginNew = document.getElementById('loginToNew'); // New Page after Login
 
     // Initial setup
-    loginNew.style.display = 'none'
+    loginNew.style.display = 'none';
 
     // Handle the login form submission
     loginContainer.addEventListener('submit', function(event) {
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         login.style.display = 'none';
         forgot.style.display = 'none';
-        loginNew.style.display = 'block'
+        loginNew.style.display = 'block';
 
         const userData = {
             fullName: "Gavril Coronel",
@@ -47,7 +46,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         
         updateUserInfo(userData);
-
     });
 
     // Forgot Password
@@ -61,4 +59,57 @@ document.addEventListener("DOMContentLoaded", function() {
         forgot.style.visibility = 'visible';
     });
 
+    // Modal functionality
+    const taskModal = document.getElementById("taskModal");
+
+    // Open modal
+    window.openModal = function() {
+        taskModal.style.display = "flex";
+    };
+
+    // Close modal
+    window.closeModal = function() {
+        taskModal.style.display = "none";
+    };
+
+    // Add task to table
+    window.addTask = function(event) {
+        event.preventDefault();
+        
+        // Get values from the form
+        const taskStatus = document.getElementById("taskStatus").value;
+        const taskId = document.getElementById("taskId").value;
+        const taskDate = document.getElementById("taskDate").value;
+        const itInCharge = document.getElementById("itInCharge").value;
+        const taskType = document.getElementById("taskType").value;
+        const taskDescription = document.getElementById("taskDescription").value;
+        const severity = document.getElementById("severity").value;
+        const requestedBy = document.getElementById("requestedBy").value;
+        const approvedBy = document.getElementById("approvedBy").value;
+        const dateInfo = document.getElementById("dateInfo").value;
+        
+        // Create a new row
+        const tableBody = document.getElementById("taskTableBody"); // Ensure <tbody id="taskTableBody"> is in the HTML
+        const newRow = document.createElement("tr");
+        
+        newRow.innerHTML = `
+            <td>${taskStatus}</td>
+            <td>${taskId}</td>
+            <td>${taskDate}</td>
+            <td>${itInCharge}</td>
+            <td>${taskType}</td>
+            <td>${taskDescription}</td>
+            <td>${severity}</td>
+            <td>${requestedBy}</td>
+            <td>${approvedBy}</td>
+            <td>${dateInfo}</td>
+        `;
+        
+        // Append the new row to the table
+        tableBody.appendChild(newRow);
+        
+        // Close the modal and reset the form
+        closeModal();
+        document.getElementById("newTaskForm").reset();
+    };
 });
