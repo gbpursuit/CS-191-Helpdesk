@@ -148,6 +148,10 @@ img {
 
 /* ======================== Side Bar ========================== */  
 
+.login-new {
+    width: 100vw;
+}
+
 .side-bar {
     position: fixed;
     top: 0;
@@ -161,6 +165,7 @@ img {
     flex-direction: column; /* Makes the sidebar a column flex container */
     z-index: 1000;
 }
+
 .side-bar header {
     font-size: 22px;
     font-weight: 600;
@@ -321,19 +326,25 @@ label[for="check"]{
     left: 242px;
     width: calc(100% - 242px); 
 }
-
 /* ======================== Dashboard Container ========================== */  
 
 .dashboard-container {
     position: relative;
+    top: 0; 
+    left: 0; 
+    width: 100%;
     height: 100vh;
-    width: 100vw;
+    box-sizing: border-box;
+
     background-color: var(--v1-gray);
     padding: 50px 30px 20px;
     transition: left 0.3s ease, width 0.3s ease;
+    --child-transform: translateX(0);
+    --child-width: 100%; 
 }
 
 .dashboard-container h2 {
+    text-align: left;
     margin-top: 5px;
     color: var(--dark-green);
 }
@@ -342,28 +353,46 @@ label[for="check"]{
     background-color: var(--white);
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    padding: 15px 25px;
-    width: 100%;
+    padding: 15px 15px;
+    width: var(--child-width);
     height: calc(100% - 65px);
     text-align: center;
     margin-top: 10px;
-    overflow: auto;
-    transition: left 0.3s ease, width 0.3s ease;
+    overflow-x: auto;
 }
 
-#check:checked ~ .dashboard-container{
-    left: 251px;
+.dashboard-container h2,
+.dashboard-container .dash-elements {
+    transform: var(--child-transform);
+    transition: transform 0.3s ease, width 0.3s ease;
+}
+
+#check:checked ~ .dashboard-container {
+    left: 230px;
+    width: calc(100% - 230px);
+    --child-transform: translateX(1rem); 
+    --child-width: calc(100% - 10px);
 }
 
 /* Search and Filter Button */
+.fixed-head {
+    position: sticky;
+    top: 0;
+    left: 1px; 
+    right: 1px; 
+    width: calc(100% - 2px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 .search-filter {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin: 5px; 
 }
+
 
 .left-section {
     display: flex;
@@ -414,9 +443,10 @@ label[for="check"]{
 .task-table th {
     border-right: 2px solid var(--v1-gray);
     font-size: smaller;
-    background-color: var(--bg-color);
+    background-color: var(--);
     padding: 10px;
     text-align: left;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .task-table th:last-child {
@@ -496,6 +526,8 @@ label[for="check"]{
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    z-index: 10;
+    position: relative;
 } 
 
 .close:hover,
@@ -578,10 +610,10 @@ form button:hover {
     background-color: var(--hover-button);
 }
 
-
 /* ======================== Dark Mode ========================== */  
 
 body.dark-mode {
+    --white:var(--v2-gray);
     --dark-green: #7ede7e;
     --hover-button: #8ddb8d;
     --light-green: #2f4d33;
@@ -593,6 +625,9 @@ body.dark-mode {
     --sidebar-bg-color: #1e1e1e;
     --sidebar-text-color: #ffffff;
     --sidebar-header-color: var(--dark-green);
+    --green-one: #120f0d;
+    --green-two: #141e0b;
+    --whitesmoke: #292929;
 }
 
 .switch::before {
@@ -613,11 +648,7 @@ body.dark-mode {
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-#sideBar header {
-    color: var(--sidebar-header-color);
-}
-
-#sideBar ul a {
+body.dark-mode #sideBar ul a {
     color: var(--sidebar-text-color);
     border-top: 1px solid rgba(255, 255, 255, 0);
 }
@@ -645,11 +676,27 @@ body.dark-mode .switch::before {
     background: var(--dark-green);
 }
 
+body.dark-mode .username,
+body.dark-mode .password,
+body.dark-mode .filter-select,
+body.dark-mode .search-input {
+    background-color: var(--v1-gray);
+    color: var(--text-color);
+}
+
+body.dark-mode .dashboard-container .dash-elements {
+    background-color: var(--bg-color);
+}
+
+body.dark-mode .task-table th {
+    border-right: 2px solid var(--v1gray);
+    background-color: var(--white);
+    box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.507);
+}
 
 /* Responsive */
 @media (max-width: 768px) {
     .login-container, .dashboard-container {
-        padding: 20px; /* Adjust padding for smaller screens */
-        max-width: 90%; /* Full width on smaller screens */
+        max-width: 100%; /* Full width on smaller screens */
     }
 }

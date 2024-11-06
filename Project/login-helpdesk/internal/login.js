@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Initial setup
     loginNew.style.display = 'none';
+    taskModal.style.display = 'none';
 
     // Handle the login form submission
     loginContainer.addEventListener('submit', function(event) {
@@ -36,17 +37,14 @@ document.addEventListener("DOMContentLoaded", function() {
         forgot.style.display = 'none';
         loginNew.style.display = 'block';
 
-        const userData = {
-            fullName: "Gavril Coronel",
-            username: "gbpursuit"
-        };
+        const enterName = document.getElementById('username').value;
         
         function updateUserInfo(user) {
-            document.getElementById("userFullName").textContent = user.fullName;
-            document.getElementById("pagename").textContent = user.username;
+            document.getElementById("userFullName").textContent = user
+            document.getElementById("pagename").textContent = user
         }
         
-        updateUserInfo(userData);
+        updateUserInfo(enterName);
     });
 
     // Forgot Password

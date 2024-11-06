@@ -22,7 +22,7 @@
         <div id="loginContainer" class="login-container">
             <form id="loginForm" class="login-form">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" list="usernames" required>
+                <input type="text" id="username" name="username" list="usernames" class = "username" required>
                 <datalist id="usernames">
                     <option value="Lorraine Castrillon"></option>
                     <option value="Weng Castrillon"></option>
@@ -34,7 +34,7 @@
                     <label for="password">Password</label>
                     <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a>
                 </div>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" class = "password" required>
                 
                 <button id="sign-in" type="submit">Sign In</button>
             </form>
@@ -92,19 +92,21 @@
             <h2>IT Management - Helpdesk</h2>
 
             <div id = "dashElements" class = "dash-elements">
-                <!-- Search and Filter -->
-                <div class="search-filter">
-                    <div class="left-section">
-                        <input type="text" placeholder="Search for task" class="search-input">
-                        <select class="filter-select" aria-label="Filter options">
-                            <option value="">Filter by</option>
-                            <option value="status">Status</option>
-                            <option value="date">Date</option>
-                            <option value="severity">Severity</option>
-                            <option value="taskType">Task Type</option>
-                        </select>
+                <div class = "fixed-head">
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <div class="left-section">
+                            <input type="text" placeholder="Search for task" class="search-input">
+                            <select class="filter-select" aria-label="Filter options">
+                                <option value="">Filter by</option>
+                                <option value="status">Status</option>
+                                <option value="date">Date</option>
+                                <option value="severity">Severity</option>
+                                <option value="taskType">Task Type</option>
+                            </select>
+                        </div>
+                        <button class="new-task-button" onclick="openModal()">+ New Task</button>
                     </div>
-                    <button class="new-task-button" onclick="openModal()">New Task</button>
                 </div>
                 
                 <!-- Task Table -->
@@ -149,7 +151,7 @@
                         <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
                             
                             <div class="main-column">
-                                <div class = column-one>
+                                <div class = "column-one">
                                     <div class="form-group">
                                         <label for="taskType">Task Type</label>
                                         <input type="text" id="taskType" placeholder="Enter Task Type" required>
