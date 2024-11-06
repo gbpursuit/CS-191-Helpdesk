@@ -109,6 +109,7 @@
                 
                 <!-- Task Table -->
                 <table class="task-table">
+
                     <thead>
                         <tr>
                             <th>Status</th>
@@ -123,6 +124,9 @@
                             <th>Date Information</th>
                         </tr>
                     </thead>
+
+
+                    <!-- DONT TOUCH -->
                     <tbody id="taskTableBody">
                         <!-- New rows will be appended here -->
                     </tbody>
@@ -134,48 +138,79 @@
                     <span>1</span>
                     <span>2</span>
                     <button class="pagination-button">Next</button>
-                </div> -->
-
+                                </div> -->
                 <!-- New Task pop up -->
                 <div id="taskModal" class="modal">
                     <div class="modal-content">
                         <span class="close" onclick="closeModal()">&times;</span>
                         <h2>Add New Task</h2>
-                        <form id="newTaskForm" onsubmit="addTask(event)">
-                            <label for="taskStatus">Status</label>
-                            <input type="text" id="taskStatus" placeholder="Enter status" required>
-                            
-                            <label for="taskId">Task ID</label>
-                            <input type="text" id="taskId" placeholder="Enter Task ID" required>
-                            
-                            <label for="taskDate">Transaction Date</label>
-                            <input type="date" id="taskDate" required>
-                            
-                            <label for="itInCharge">IT in Charge</label>
-                            <input type="text" id="itInCharge" placeholder="Enter IT in Charge" required>
-                            
-                            <label for="taskType">Task Type</label>
-                            <input type="text" id="taskType" placeholder="Enter Task Type" required>
-                            
-                            <label for="taskDescription">Description</label>
-                            <input type="text" id="taskDescription" placeholder="Enter Task Description" required>
-                            
-                            <label for="severity">Severity</label>
-                            <input type="text" id="severity" placeholder="Enter Severity Level" required>
-                            
-                            <label for="requestedBy">Requested by</label>
-                            <input type="text" id="requestedBy" placeholder="Enter Requestor Name" required>
-                            
-                            <label for="approvedBy">Approved by</label>
-                            <input type="text" id="approvedBy" placeholder="Enter Approver Name" required>
-                            
-                            <label for="dateInfo">Date Information</label>
-                            <input type="text" id="dateInfo" placeholder="Enter Date Information" required>
-                            
+                        <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
+                            <div class="form-group">
+                                <label for="taskStatus">Status</label>
+                                <select id="taskStatus" required>
+                                    <option value="" disabled selected>Select Status</option>
+                                    <option value="open">Open</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="closed">Closed</option>
+                                    <option value="on-hold">On Hold</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="taskId">Task ID</label>
+                                <input type="text" id="taskId" placeholder="Enter Task ID" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="taskDate">Transaction Date</label>
+                                <input type="date" id="taskDate" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="itInCharge">IT in Charge</label>
+                                <select id="itInCharge" required>
+                                    <option value="" disabled selected>Select IT in Charge</option>
+                                    <option value="weng_castrillon">Weng Castrillon</option>
+                                    <option value="anne_ranay">Anne Ranay</option>
+                                    <option value="julius_jara">Julius Jara</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="taskType">Task Type</label>
+                                <input type="text" id="taskType" placeholder="Enter Task Type" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="taskDescription">Description</label>
+                                <input type="text" id="taskDescription" placeholder="Enter Task Description" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="severity">Severity</label>
+                                <input type="text" id="severity" placeholder="Enter Severity Level" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="requestedBy">Requested by</label>
+                                <input type="text" id="requestedBy" placeholder="Enter Requestor Name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="approvedBy">Approved by</label>
+                                <input type="text" id="approvedBy" placeholder="Enter Approver Name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dateInfo">Date Information</label>
+                                <input type="text" id="dateInfo" placeholder="Enter Date Information" required>
+                            </div>
+
                             <button type="submit">Add Task</button>
-                        </form>            
+                        </form>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

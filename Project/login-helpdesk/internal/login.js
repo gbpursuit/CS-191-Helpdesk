@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addTask = function(event) {
         event.preventDefault();
         
-        // Get values from the form
+        // Get values from the form fields
         const taskStatus = document.getElementById("taskStatus").value;
         const taskId = document.getElementById("taskId").value;
         const taskDate = document.getElementById("taskDate").value;
