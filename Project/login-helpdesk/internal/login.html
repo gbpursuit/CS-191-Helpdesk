@@ -113,19 +113,20 @@
                     <thead>
                         <tr>
                             <th>Status</th>
-                            <th>ID</th>
                             <th>Trx Date</th>
                             <th>IT in Charge</th>
                             <th>Task Type</th>
                             <th>Task Description</th>
                             <th>Severity</th>
-                            <th>Requested by</th>
-                            <th>Approved by</th>
-                            <th>Date Information</th>
+                            <th>Requested By</th>
+                            <th>Approved By</th>
+                            <th>Date Requested</th>
+                            <th>Date Received</th>
+                            <th>Date Started</th>
+                            <th>Date Finished</th>
                         </tr>
                     </thead>
-
-
+                    
                     <!-- DONT TOUCH -->
                     <tbody id="taskTableBody">
                         <!-- New rows will be appended here -->
@@ -140,74 +141,135 @@
                     <button class="pagination-button">Next</button>
                                 </div> -->
 
-
-                <!-- New Task pop up -->
+                <!-- New Task Modal -->
                 <div id="taskModal" class="modal">
                     <div class="modal-content">
                         <span class="close" onclick="closeModal()">&times;</span>
                         <h2>Add New Task</h2>
                         <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
-                            <div class="form-group">
-                                <label for="taskStatus">Status</label>
-                                <select id="taskStatus" required>
-                                    <option value="" disabled selected>Select Status</option>
-                                    <option value="open">Open</option>
-                                    <option value="in-progress">In Progress</option>
-                                    <option value="closed">Closed</option>
-                                    <option value="on-hold">On Hold</option>
-                                </select>
-                            </div>
+                            
+                            <div class="main-column">
+                                <div class = column-one>
+                                    <div class="form-group">
+                                        <label for="taskType">Task Type</label>
+                                        <input type="text" id="taskType" placeholder="Enter Task Type" required>
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="taskDescription">Task Description</label>
+                                        <input type="text" id="taskDescription" placeholder="Enter Task Description" required>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="requestedBy">Requested by</label>
+                                        <input type="text" id="requestedBy" placeholder="Enter Requestor Name" required>
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="approvedBy">Approved by</label>
+                                        <input type="text" id="approvedBy" placeholder="Enter Approver Name" required>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="department">Department</label>
+                                        <select id="department" required>
+                                            <option value="" disabled selected>Select Department</option>
+                                            <option value="Marketing">Marketing</option>
+                                            <option value="Executive">Executive</option>
+                                            <option value="Warehouse">Warehouse</option>
+                                            <option value="IT">IT</option>
+                                        </select>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="departmentNo">Department No</label>
+                                        <input type="text" id="departmentNo" placeholder="Enter Dept. No." required>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="itInCharge">IT in Charge</label>
+                                        <select id="itInCharge" required>
+                                            <option value="" disabled selected>Select IT in Charge</option>
+                                            <option value="weng_castrillon">Weng Castrillon</option>
+                                            <option value="anne_ranay">Anne Ranay</option>
+                                            <option value="julius_jara">Julius Jara</option>
+                                        </select>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="deviceName">Device Name</label>
+                                        <input type="text" id="deviceName" placeholder="Enter Device Name" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="itemName">Item Name</label>
+                                        <input type="text" id="itemName" placeholder="Enter Item Name" required>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="applicationName">Application Name</label>
+                                        <input type="text" id="applicationName" placeholder="Enter Application Name" required>
+                                    </div>
+                                </div>
+    
+                                <!-- ---------- -->
+                                <div class="column-two">
+                                    <div class="form-group">
+                                        <label for="taskDate">Transaction Date</label>
+                                        <input type="date" id="taskDate" required>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="taskStatus">Status</label>
+                                        <select id="taskStatus" required>
+                                            <option value="" disabled selected>Select Status</option>
+                                            <option value="open">Open</option>
+                                            <option value="in-progress">In Progress</option>
+                                            <option value="closed">Closed</option>
+                                            <option value="on-hold">On Hold</option>
+                                        </select>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="severity">Severity</label>
+                                        <input type="text" id="severity" placeholder="Enter Severity Level" required>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="taskId">Task ID</label>
-                                <input type="text" id="taskId" placeholder="Enter Task ID" required>
-                            </div>
+                                    <!-- <div class="form-group">
+                                        <label for="dateInfo">Date Information</label>
+                                        <input type="text" id="dateInfo" placeholder="Enter Date Information" required>
+                                    </div> -->
 
-                            <div class="form-group">
-                                <label for="taskDate">Transaction Date</label>
-                                <input type="date" id="taskDate" required>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="dateReq">Date Requested</label>
+                                        <input type="date" id="dateReq" placeholder="Enter Date Requested" required>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="itInCharge">IT in Charge</label>
-                                <select id="itInCharge" required>
-                                    <option value="" disabled selected>Select IT in Charge</option>
-                                    <option value="weng_castrillon">Weng Castrillon</option>
-                                    <option value="anne_ranay">Anne Ranay</option>
-                                    <option value="julius_jara">Julius Jara</option>
-                                </select>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="dateRec">Date Received</label>
+                                        <input type="date" id="dateRec" placeholder="Enter Date Received" required>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="taskType">Task Type</label>
-                                <input type="text" id="taskType" placeholder="Enter Task Type" required>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="dateStart">Date Started</label>
+                                        <input type="date" id="dateStart" placeholder="Enter Date Started" required>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="taskDescription">Description</label>
-                                <input type="text" id="taskDescription" placeholder="Enter Task Description" required>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="dateFin">Date Finished</label>
+                                        <input type="date" id="dateFin" placeholder="Enter Date Finished" required>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="severity">Severity</label>
-                                <input type="text" id="severity" placeholder="Enter Severity Level" required>
+                                </div>
+    
+    
+                                <!-- <div class="form-group">
+                                    <label for="taskId">Task ID</label>
+                                    <input type="text" id="taskId" placeholder="Enter Task ID" required>
+                                </div> -->
+    
                             </div>
-
-                            <div class="form-group">
-                                <label for="requestedBy">Requested by</label>
-                                <input type="text" id="requestedBy" placeholder="Enter Requestor Name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="approvedBy">Approved by</label>
-                                <input type="text" id="approvedBy" placeholder="Enter Approver Name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="dateInfo">Date Information</label>
-                                <input type="text" id="dateInfo" placeholder="Enter Date Information" required>
-                            </div>
-
+                            
                             <button type="submit">Add Task</button>
                         </form>
                     </div>

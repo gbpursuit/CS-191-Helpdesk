@@ -24,6 +24,8 @@
     --hot-pink: #d44a41;
     --bg-color: #f0f2f5;
     --text-color: black;
+    --green-one: #ebf5f1;
+    --green-two: #e9fef7;
 }
 
 /* General Styles */
@@ -346,6 +348,7 @@ label[for="check"]{
     text-align: center;
     margin-top: 10px;
     overflow: auto;
+    transition: left 0.3s ease, width 0.3s ease;
 }
 
 #check:checked ~ .dashboard-container{
@@ -402,21 +405,43 @@ label[for="check"]{
 }
 
 /* Task Table */
-
 .task-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse;  /* Ensures borders collapse into a single line between cells */
     margin-top: 20px;
 }
 
 .task-table th {
-    border: 1px solid var(--light-gray);
+    border-right: 2px solid var(--v1-gray);
     font-size: smaller;
     background-color: var(--bg-color);
     padding: 10px;
     text-align: left;
 }
 
+.task-table th:last-child {
+    border-right: none;
+}
+
+/* Table Input */
+.task-table tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+.task-table tbody tr:nth-child(even) {
+    background-color: whitesmoke;
+}
+
+.task-table tbody tr:hover {
+    background-color: #e8f5e9;
+}
+
+.task-table td {
+    border: 1px solid var(--v2-gray);
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 0.85rem;
+}
 
 /* .pagination {
     margin-top: 20px;
@@ -436,8 +461,7 @@ label[for="check"]{
 
 /* ======================== New Task Modal ========================== */ 
 
-/* Modal styling */
-/* Styling for Modal and Form */
+/* Modal Container */
 .modal {
     display: none;
     position: fixed;
@@ -446,21 +470,26 @@ label[for="check"]{
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
+    overflow: hidden; /* Ensure no scroll bar on modal */
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
     background-color: var(--white);
-    margin: 5% auto;
-    padding: 20px;
+    margin: 0 auto;
+    padding: 15px; /* Slightly smaller padding for compactness */
     border-radius: 8px;
     width: 80%;
-    overflow: auto;
+    max-width: 900px;
+    max-height: 90vh; /* Set max height to fit viewport */
+    overflow-y: auto; /* Enable scrolling within modal if content exceeds */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Close button */
 .close {
     float: right;
     color: var(--dark-green);
@@ -478,40 +507,69 @@ label[for="check"]{
 
 h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
+/* Modal Content */
 .task-form {
     display: flex;
     flex-direction: column;
+    width: 100%;
+}
+
+.main-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 25px; 
+}
+
+.column-one, .column-two {
+    display: flex;
+    flex-direction: column;
+    width: 50%; 
+    gap: 2px; 
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px; 
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 10px; 
 }
+
 
 .form-group label {
     font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 0.825rem;
+    width: 120px; /* Set a fixed width for labels */
+    text-align: right; 
+    margin-right: 10px;
 }
 
-.form-group input,
-.form-group select {
+.form-group input, .form-group select {
+    flex: 1; /* Allows input fields to adjust based on available space */
+    width: 100%; /* Ensure input fills available width */
     padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--v2-gray);
     border-radius: 4px;
+    font-size: 0.765rem;
+    color: var(--sidebar-bg-color); /* Adjust text color for better readability */
+    background-color: var(--white); /* Ensure background is white for contrast */
+}
+
+/* Optional: Customize placeholder color for inputs */
+.form-group input::placeholder {
+    color: var(--sidebar-bg-color); /* Adjust placeholder color if needed */
 }
 
 form button {
-    padding: 10px 20px;
+    padding: 9px 20px;
     background-color: var(--dark-green);
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 0.825rem;
     cursor: pointer;
     margin-top: 10px;
 }
@@ -519,6 +577,7 @@ form button {
 form button:hover {
     background-color: var(--hover-button);
 }
+
 
 /* ======================== Dark Mode ========================== */  
 

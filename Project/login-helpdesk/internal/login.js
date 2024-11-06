@@ -76,7 +76,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // Get values from the form fields
         const taskStatus = document.getElementById("taskStatus").value;
-        const taskId = document.getElementById("taskId").value;
         const taskDate = document.getElementById("taskDate").value;
         const itInCharge = document.getElementById("itInCharge").value;
         const taskType = document.getElementById("taskType").value;
@@ -84,7 +83,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const severity = document.getElementById("severity").value;
         const requestedBy = document.getElementById("requestedBy").value;
         const approvedBy = document.getElementById("approvedBy").value;
-        const dateInfo = document.getElementById("dateInfo").value;
+        const dateReq = document.getElementById("dateReq").value;
+        const dateRec = document.getElementById("dateRec").value;
+        const dateStart = document.getElementById("dateStart").value;
+        const dateFin = document.getElementById("dateFin").value;
         
         // Create a new row
         const tableBody = document.getElementById("taskTableBody"); // Ensure <tbody id="taskTableBody"> is in the HTML
@@ -92,7 +94,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         newRow.innerHTML = `
             <td>${taskStatus}</td>
-            <td>${taskId}</td>
             <td>${taskDate}</td>
             <td>${itInCharge}</td>
             <td>${taskType}</td>
@@ -100,7 +101,10 @@ document.addEventListener("DOMContentLoaded", function() {
             <td>${severity}</td>
             <td>${requestedBy}</td>
             <td>${approvedBy}</td>
-            <td>${dateInfo}</td>
+            <td>${dateReq}</td>
+            <td>${dateRec}</td>
+            <td>${dateStart}</td>
+            <td>${dateFin}</td>
         `;
         
         // Append the new row to the table
