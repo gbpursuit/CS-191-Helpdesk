@@ -22,7 +22,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Login -> User Page
     const login = document.getElementById('login');
     const loginContainer = document.getElementById('loginContainer');
-    const loginNew = document.getElementById('loginToNew'); // New Page after Login
+    const loginNew = document.getElementById('loginToNew');
+    const taskModal = document.getElementById("taskModal");
 
     // Initial setup
     loginNew.style.display = 'none';
@@ -58,9 +59,6 @@ document.addEventListener("DOMContentLoaded", function() {
         login.style.display = 'none';
         forgot.style.visibility = 'visible';
     });
-
-    // Modal functionality
-    const taskModal = document.getElementById("taskModal");
 
     // Open modal
     window.openModal = function() {
