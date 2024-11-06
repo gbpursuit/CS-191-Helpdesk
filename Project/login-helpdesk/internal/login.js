@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function() {
         body.classList.toggle("dark-mode");
     });
 
-
     // Login -> User Page
     const login = document.getElementById('login');
     const loginContainer = document.getElementById('loginContainer');
