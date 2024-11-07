@@ -132,4 +132,27 @@ document.addEventListener("DOMContentLoaded", function() {
             closeNotificationPopup();
         }
     });
+
+    // Dropdown toggle for user profile
+    const logoutButton = document.querySelector(".logout-btn");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+
+    logoutButton.addEventListener("click", function(event) {
+        event.stopPropagation();
+        dropdownMenu.classList.toggle("show");
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener("click", function(event) {
+        if (!dropdownMenu.contains(event.target) && !logoutButton.contains(event.target)) {
+            dropdownMenu.classList.remove("show");
+        }
+    });
+
+    // Logout function
+    window.logout = function() {
+        loginNew.style.display = "none";
+        login.style.display = "block";
+    };
+    
 });
