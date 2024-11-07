@@ -112,4 +112,24 @@ document.addEventListener("DOMContentLoaded", function() {
         closeModal();
         document.getElementById("newTaskForm").reset();
     };
+
+    // Notification Pop-up
+    const notificationPopup = document.getElementById("notificationPopup");
+
+    // Function to open the notification pop-up
+    window.openNotificationPopup = function() {
+        notificationPopup.style.display = "block";
+    };
+
+    // Function to close the notification pop-up
+    window.closeNotificationPopup = function() {
+        notificationPopup.style.display = "none";
+    };
+
+    // Close the notification pop-up if clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (event.target === notificationPopup) {
+            closeNotificationPopup();
+        }
+    });
 });
