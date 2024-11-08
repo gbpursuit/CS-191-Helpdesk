@@ -27,9 +27,14 @@
     --green-one: #ebf5f1;
     --green-two: #e9fef7;
     --whitesmoke: whitesmoke;
+    --tsm-left: left 0.3s ease;
+    --tsm-width: width 0.3s ease;
+    --tsm-l-w: var(--tsm-left), var(--tsm-width);
+    --tsm-pad: padding-left 0.3s ease;
 }
 
 /* General Styles */
+
 body {
     color: var(--text-color);
     background-color: var(--bg-color);
@@ -156,12 +161,12 @@ img {
 .side-bar {
     position: fixed;
     top: 0;
-    left: -250px;
-    width: 250px;
+    left: -240px;
+    width: 240px;
     height: 100%;
     background: var(--bg-color);
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2); 
-    transition: left 0.3s ease;
+    transition: var(--tsm-left);
     display: flex;
     flex-direction: column; /* Makes the sidebar a column flex container */
     z-index: 1000;
@@ -171,8 +176,10 @@ img {
     font-size: 22px;
     font-weight: 600;
     color: var(--dark-green);
-    text-align: center;
     line-height: 70px;
+    cursor: pointer;
+    padding-left: 60px;
+    transition: var(--tsm-pad);
 }
 
 .side-bar ul {
@@ -188,7 +195,8 @@ img {
     line-height: 65px;
     color: var(--text-color);
     display: block;
-    padding-left: 40px;
+    padding-left: 50px;
+    transition: var(--tsm-pad);
     box-sizing: border-box;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -201,11 +209,11 @@ img {
     cursor: default;
 }
 
-ul li.transition:hover{
+.side-bar ul li.transition:hover a {
     background: var(--v1-gray);
-    padding-left: 10px; /* Padding might be better applied to the <li> */
+    padding-left: 60px; 
     transition: 0.3s;
-    color: var(--hover-button);
+    color: var(--dark-green);
 }
 
 .side-bar ul a i {
@@ -270,17 +278,14 @@ label[for="check"]{
     position: absolute;
     cursor: pointer;
     color: var(--dark-green);
-    transition: left 0.3s ease;
+    transition: var(--tsm-left);
     z-index: 1;
     margin-right: 15px;
 }
 
 #check:checked ~ .side-bar {
     left: 0;
-}
-
-#check:checked ~ label #btn {
-    left: 260px;
+    transition: var(--tsm-l-w);
 }
 
 /* ======================== Top Bar ========================== */  
@@ -298,7 +303,7 @@ label[for="check"]{
     padding: 10px 20px;
     background: var(--bg-color);
     box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1); 
-    transition: left 0.3s ease, width 0.3s ease;
+    transition: var(--tsm-l-w);
 }
 
 .top-bar header {
@@ -324,8 +329,8 @@ label[for="check"]{
 }
 
 #check:checked ~ .top-bar {
-    left: 242px;
-    width: calc(100% - 242px); 
+    left: 240px;
+    width: calc(100% - 240px); 
 }
 
 /* Notification Button and Pop-up */
@@ -367,7 +372,7 @@ label[for="check"]{
     background-color: var(--white);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .popup-content {
@@ -446,13 +451,12 @@ label[for="check"]{
     transition: background-color 0.3s ease;
 }
 
-.logout-elem:hover, .logout-text:hover{
-    background-color: var(--v1-gray); 
+.logout-elem:hover .logout-text{
     color: var(--hot-pink); 
 }
 
 .logout-text {
-    color: var(--sidebar-bg-color); /* Set the text color */
+    color: var(--text-color); /* Default text color */
     text-decoration: none; /* Prevent underlining if it's a link */
     transition: color 0.3s ease; /* Smooth color change */
 }
@@ -473,14 +477,14 @@ label[for="check"]{
 
     background-color: var(--v1-gray);
     padding: 50px 30px 20px;
-    transition: left 0.3s ease, width 0.3s ease;
+    transition: var(--tsm-l-w);
     --child-transform: translateX(0);
     --child-width: 100%; 
 }
 
 .dashboard-container h2 {
     text-align: left;
-    margin-top: 5px;
+    margin-top: 18px;
     color: var(--dark-green);
 }
 
@@ -493,7 +497,6 @@ label[for="check"]{
     height: calc(100% - 65px);
     text-align: center;
     margin-top: 10px;
-    overflow-x: auto;
 }
 
 .dashboard-container h2,
@@ -503,8 +506,8 @@ label[for="check"]{
 }
 
 #check:checked ~ .dashboard-container {
-    left: 230px;
-    width: calc(100% - 230px);
+    left: 220px;
+    width: calc(100% - 220px);
     --child-transform: translateX(1rem); 
     --child-width: calc(100% - 10px);
 }
@@ -719,13 +722,13 @@ h2 {
     border: 1px solid var(--v2-gray);
     border-radius: 4px;
     font-size: 0.765rem;
-    color: var(--sidebar-bg-color); /* Adjust text color for better readability */
+    color: var(--text-color); /* Adjust text color for better readability */
     background-color: var(--white); /* Ensure background is white for contrast */
 }
 
 /* Optional: Customize placeholder color for inputs */
 .form-group input::placeholder {
-    color: var(--sidebar-bg-color); /* Adjust placeholder color if needed */
+    color: var(--text-color); /* Adjust placeholder color if needed */
 }
 
 form button {
@@ -747,8 +750,8 @@ form button:hover {
 
 body.dark-mode {
     --white:var(--v2-gray);
-    --dark-green: #7ede7e;
-    --hover-button: #8ddb8d;
+    --dark-green: #7ce57c;
+    --hover-button: #7dc57d;
     --light-green: #2f4d33;
     --v1-gray: #333;
     --v2-gray: #555;
@@ -774,7 +777,7 @@ body.dark-mode {
     left: 5px;
     transform: translateY(-50%);
     cursor: pointer;
-    transition: left 0.3s ease, background 0.3s ease;
+    transition: var(--tsm-left), background 0.3s ease;
 }
 
 .switch-login::before {
@@ -833,12 +836,20 @@ body.dark-mode .notification-button {
     background-color: var(--bg-color);
 }
 
+body.dark-mode .notification-button:hover {
+    color: var(--text-color);          
+    border-color: var(--dark-green);
+}
+
 body.dark-mode .notification-badge {
     color: var(--text-color);
 }
 
-body.dark-mode .logout-elem:hover, .logout-text:hover{
-    background-color: var(--v1-gray); 
+body.dark-mode .logout-text {
+    color: var(--text-color);
+}
+
+body.dark-mode .logout-elem:hover .logout-text {
     color: var(--hot-pink); 
 }
 
@@ -847,4 +858,76 @@ body.dark-mode .logout-elem:hover, .logout-text:hover{
     .login-container, .dashboard-container {
         max-width: 100%; /* Full width on smaller screens */
     }
+
+    .side-bar header {
+        padding-left: 50px;
+    }
+
+    .side-bar ul .transition a {
+        padding-left: 40px;
+        transition: var(--tsm-pad);
+    }
+
+    .side-bar ul .mode a {
+        padding-left: 30px;
+        transition: var(--tsm-pad);
+    }
+
+    .dash-elements,
+    .fixed-head {
+        overflow-x: auto; /* Allows horizontal scrolling */
+        padding-bottom: 5px;
+    }
+
+    .dash-elements::-webkit-scrollbar,
+    .fixed-head::-webkit-scrollbar {
+        width: 4px;  /* Vertical scrollbar width */
+        height: 4px; /* Horizontal scrollbar height */
+    }
+
+    .dash-elements::-webkit-scrollbar-thumb,
+    .fixed-head::-webkit-scrollbar-thumb {
+        border-radius: 5px; /* Rounded edges */
+    }
+
+    .dash-elements:hover::-webkit-scrollbar,
+    .fixed-head:hover::-webkit-scrollbar {
+        width: 4px; 
+        height: 4px; 
+    }
+
+    .dash-elements:hover::-webkit-scrollbar-thumb,
+    .fixed-head:hover::-webkit-scrollbar-thumb {
+        background-color: var(--v2-gray);
+    }
+
+    .search-input {
+        flex: 0.4; /* Search bar takes more space */
+        min-width: 50px;
+        padding: 5px;
+    }
+
+    .filter-select,
+    .new-task-button {
+        flex: 0.3; /* Filter dropdown */
+        min-width: 50px;
+        padding: 5px;
+    }
+
+    #check:checked ~ .dashboard-container {
+        left: 200px;
+        width: calc(100% - 200px);
+    }
+
+    #check:checked ~ .top-bar {
+        left: 220px;
+        width: calc(100% - 220px);
+    }
+
+    #check:checked ~ .side-bar {
+        width: 220px;
+        transition: var(--tsm-l-w);
+    }
 }
+
+
