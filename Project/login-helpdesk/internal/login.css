@@ -21,12 +21,15 @@
     --light-green: #90EE90;
     --v1-gray: #E3E9E8;
     --v2-gray: #ccc;
+    --v3-gray: #b3b0b0;
     --hot-pink: #d44a41;
     --bg-color: #f0f2f5;
     --text-color: black;
     --green-one: #ebf5f1;
     --green-two: #e9fef7;
     --whitesmoke: whitesmoke;
+
+
     --tsm-left: left 0.3s ease;
     --tsm-width: width 0.3s ease;
     --tsm-l-w: var(--tsm-left), var(--tsm-width);
@@ -156,6 +159,7 @@ img {
 
 .login-new {
     width: 100vw;
+    height: 100vh;  
 }
 
 .side-bar {
@@ -298,6 +302,7 @@ label[for="check"]{
     left: 0;
     z-index: 1000;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
@@ -444,21 +449,36 @@ label[for="check"]{
     justify-items: center;
 }
 
-.logout-elem {
-    text-align: center; 
+.dropdown-menu ul {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-align: center;
     padding: 5px 20px;
-    cursor: pointer; 
     transition: background-color 0.3s ease;
+    cursor: default;
 }
 
-.logout-elem:hover .logout-text{
-    color: var(--hot-pink); 
+.dropdown-menu ul a {
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    padding: 10px 0px;
+    left: 0;
+
+    transition: var(--tsm-pad);
+    box-sizing: border-box;
 }
 
-.logout-text {
-    color: var(--text-color); /* Default text color */
-    text-decoration: none; /* Prevent underlining if it's a link */
-    transition: color 0.3s ease; /* Smooth color change */
+.dropdown-menu ul li:hover a{
+    color: var(--hot-pink);
+    cursor: pointer;
+}
+
+.dropdown-menu ul li a{
+    color: var(--text-color); 
+    text-decoration: none; 
+    transition: color 0.3s ease;
 }
 
 .dropdown-menu.show {
@@ -468,11 +488,11 @@ label[for="check"]{
 /* ======================== Dashboard Container ========================== */  
 
 .dashboard-container {
-    position: relative;
-    top: 0; 
+    position: fixed;
+    top: 20px; 
     left: 0; 
     width: 100%;
-    height: 100vh;
+    height: 100%;
     box-sizing: border-box;
 
     background-color: var(--v1-gray);
@@ -484,7 +504,6 @@ label[for="check"]{
 
 .dashboard-container h2 {
     text-align: left;
-    margin-top: 18px;
     color: var(--dark-green);
 }
 
@@ -503,6 +522,34 @@ label[for="check"]{
 .dashboard-container .dash-elements {
     transform: var(--child-transform);
     transition: transform 0.3s ease, width 0.3s ease;
+}
+
+.dash-elements,
+.fixed-head {
+    overflow-x: auto; /* Allows horizontal scrolling */
+    padding-bottom: 5px;
+}
+
+.dash-elements::-webkit-scrollbar,
+.fixed-head::-webkit-scrollbar {
+    width: 4px;  /* Vertical scrollbar width */
+    height: 4px; /* Horizontal scrollbar height */
+}
+
+.dash-elements::-webkit-scrollbar-thumb,
+.fixed-head::-webkit-scrollbar-thumb {
+    border-radius: 5px; /* Rounded edges */
+}
+
+.dash-elements:hover::-webkit-scrollbar,
+.fixed-head:hover::-webkit-scrollbar {
+    width: 4px; 
+    height: 4px; 
+}
+
+.dash-elements:hover::-webkit-scrollbar-thumb,
+.fixed-head:hover::-webkit-scrollbar-thumb {
+    background-color: var(--v2-gray);
 }
 
 #check:checked ~ .dashboard-container {
@@ -610,21 +657,46 @@ label[for="check"]{
     font-size: 0.85rem;
 }
 
-/* .pagination {
-    margin-top: 20px;
+.pagination {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
     display: flex;
-    gap: 10px;
     align-items: center;
+    gap: 10px;
 }
 
 .pagination-button {
-    padding: 5px 10px;
     border: none;
-    background-color: var(--button-blue);
-    color: white;
-    border-radius: 5px;
+    background: none;
+    color: var(--v3-gray);
     cursor: pointer;
-} */
+}
+
+.pagination-button:hover {
+    color: var(--hover-button);
+    transition: color 0.5s ease;
+}
+
+.pages {
+    padding: 0px 13px;
+    border: 1px solid var(--v2-gray);
+    border-radius: 5px;
+    background-color: var(--white);
+    cursor: pointer;
+}
+
+/* If implemented na yung pagkuha ng mga tasks */
+/* 
+.pages.active {
+    background-color: var(--dark-green);
+}
+
+.pages.not(active) {
+    background-color: var(--dark-green);
+}
+*/
+
 
 /* ======================== New Task Modal ========================== */ 
 
@@ -871,34 +943,6 @@ body.dark-mode .logout-elem:hover .logout-text {
     .side-bar ul .mode a {
         padding-left: 30px;
         transition: var(--tsm-pad);
-    }
-
-    .dash-elements,
-    .fixed-head {
-        overflow-x: auto; /* Allows horizontal scrolling */
-        padding-bottom: 5px;
-    }
-
-    .dash-elements::-webkit-scrollbar,
-    .fixed-head::-webkit-scrollbar {
-        width: 4px;  /* Vertical scrollbar width */
-        height: 4px; /* Horizontal scrollbar height */
-    }
-
-    .dash-elements::-webkit-scrollbar-thumb,
-    .fixed-head::-webkit-scrollbar-thumb {
-        border-radius: 5px; /* Rounded edges */
-    }
-
-    .dash-elements:hover::-webkit-scrollbar,
-    .fixed-head:hover::-webkit-scrollbar {
-        width: 4px; 
-        height: 4px; 
-    }
-
-    .dash-elements:hover::-webkit-scrollbar-thumb,
-    .fixed-head:hover::-webkit-scrollbar-thumb {
-        background-color: var(--v2-gray);
     }
 
     .search-input {

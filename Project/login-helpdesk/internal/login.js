@@ -5,13 +5,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const loginSwitch = document.querySelector(".dark-mode");
     const body = document.body;
 
-    toggleSwitch.addEventListener('click', function() {
+    function darkmode(event){
+        event.preventDefault();
         body.classList.toggle("dark-mode");
-    });
+    }
 
-    loginSwitch.addEventListener('click', function() {
-        body.classList.toggle("dark-mode");
-    });
+    toggleSwitch.addEventListener("click", darkmode);
+    loginSwitch.addEventListener("click", darkmode);
 
     /* ========= ELEMENT SELECTION ========= */
     const login = document.getElementById('login');
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     summary.addEventListener('click', function(event){
         event.preventDefault();
-        dashTitle.innerText = "Summary";
+        dashTitle.innerText = "IT Summary";
         dashContainer.style.display = 'block';
     
         taskTable.style.display = 'none';
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     dashboard.addEventListener('click', function(event){
         event.preventDefault();
-        dashTitle.innerText = "Dashboard";
+        dashTitle.innerText = "IT Dashboard";
         dashContainer.style.display = 'block';
     
         taskTable.style.display = 'block';
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     headerBar.addEventListener('click', function(event){
         event.preventDefault();
-        dashTitle.innerText = 'Home Page';
+        dashTitle.innerText = 'IT Management - Helpdesk';
         dashContainer.style.display = 'block';
 
         dashElements.style.display = 'none';
@@ -165,11 +165,15 @@ document.addEventListener("DOMContentLoaded", function() {
     /* ========= DROPDOWN TOGGLE ========= */
     const logoutButton = document.querySelector(".logout-btn");
     const dropdownMenu = document.getElementById("dropdownMenu");
-
-    logoutButton.addEventListener("click", function(event) {
+    const profile = document.querySelector(".user-profile");
+    
+    function toggleDropdown(event) {
         event.stopPropagation();
         dropdownMenu.classList.toggle("show");
-    });
+    }
+    
+    logoutButton.addEventListener("click", toggleDropdown);
+    profile.addEventListener("click", toggleDropdown);
 
     document.addEventListener("click", function(event) {
         if (!dropdownMenu.contains(event.target) && !logoutButton.contains(event.target)) {
@@ -179,9 +183,47 @@ document.addEventListener("DOMContentLoaded", function() {
 
     /* ========= LOGOUT FUNCTION ========= */
     window.logout = function() {
-        loginNew.style.display = "none";
-        login.style.display = "block";
         location.reload();
     };
+
+    /* ========= TOPBAR RESIZE ========= */
+    // window.addEventListener('resize', function() {
+    //     if (window.innerWidth < 768) {
+    //       dashContainer.style.marginTop = '400px';
+    //     } 
+    //   });
+      
+    /*
+    let currentPage = 1;
+    const rowsPerPage = 10; // Adjust as needed for the number of tasks displayed per page
+
+    function goToPreviousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            displayTablePage(currentPage);
+        }
+    }
+
+    function goToNextPage() {
+        const totalRows = document.querySelectorAll("#taskTableBody tr").length;
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayTablePage(currentPage);
+        }
+    }
+
+    function displayTablePage(page) {
+        const rows = document.querySelectorAll("#taskTableBody tr");
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+            row.style.display = index >= start && index < end ? "table-row" : "none";
+        });
+
+        document.getElementById("currentPage").textContent = page; // Update page indicator
+    }
+    */
 
 });

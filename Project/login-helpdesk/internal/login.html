@@ -70,13 +70,13 @@
                         <button class="logout-btn" aria-label="Toggle user options" onclick="toggleDropdown()">
                             <i class="fa fa-chevron-down arrow-icon"></i>
                         </button>
-                        <div id="dropdownMenu" class="dropdown-menu" onclick="logout()">
+                        <div id="dropdownMenu" class="dropdown-menu">
                             <ul class="logout-elem">
-                                <li><a class="logout-text" href="#">Logout</a></li>
+                                <li class = "profile-text"><a href = "#">Profile</a></li>
+                                <li class = "logout-text" onclick="logout()"><a href="#">Logout</a></li>
                             </ul>
                         </div>
                     </div>   
-                    
                 </div>
                 
                 <!-- Notification Pop-up -->
@@ -161,14 +161,16 @@
                     </tbody>
                 </table>
     
-                <!-- Pagination
+                <!-- Pagination -->
                 <div class="pagination">
-                    <button class="pagination-button">Previous</button>
-                    <span>1</span>
-                    <span>2</span>
-                    <button class="pagination-button">Next</button>
-                                </div> -->
+                    <button class="pagination-button" onclick="goToPreviousPage()">Previous</button>
+                    <div class = "pages">
+                        <span id="currentPage">1</span> <!-- Current page indicator -->
+                    </div>
+                    <button class="pagination-button" onclick="goToNextPage()">Next</button>
+                </div>
             </div>
+
             <!-- New Task Modal -->
             <div id="taskModal" class="modal">
                 <div class="modal-content">
