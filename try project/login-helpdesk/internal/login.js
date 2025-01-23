@@ -109,35 +109,44 @@ document.addEventListener("DOMContentLoaded", function() {
     headerBar.addEventListener('click', dashBoardclick);
 
     /* ========= MODAL HANDLING ========= */
+    const form = document.getElementById('newTaskForm')
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    function getFieldValue(id) {
+        let value = document.getElementById(id).value;
+        return value.trim() ? value : "--";
+    }
+
     window.openModal = function() {
         taskModal.style.display = "flex";
+        document.getElementById('taskDate').value = currentDate;
     };
 
     window.closeModal = function() {
         taskModal.style.display = "none";
+        form.reset()
     };
 
     /* ========= ADD TASK TO TABLE ========= */
     window.addTask = function(event) {
         event.preventDefault();
 
-        // Get values from the form fields
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskDate = document.getElementById("taskDate").value;
-        const itInCharge = document.getElementById("itInCharge").value;
-        const taskType = document.getElementById("taskType").value;
-        const taskDescription = document.getElementById("taskDescription").value;
-        const severity = document.getElementById("severity").value;
-        const requestedBy = document.getElementById("requestedBy").value;
-        const approvedBy = document.getElementById("approvedBy").value;
-        const dateReq = document.getElementById("dateReq").value;
-        const dateRec = document.getElementById("dateRec").value;
-        const dateStart = document.getElementById("dateStart").value;
-        const dateFin = document.getElementById("dateFin").value;
+        let taskStatus = getFieldValue("taskStatus");
+        let taskDate = currentDate;  
+        let itInCharge = getFieldValue("itInCharge");
+        let taskType = getFieldValue("taskType");
+        let taskDescription = getFieldValue("taskDescription");
+        let severity = getFieldValue("severity");
+        let requestedBy = getFieldValue("requestedBy");
+        let approvedBy = getFieldValue("approvedBy");
+        let dateReq = getFieldValue("dateReq");
+        let dateRec = getFieldValue("dateRec");
+        let dateStart = getFieldValue("dateStart");
+        let dateFin = getFieldValue("dateFin");
 
         // Create a new row in the table
-        const tableBody = document.getElementById("taskTableBody");
-        const newRow = document.createElement("tr");
+        let tableBody = document.getElementById("taskTableBody");
+        let newRow = document.createElement("tr");
 
         newRow.innerHTML = `
             <td>${taskStatus}</td>
@@ -156,7 +165,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         tableBody.appendChild(newRow);
         closeModal();
-        document.getElementById("newTaskForm").reset();
     };
 
     /* ========= NOTIFICATION POP-UP ========= */
@@ -169,12 +177,6 @@ document.addEventListener("DOMContentLoaded", function() {
     window.closeNotificationPopup = function() {
         notificationPopup.style.display = "none";
     };
-
-    window.addEventListener('click', function(event) {
-        if (event.target === notificationPopup) {
-            closeNotificationPopup();
-        }
-    });
 
     /* ========= DROPDOWN TOGGLE ========= */
     const logoutButton = document.querySelector(".logout-btn");

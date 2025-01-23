@@ -10,6 +10,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^4.21.1"
+    "connect-livereload": "^0.6.1",
+    "express": "^4.21.1",
+    "livereload": "^0.9.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

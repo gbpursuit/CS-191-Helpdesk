@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Helpdesk Login</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="/internal/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="login.js" defer></script>
+    <script src="/internal/login.js" defer></script>
 </head>
 <body>
     
     <!-- Login Form Container -->
     <div id="login">
-        <h2>Sign in to Help Desk</h2>
+        <h2 class = "sign-in-login">Sign in to Help Desk</h2>
         <div id="darkmode" class="dark-mode">
             <i class="fa-solid fa-moon icon moon"></i>
             <i class="fa-regular fa-sun icon sun"></i>
@@ -162,14 +162,15 @@
                         </tbody>
                     </table>
                 </div>
-    
-                <!-- Pagination -->
-                <div class="pagination">
-                    <button class="pagination-button" onclick="goToPreviousPage()">Previous</button>
-                    <div class = "pages">
-                        <span id="currentPage">1</span> <!-- Current page indicator -->
+                 <!-- Pagination  -->
+                <div class = "fixed-bottom">
+                    <div class="pagination">
+                        <button class="pagination-button" onclick="goToPreviousPage()">Previous</button>
+                        <div class = "pages">
+                            <span id="currentPage"></span> <!-- Current page indicator -->
+                        </div>
+                        <button class="pagination-button" onclick="goToNextPage()">Next</button>
                     </div>
-                    <button class="pagination-button" onclick="goToNextPage()">Next</button>
                 </div>
             </div>
 
@@ -177,7 +178,7 @@
             <div id="taskModal" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeModal()">&times;</span>
-                    <h2>Add New Task</h2>
+                    <h2 class = "add-task">Add New Task</h2>
                     <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
                         
                         <div class="main-column">
@@ -189,7 +190,7 @@
     
                                 <div class="form-group">
                                     <label for="taskDescription">Task Description</label>
-                                    <input type="text" id="taskDescription" placeholder="Enter Task Description" required>
+                                    <input type="text" id="taskDescription" placeholder="Enter Task Description">
                                 </div>
 
                                 <div class="form-group">
@@ -199,7 +200,7 @@
     
                                 <div class="form-group">
                                     <label for="approvedBy">Approved by</label>
-                                    <input type="text" id="approvedBy" placeholder="Enter Approver Name" required>
+                                    <input type="text" id="approvedBy" placeholder="Enter Approver Name">
                                 </div>
 
                                 <div class="form-group">
@@ -215,7 +216,7 @@
 
                                 <div class="form-group">
                                     <label for="departmentNo">Department No</label>
-                                    <input type="text" id="departmentNo" placeholder="Enter Dept. No." required>
+                                    <input type="text" id="departmentNo" placeholder="Enter Dept. No.">
                                 </div>
 
                                 <div class="form-group">
@@ -230,17 +231,17 @@
 
                                 <div class="form-group">
                                     <label for="deviceName">Device Name</label>
-                                    <input type="text" id="deviceName" placeholder="Enter Device Name" required>
+                                    <input type="text" id="deviceName" placeholder="Enter Device Name">
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="itemName">Item Name</label>
-                                    <input type="text" id="itemName" placeholder="Enter Item Name" required>
+                                    <input type="text" id="itemName" placeholder="Enter Item Name">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="applicationName">Application Name</label>
-                                    <input type="text" id="applicationName" placeholder="Enter Application Name" required>
+                                    <input type="text" id="applicationName" placeholder="Enter Application Name">
                                 </div>
                             </div>
 
@@ -248,7 +249,7 @@
                             <div class="column-two">
                                 <div class="form-group">
                                     <label for="taskDate">Transaction Date</label>
-                                    <input type="date" id="taskDate" required>
+                                    <input type="date" id="taskDate" class = "date-box" disabled>
                                 </div>
 
                                 <div class="form-group">
@@ -264,7 +265,14 @@
 
                                 <div class="form-group">
                                     <label for="severity">Severity</label>
-                                    <input type="text" id="severity" placeholder="Enter Severity Level" required>
+                                    <select id="severity" class = "dropdown" required>
+                                        <option value="" disabled selected>Select Severity</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>                    
                                 </div>
 
                                 <!-- <div class="form-group">
@@ -274,26 +282,25 @@
 
                                 <div class="form-group">
                                     <label for="dateReq">Date Requested</label>
-                                    <input type="date" id="dateReq" placeholder="Enter Date Requested" required>
+                                    <input type="date" id="dateReq" placeholder="Enter Date Requested">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="dateRec">Date Received</label>
-                                    <input type="date" id="dateRec" placeholder="Enter Date Received" required>
+                                    <input type="date" id="dateRec" placeholder="Enter Date Received">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="dateStart">Date Started</label>
-                                    <input type="date" id="dateStart" placeholder="Enter Date Started" required>
+                                    <input type="date" id="dateStart" placeholder="Enter Date Started">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="dateFin">Date Finished</label>
-                                    <input type="date" id="dateFin" placeholder="Enter Date Finished" required>
+                                    <input type="date" id="dateFin" placeholder="Enter Date Finished">
                                 </div>
 
                             </div>
-
 
                             <!-- <div class="form-group">
                                 <label for="taskId">Task ID</label>
@@ -302,7 +309,7 @@
 
                         </div>
                         
-                        <button type="submit">Add Task</button>
+                        <button type="submit" class = "button-add">Add Task</button>
                     </form>
                 </div>
             </div>
