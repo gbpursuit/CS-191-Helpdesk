@@ -1,4 +1,4 @@
-/* Google Fonts */
+    /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 /* Global Reset */
@@ -53,7 +53,6 @@ img {
 }
 
 /* ======================== Login Page ========================== */  
-
 #login h2 {
     margin-bottom: 30px;
     color: var(--dark-green);
@@ -78,6 +77,7 @@ img {
 .login-container {
     background-color: var(--v1-gray);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
     max-width: 350px;
@@ -110,6 +110,15 @@ img {
     border-color: var(--dark-green);
     outline: none;
     box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    padding: 0px 3px;
+    margin-bottom: 10px;
+    display: none;
+    transition: all 0.3s ease;
 }
 
 .password-container {
@@ -521,7 +530,7 @@ label[for="check"]{
 .dashboard-container h2,
 .dashboard-container .dash-elements {
     transform: var(--child-transform);
-    transition: transform 0.3s ease, width 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .dash-elements,
@@ -622,6 +631,7 @@ label[for="check"]{
     width: 100%;
     border-collapse: collapse;  /* Ensures borders collapse into a single line between cells */
     margin-top: 20px;
+    table-layout: relative;
 }
 
 .task-table th {
@@ -787,7 +797,8 @@ h2 {
     margin-right: 10px;
 }
 
-.form-group input, .form-group select {
+.form-group .dropdown,
+.form-group input {
     flex: 1; /* Allows input fields to adjust based on available space */
     width: 100%; /* Ensure input fills available width */
     padding: 8px;
@@ -797,6 +808,8 @@ h2 {
     color: var(--text-color); /* Adjust text color for better readability */
     background-color: var(--white); /* Ensure background is white for contrast */
 }
+
+
 
 /* Optional: Customize placeholder color for inputs */
 .form-group input::placeholder {
@@ -923,6 +936,11 @@ body.dark-mode .logout-text {
 
 body.dark-mode .logout-elem:hover .logout-text {
     color: var(--hot-pink); 
+}
+
+body.dark-mode .form-group .dropdown,
+body.dark-mode .form-group input {
+    border: 1px solid var(--v1-gray);
 }
 
 /* Responsive */

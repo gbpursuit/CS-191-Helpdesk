@@ -34,8 +34,8 @@
                     <label for="password">Password</label>
                     <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a>
                 </div>
-                <input type="password" id="password" name="password" class = "password" required>
-                
+                <input type="password" id="password" name="password" class = "password" required>      
+                <div id="usernameError" class="error-message"></div>
                 <button id="sign-in" type="submit">Sign In</button>
             </form>
         </div>
@@ -202,7 +202,7 @@
 
                                 <div class="form-group">
                                     <label for="department">Department</label>
-                                    <select id="department" required>
+                                    <select id="department" class = "dropdown" required>
                                         <option value="" disabled selected>Select Department</option>
                                         <option value="Marketing">Marketing</option>
                                         <option value="Executive">Executive</option>
@@ -218,7 +218,7 @@
 
                                 <div class="form-group">
                                     <label for="itInCharge">IT in Charge</label>
-                                    <select id="itInCharge" required>
+                                    <select id="itInCharge" class = "dropdown" required>
                                         <option value="" disabled selected>Select IT in Charge</option>
                                         <option value="weng_castrillon">Weng Castrillon</option>
                                         <option value="anne_ranay">Anne Ranay</option>
@@ -251,7 +251,7 @@
 
                                 <div class="form-group">
                                     <label for="taskStatus">Status</label>
-                                    <select id="taskStatus" required>
+                                    <select id="taskStatus" class = "dropdown" required>
                                         <option value="" disabled selected>Select Status</option>
                                         <option value="open">Open</option>
                                         <option value="in-progress">In Progress</option>
