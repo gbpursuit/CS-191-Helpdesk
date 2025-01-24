@@ -30,6 +30,7 @@
     --new-border: #E3E9E8;
     --btn: whitesmoke;
     --disable-input: #e0e0e0;
+    --disable-text: #535353;
 
     --tsm-left: left 0.3s ease;
     --tsm-width: width 0.3s ease;
@@ -892,8 +893,8 @@ form button:hover {
 }
 
 .date-box[disabled] {
-    background-color: #e0e0e0;
-    color: #535353;
+    background-color: var(--disable-input);
+    color: var(--disable-text);
     cursor: not-allowed;
 }
 
@@ -917,6 +918,8 @@ body.dark-mode {
     --hint-green: #929292;
     --new-border: #868685;
     --btn: #363636;
+    --disable-input: #505050;
+    --disable-text: #c7c7c7;
 }
 
 .switch::before {
