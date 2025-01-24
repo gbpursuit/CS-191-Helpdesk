@@ -29,6 +29,7 @@
     --hint-green: #e8f5e9;
     --new-border: #E3E9E8;
     --btn: whitesmoke;
+    --disable-input: #e0e0e0;
 
     --tsm-left: left 0.3s ease;
     --tsm-width: width 0.3s ease;
@@ -788,11 +789,11 @@ label[for="check"]{
 .modal-content {
     background-color: var(--white);
     margin: 0 auto;
-    padding: 15px; /* Slightly smaller padding for compactness */
+    padding: 25px; /* Slightly smaller padding for compactness */
     border-radius: 8px;
     width: 80%;
     max-width: 900px;
-    max-height: 90vh; /* Set max height to fit viewport */
+    max-height: 90%; /* Set max height to fit viewport */
     overflow-y: auto; /* Enable scrolling within modal if content exceeds */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow-x: hidden;
@@ -888,6 +889,12 @@ form button {
 
 form button:hover {
     background-color: var(--hover-button);
+}
+
+.date-box[disabled] {
+    background-color: #e0e0e0;
+    color: #535353;
+    cursor: not-allowed;
 }
 
 /* ======================== Dark Mode ========================== */  

@@ -68,7 +68,7 @@
                     <div class="user-profile">
                         <span class="page-name" id="pagename">Username</span>
                         <button class="logout-btn" aria-label="Toggle user options" onclick="toggleDropdown()">
-                            <i class="fa fa-chevron-down arrow-icon"></i>
+                            <i class="fa fa-chevron-down arrow-icon"></i> <!-- check for error -->
                         </button>
                         <div id="dropdownMenu" class="dropdown-menu">
                             <ul class="logout-elem">
@@ -176,7 +176,7 @@
 
             <!-- New Task Modal -->
             <div id="taskModal" class="modal">
-                <div class="modal-content">
+                <div class="modal-content" onclick = "event.stopPropagation()">            
                     <span class="close" onclick="closeModal()">&times;</span>
                     <h2 class = "add-task">Add New Task</h2>
                     <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
