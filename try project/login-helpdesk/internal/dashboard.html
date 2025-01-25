@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="preload" href="icon.png" as="image">
+    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="stylesheet" href="/internal/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="/internal/dashboard.js" type="module" defer></script>
+</head>
+<body>
+
+    <!-- Side Bar, Top Bar, and DashBoard Container -->
+    <div id="loginToNew" class="login-new">
+        <input type="checkbox" id="check" class="check-button">
+        <div id="topbar" class="top-bar">
+            <header>
+                <label for="check"> 
+                    <span class="label-text">check</span>
+                    <i class="fas fa-bars" id="btn"></i>
+                </label>
+                <div class="top-bar-left">
+                    <span class="welcome-message">Welcome! <strong id="userFullName">Username</strong></span>
+                </div>
+                <div class="top-bar-right">
+                    <button class="notification-button" onclick="openNotificationPopup()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge">3</span>  <!-- Example count -->
+                    </button>
+                    
+                    <div class="user-profile">
+                        <span class="page-name" id="pagename">Username</span>
+                        <button class="logout-btn" aria-label="Toggle user options" onclick="toggleDropdown()">
+                            <i class="fa fa-chevron-down arrow-icon"></i> <!-- check for error -->
+                        </button>
+                        <div id="dropdownMenu" class="dropdown-menu">
+                            <ul class="logout-elem">
+                                <li class = "profile-text"><a href = "#">Profile</a></li>
+                                <li class = "logout-text" onclick="logout()"><a href="#">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>   
+                </div>
+                
+                <!-- Notification Pop-up -->
+                <div id="notificationPopup" class="notification-popup">
+                    <div class="popup-content">
+                        <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
+                        <h3>Notifications</h3>
+                        <p>No new notifications.</p> <!-- Example content -->
+                        <!-- Add dynamic notifications here -->
+                    </div>
+                </div>
+                
+            </header>
+        </div>
+    
+        <div id="sideBar" class="side-bar">
+            <header id = "headerbar" title = "Home Page">IT HELPDESK</header>
+            <ul>
+                <li id = "dashboard" class="transition"><a href="#"><i class="fa-solid fa-house"></i>Dashboard</a></li>
+                <li id = "summary" class="transition"><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
+                <li class="mode bottom-item"><a href="#">
+                    <div class="moon-sun">
+                        <i class="fa-solid fa-moon icon moon"></i>
+                        <i class="fa-regular fa-sun icon sun"></i>
+                    </div>
+                    <span class="toggle-mode">Dark Mode</span>
+
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="dashboardContainer" class = "dashboard-container">
+            <div class = "homepage">
+                <h2 id = "dashTitle" class = "d-title"></h2>
+            </div>
+
+            <div id = "dashElements" class = "dash-elements">
+                <div class = "fixed-head">
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <div class="left-section">
+                            <input type="text" placeholder="Search for task" class="search-input">
+                            <select class="filter-select" aria-label="Filter options">
+                                <option value="">Filter by</option>
+                                <option value="status">Status</option>
+                                <option value="date">Date</option>
+                                <option value="severity">Severity</option>
+                                <option value="taskType">Task Type</option>
+                            </select>
+                        </div>
+                        <button class="new-task-button" onclick="openModal()">+ New Task</button>
+                    </div>
+                </div>
+                
+                <!-- Task Table -->
+                <div class = "table">
+                    <table class="task-table">
+
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Trx Date</th>
+                                <th>IT in Charge</th>
+                                <th>Task Type</th>
+                                <th>Task Description</th>
+                                <th>Severity</th>
+                                <th>Requested By</th>
+                                <th>Approved By</th>
+                                <th>Date Requested</th>
+                                <th>Date Received</th>
+                                <th>Date Started</th>
+                                <th>Date Finished</th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- DONT TOUCH -->
+                        <tbody id="taskTableBody">
+                            <!-- New rows will be appended here -->
+                        </tbody>
+                    </table>
+                </div>
+                 <!-- Pagination  -->
+                <div class = "fixed-bottom">
+                    <div class="pagination">
+                        <button class="pagination-button" onclick="goToPreviousPage()">Previous</button>
+                        <div class = "pages">
+                            <span id="currentPage"></span> <!-- Current page indicator -->
+                        </div>
+                        <button class="pagination-button" onclick="goToNextPage()">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Task Modal -->
+            <div id="taskModal" class="modal">
+                <div class="modal-content" onclick = "event.stopPropagation()">            
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2 class = "add-task">Add New Task</h2>
+                    <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
+                        
+                        <div class="main-column">
+                            <div class = "column-one">
+                                <div class="form-group">
+                                    <label for="taskType">Task Type<span class="required"> *</span></label>
+                                    <input type="text" id="taskType" placeholder="Enter Task Type">
+                                </div>
+    
+                                <div class="form-group">
+                                    <label for="taskDescription">Task Description</label>
+                                    <input type="text" id="taskDescription" placeholder="Enter Task Description">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="requestedBy">Requested by<span class="required"> *</span></label>
+                                    <input type="text" id="requestedBy" placeholder="Enter Requestor Name">
+                                </div>
+    
+                                <div class="form-group">
+                                    <label for="approvedBy">Approved by</label>
+                                    <input type="text" id="approvedBy" placeholder="Enter Approver Name">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="department">Department<span class="required"> *</span></label>
+                                    <select id="department" class = "dropdown">
+                                        <option value="" disabled selected>Select Department</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="Executive">Executive</option>
+                                        <option value="Warehouse">Warehouse</option>
+                                        <option value="IT">IT</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="departmentNo">Department No</label>
+                                    <input type="text" id="departmentNo" placeholder="Enter Dept. No.">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="itInCharge">IT in Charge<span class="required"> *</span></label>
+                                    <select id="itInCharge" class = "dropdown">
+                                        <option value="" disabled selected>Select IT in Charge</option>
+                                        <option value="weng_castrillon">Weng Castrillon</option>
+                                        <option value="anne_ranay">Anne Ranay</option>
+                                        <option value="julius_jara">Julius Jara</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="deviceName">Device Name</label>
+                                    <input type="text" id="deviceName" placeholder="Enter Device Name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="itemName">Item Name</label>
+                                    <input type="text" id="itemName" placeholder="Enter Item Name">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="applicationName">Application Name</label>
+                                    <input type="text" id="applicationName" placeholder="Enter Application Name">
+                                </div>
+                            </div>
+
+                            <!-- ---------- -->
+                            <div class="column-two">
+                                <div class="form-group">
+                                    <label for="taskDate">Transaction Date</label>
+                                    <input type="date" id="taskDate" class = "date-box" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="taskStatus">Status<span class="required"> *</span></label>
+                                    <select id="taskStatus" class = "dropdown">
+                                        <option value="" disabled selected>Select Status</option>
+                                        <option value="open">Open</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="closed">Closed</option>
+                                        <option value="on-hold">On Hold</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="severity">Severity<span class="required"> *</span></label>
+                                    <select id="severity" class = "dropdown">
+                                        <option value="" disabled selected>Select Severity</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>                    
+                                </div>
+
+                                <!-- <div class="form-group">
+                                    <label for="dateInfo">Date Information</label>
+                                    <input type="text" id="dateInfo" placeholder="Enter Date Information" required>
+                                </div> -->
+
+                                <div class="form-group">
+                                    <label for="dateReq">Date Requested</label>
+                                    <input type="date" id="dateReq" placeholder="Enter Date Requested">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="dateRec">Date Received</label>
+                                    <input type="date" id="dateRec" placeholder="Enter Date Received">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="dateStart">Date Started</label>
+                                    <input type="date" id="dateStart" placeholder="Enter Date Started">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="dateFin">Date Finished</label>
+                                    <input type="date" id="dateFin" placeholder="Enter Date Finished">
+                                </div>
+
+                            </div>
+
+                            <!-- <div class="form-group">
+                                <label for="taskId">Task ID</label>
+                                <input type="text" id="taskId" placeholder="Enter Task ID" required>
+                            </div> -->
+
+                        </div>
+                        
+                        <button type="submit" class = "button-add">Add Task</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
