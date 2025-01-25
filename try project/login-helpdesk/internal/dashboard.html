@@ -27,7 +27,7 @@
                 <div class="top-bar-right">
                     <button class="notification-button" onclick="openNotificationPopup()">
                         <i class="fa-solid fa-bell"></i>
-                        <span class="notification-badge">3</span>  <!-- Example count -->
+                        <span class="notification-badge">3</span>
                     </button>
                     
                     <div class="user-profile">
@@ -45,14 +45,13 @@
                 </div>
                 
                 <!-- Notification Pop-up -->
-                <div id="notificationPopup" class="notification-popup">
+                <!-- <div id="notificationPopup" class="notification-popup">
                     <div class="popup-content">
                         <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
                         <h3>Notifications</h3>
-                        <p>No new notifications.</p> <!-- Example content -->
-                        <!-- Add dynamic notifications here -->
+                        <p>No new notifications.</p> 
                     </div>
-                </div>
+                </div> -->
                 
             </header>
         </div>
@@ -139,6 +138,15 @@
                 </div>
             </div>
 
+            <!-- Notification Pop-up -->
+            <div id="notificationPopup" class="notification-popup">
+                <div class="popup-content">
+                    <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
+                    <h2 class="notif">Notifications</h2>
+                    <p>No new notifications.</p> 
+                </div>
+            </div>
+                      
             <!-- New Task Modal -->
             <div id="taskModal" class="modal">
                 <div class="modal-content" onclick = "event.stopPropagation()">            

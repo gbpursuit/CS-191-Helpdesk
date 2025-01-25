@@ -270,31 +270,6 @@ label[for="check"]{
     transition-duration: 0.4s;
 }
 
-.notification-popup {
-    display: none; 
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px;
-    background-color: var(--white);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    z-index: 2000;
-}
-
-.popup-content {
-    padding: 20px;
-    text-align: center;
-}
-
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 18px;
-    cursor: pointer;
-}
 
 .notification-badge {
     position: absolute;
@@ -305,6 +280,60 @@ label[for="check"]{
     border-radius: 50%;
     padding: 3px 6px;
     font-size: 12px;
+}
+
+.notification-popup {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+    
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 700px;
+    max-height: 90%; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center; 
+}
+
+.notif {
+    color: var(--dark-green);
+    text-align: center;
+}
+
+.close-btn {
+    float: right;
+    color: var(--dark-green);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--hot-pink);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* User Profile */
@@ -504,8 +533,8 @@ label[for="check"]{
 /* New Task Button */
 .new-task-button {
     padding: 5px 12px;
-    background-color: var(--hover-button);
-    color: var(--bg-color);
+    background-color: var(--dark-green);
+    color: var(--white);
     border: 1px solid var(--light-gray);
     border-radius: 5px;
     cursor: pointer;
@@ -513,9 +542,8 @@ label[for="check"]{
 }
 
 .new-task-button:hover {
-    background-color: var(--dark-green);
+    background-color: var(--hover-button);
     color: var(--white);
-    transition-duration: 0.4s;
 }
 
 .table {
@@ -674,6 +702,7 @@ label[for="check"]{
     cursor: pointer;
     z-index: 10;
     position: relative;
+
 } 
 
 .close:hover,
