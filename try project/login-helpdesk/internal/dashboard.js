@@ -252,6 +252,7 @@ document.addEventListener("DOMContentLoaded", function () {
     UI.page_navigation("summary", "/internal/summary.html")
     UI.notificationPop();
     UI.dropdownToggle();
+    UI.handleSidebarState();
 
     // Call Functions
     dashboard_open();

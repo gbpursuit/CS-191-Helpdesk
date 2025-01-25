@@ -1,6 +1,26 @@
 export const UI = {
 
     // Functions
+    handleSidebarState: function() {
+        const sidebarCheckbox = document.getElementById("check");
+        console.log("sidebar is: ", localStorage.getItem("sidebarState"));
+        if (!sidebarCheckbox) return; 
+
+        if (localStorage.getItem("sidebarState") === "open") {
+            sidebarCheckbox.checked = true;
+        } else {
+            sidebarCheckbox.checked = false;
+        }
+
+        sidebarCheckbox.addEventListener("change", () => {
+            if (sidebarCheckbox.checked) {
+                localStorage.setItem("sidebarState", "open");
+            } else {
+                localStorage.setItem("sidebarState", "closed");
+            }
+        });
+    },
+
     handle_darkmode: function(toggleSelector) {
         let darkmode = localStorage.getItem('dark-mode');
         const toggleSwitch = document.querySelector(toggleSelector);
@@ -91,6 +111,7 @@ export const UI = {
 
         window.logout = function() {
             window.location.href = "/internal/login.html";
+            localStorage.setItem("sidebarState", "closed");
         };
     }
 };
