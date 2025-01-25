@@ -657,9 +657,7 @@ label[for="check"]{
     width: 80%;
     max-width: 900px;
     max-height: 90%; /* Set max height to fit viewport */
-    overflow-y: auto; /* Enable scrolling within modal if content exceeds */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow-x: hidden;
 }
 
 .add-task {
@@ -691,7 +689,7 @@ label[for="check"]{
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow-x: auto;
+    overflow-x: hidden;
 }
 
 .main-column {
@@ -735,6 +733,7 @@ label[for="check"]{
     background-color: var(--white); /* Ensure background is white for contrast */
 }
 
+
 .form-group input::placeholder {
     color: var(--text-color); /* Adjust placeholder color if needed */
 }
@@ -758,6 +757,7 @@ form button:hover {
     background-color: var(--disable-input);
     color: var(--disable-text);
     cursor: not-allowed;
+    flex: 1;
 }
 
 /* ======================== Dark Mode ========================== */  

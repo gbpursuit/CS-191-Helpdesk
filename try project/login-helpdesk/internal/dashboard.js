@@ -220,7 +220,22 @@ document.addEventListener("DOMContentLoaded", function () {
             tableBody.appendChild(newRow);
             closeModal();
         };
+
     }
+
+    const taskModal = document.getElementById('taskModal');
+    function closeOutsideModal(event) {
+        const modalcontent = document.querySelector(".modal-content");
+        if (event) {
+            console.log("Event target:", event.target);
+    
+            if (event.target != modalcontent) {
+                closeModal();
+            }
+        }
+    }
+
+    taskModal.addEventListener('click', closeOutsideModal);
 
     UI.handle_darkmode(".toggle-switch");
     UI.page_navigation("summary", "/internal/summary.html")
