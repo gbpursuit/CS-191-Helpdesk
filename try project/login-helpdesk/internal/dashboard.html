@@ -96,6 +96,7 @@
 
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Status</th>
                                 <th>Trx Date</th>
                                 <th>IT in Charge</th>
@@ -212,9 +213,14 @@
                             <!-- ---------- -->
                             <div class="column-two">
                                 <div class="form-group">
+                                    <label for="taskId">Task ID</label>
+                                    <input type="text" id="taskId" class="id-box" disabled>
+                                </div>
+
+                                <div class="form-group">
                                     <label for="taskDate">Transaction Date</label>
                                     <input type="date" id="taskDate" class = "date-box" disabled>
-                                </div>
+                                </div>                             
 
                                 <div class="form-group">
                                     <label for="taskStatus">Status<span class="required"> *</span></label>
@@ -265,18 +271,29 @@
                                 </div>
 
                             </div>
-
-                            <!-- <div class="form-group">
-                                <label for="taskId">Task ID</label>
-                                <input type="text" id="taskId" placeholder="Enter Task ID" required>
-                            </div> -->
-
-                        </div>
-                        
+                        </div>    
                         <button type="submit" class = "button-add">Add Task</button>
                     </form>
                 </div>
             </div>
+
+            <!-- <div id="taskModal" class="modal">
+                <div id = "modalContent" class="modal-content" onclick = "event.stopPropagation()">            
+                    <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
+                    <h2 class = "add-task">Add New Task</h2>
+                    <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
+                         -->
+
+            <div id="taskInfoModal" class="submitted-modal">
+                <div id="submittedContent" class="submitted-content">
+                    <span class="close-task">&times;</span>
+                    <h2 class="sub-task">Task Information</h2>
+                    <div id="taskInfoContent">
+                        <!-- Task details will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 

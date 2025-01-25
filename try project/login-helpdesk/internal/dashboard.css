@@ -562,8 +562,7 @@ label[for="check"]{
 .task-table th {
     border-right: 1px solid var(--v2-gray);
     font-size: smaller;
-    /* background-color: var(--white); */
-    background-color: rgba(214, 218, 211, 0.247);
+    background-color: var(--whitesmoke);
     padding: 10px;
     text-align: left;
     box-shadow: 0px 2px 2px var(--table-b-shadow);
@@ -579,7 +578,8 @@ label[for="check"]{
 }
 
 .task-table tbody tr:nth-child(even) {
-    background-color: var(--whitesmoke);
+    background-color: rgba(214, 218, 211, 0.247);
+
 }
 
 .task-table tbody tr:hover {
@@ -788,6 +788,106 @@ form button:hover {
     cursor: not-allowed;
     flex: 1;
 }
+
+.id-box[disabled] {
+    background-color: var(--disable-input);
+    color: var(--disable-text);
+    cursor: not-allowed;
+    flex: 1;
+}
+
+/* ======================== Submitted Task Modal ========================== */  
+
+.submitted-modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    overflow: auto; 
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; 
+}
+
+.sub-task {
+    color: var(--dark-green);
+    text-align: center;
+    font-size: 1.2rem; 
+}
+
+.submitted-content {
+    position: relative; 
+    margin: 0 auto;
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%; 
+    max-width: 800px;
+    max-height: 90%;
+    overflow-y: auto; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.task-info-table {
+    width: 100%; 
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 1rem; 
+    word-break: break-word; 
+}
+
+.task-info-table td {
+    padding: 8px 12px;
+    border: 1px solid var(--v2-gray);
+    vertical-align: top;
+}
+
+.task-info-table td strong {
+    font-weight: bold;
+}
+
+.task-info-table tr:nth-child(even) {
+    background-color: rgba(214, 218, 211, 0.247);
+}
+
+.task-info-table tr:nth-child(odd) {
+    background-color: var(--white);
+}
+
+.task-info-table tr:hover {
+    background-color: var(--hint-green);
+}
+
+.close-task {
+    float: right;
+    color: var(--dark-green);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+}
+
+.close-task {
+    float: right;
+    color: var(--dark-green);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+}
+
+.close-task:hover,
+.close-task:focus {
+    color: var(--hot-pink);
+    text-decoration: none;
+    cursor: pointer;
+}
+
 
 /* ======================== Dark Mode ========================== */  
 
