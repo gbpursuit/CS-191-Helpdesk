@@ -422,7 +422,7 @@ label[for="check"]{
 }
 
 .required {
-    color: #C50000;
+    color: var(--hot-pink);
     font-weight: bold;
     font-size: 1em;
 }
