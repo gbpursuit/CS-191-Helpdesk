@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="preload" href="icon.png" as="image">
     <link rel="icon" href="icon.png" type="image/png">
     <link rel="stylesheet" href="/internal/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="/internal/dashboard.js" type="module" defer></script>
+    <script src="/internal/common.js" type="module" defer></script>
 </head>
 <body>
 
@@ -48,7 +48,7 @@
         </div>
     
         <div id="sideBar" class="side-bar">
-            <header id = "headerbar" title = "Home Page">IT HELPDESK</header>
+            <header id = "headerbar"    >IT HELPDESK</header>
             <ul>
                 <li id = "dashboard" class="transition"><a href="#"><i class="fa-solid fa-house"></i>Dashboard</a></li>
                 <li id = "summary" class="transition"><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
@@ -131,7 +131,7 @@
 
             <!-- Notification Pop-up -->
             <div id="notificationPopup" class="notification-popup">
-                <div class="popup-content">
+                <div id = "popupContent" class="popup-content">
                     <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
                     <h2 class="notif">Notifications</h2>
                     <p>No new notifications.</p> 
@@ -140,8 +140,8 @@
                       
             <!-- New Task Modal -->
             <div id="taskModal" class="modal">
-                <div class="modal-content" onclick = "event.stopPropagation()">            
-                    <span class="close" onclick="closeModal()">&times;</span>
+                <div id = "modalContent" class="modal-content" onclick = "event.stopPropagation()">            
+                    <span class="close">&times;</span>
                     <h2 class = "add-task">Add New Task</h2>
                     <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
                         

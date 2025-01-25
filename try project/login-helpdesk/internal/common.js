@@ -1,5 +1,6 @@
 export const UI = {
 
+    // Functions
     handle_darkmode: function(toggleSelector) {
         let darkmode = localStorage.getItem('dark-mode');
         const toggleSwitch = document.querySelector(toggleSelector);
@@ -31,6 +32,29 @@ export const UI = {
             button.addEventListener('click', function () {
                 window.location.href = targetUrl;
             });
+        }
+    },
+
+    closeModal: function(modalId, check) {
+        const modal = document.getElementById(modalId);
+        const form = document.getElementById('newTaskForm'); // Assuming form is the same for task modal
+
+        if (modal) {
+            modal.style.display = "none";
+            if (check && form) {
+                form.reset(); // Reset form if check is true
+            }
+        }
+    },
+
+    closeOutsideModal: function(event, content, close) {
+        const targetContent = document.getElementById(content);
+        if (event) {
+            console.log("Event target:", event.target);
+    
+            if (event.target != targetContent) {
+                UI.closeModal(close, close === 'taskModal');
+            }
         }
     },
 

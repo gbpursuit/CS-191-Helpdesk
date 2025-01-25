@@ -2,34 +2,52 @@ import { UI } from './common.js';
 
 document.addEventListener("DOMContentLoaded", function() {
 
-    function handleLogin() {
+    function showError(input, errorElement, message) {
+        errorElement.style.display = 'block';
+        errorElement.textContent = message;
+        input.classList.add('error');
+    }
 
-        /* ========= ELEMENT SELECTION ========= */
+    function forgotPasswordLink() {
+        const passwordLink = document.getElementById('forgotPassword');
+        const forgotContainer = document.getElementById('forgotContainer');
+        const login = document.getElementById('login');
+
+        passwordLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            login.style.display = 'none';
+            forgotContainer.style.visibility = 'visible';
+        });
+    }
+
+    function handleLogin() {
         const loginContainer = document.getElementById('loginContainer');
         const usernameInput = document.getElementById('username');
-        const usernameError = document.getElementById('usernameError'); 
-        const validUsernames = ["Lorraine Castrillon", "Weng Castrillon", "Gavril Coronel", "Marcus Pilapil"];  // Predefined usernames
+        const usernameError = document.getElementById('usernameError');
+        const validUsernames = ["Lorraine Castrillon", "Weng Castrillon", "Gavril Coronel", "Marcus Pilapil"]; // Predefined usernames
 
-        /* ========= LOGIN & USER PAGE NAVIGATION ========= */
+        /* ========= LOGIN FORM SUBMISSION ========= */
         loginContainer.addEventListener('submit', function(event) {
-            event.preventDefault(); 
+            event.preventDefault();
 
-            const enteredUsername = usernameInput.value.trim();  // Get the entered username
+            const enteredUsername = usernameInput.value.trim();
 
-            // Validate the entered username
             if (!validUsernames.includes(enteredUsername)) {
-                usernameError.style.display = 'block';
-                // Show error message if the username is invalid
-                usernameError.textContent = "Invalid username or password. Please try again.";
-                usernameInput.classList.add('error'); 
-                return; 
+                showError(usernameInput, usernameError, "Invalid username or password. Please try again.");
+                return;
             }
-
-            // If the username is valid, proceed with the login flow
-            usernameError.textContent = ""; 
-            usernameInput.classList.remove('error'); 
-
             window.location.href = "/internal/dashboard.html";
+        });
+
+        forgotPasswordLink();
+    }
+
+    // Initialize login and UI functions
+    handleLogin();
+    UI.handle_darkmode('.d-mode');
+
+});
+
 
             // Update the user info on the page
             // function updateUserInfo(user) {
@@ -41,27 +59,6 @@ document.addEventListener("DOMContentLoaded", function() {
             // const audio = new Audio('audio.mp3'); // Replace with your audio file path
             // audio.loop = true; // Make the audio loop
             // audio.autoplay = true; // Auto-play the audio when the page loads
-        });
-
-        /* ========= FORGOT PASSWORD ========= */
-        const passwordLink = document.getElementById('forgotPassword');
-        const forgot = document.getElementById('forgotContainer');
-        const login = document.getElementById('login');
-
-        passwordLink.addEventListener('click', function(event){
-            event.preventDefault();
-            login.style.display = 'none';
-            forgot.style.visibility = 'visible';
-        });
-
-    }
-
-    handleLogin();
-    UI.handle_darkmode('.d-mode');
-
-});
-
-
 
     /* ========= TOPBAR RESIZE ========= */
     // window.addEventListener('resize', function() {

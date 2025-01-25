@@ -3,13 +3,18 @@ import { UI } from './common.js';
 document.addEventListener("DOMContentLoaded", function () {
 
     function summary_open() {
-        const sumTitle = document.getElementById('summaryTitle');
-        const summaryContainer = document.getElementById('summaryContainer');
+        const sumElements = {
+            sumTitle: document.getElementById('summaryTitle'),
+            sumContainer: document.getElementById('summaryContainer')
+        };
 
-        sumTitle.innerText = "IT Management - Summary";
-        summaryContainer.style.display = 'block';
+        sumElements.sumTitle.innerText = "IT Management - Summary";
+        sumElements.sumContainer.style.display = 'block';
     }
-    
+
+    const pop = document.querySelector('.notification-popup');
+    pop.addEventListener('click', (event) => UI.closeOutsideModal(event, 'popupContent', 'notificationPopup'));
+
     UI.handle_darkmode(".toggle-switch");
     UI.page_navigation("dashboard", "/internal/dashboard.html")
     UI.notificationPop();

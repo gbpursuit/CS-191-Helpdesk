@@ -1,8 +1,11 @@
-// Import the required modules
-const express = require('express');
-const path = require('path');
-const livereload = require('livereload');
-const connectLivereload = require('connect-livereload');
+import express from 'express';
+import path from 'path';
+import livereload from 'livereload';
+import connectLivereload from 'connect-livereload';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const liveReloadServer = livereload.createServer({
     exts: ["html", "css", "js"],
@@ -18,9 +21,10 @@ function isAuthenticated(req, res, next) {
     res.status(403).send('Access Denied');
 }
 
+// Watch the 'internal' directory
 liveReloadServer.watch(path.join(__dirname, 'internal'));
 
-const app = express()
+const app = express();
 app.use(connectLivereload());
 app.use('/internal', isAuthenticated, express.static(path.join(__dirname, 'internal')));
 
