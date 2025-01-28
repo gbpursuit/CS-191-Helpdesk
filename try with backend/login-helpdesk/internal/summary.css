@@ -1,0 +1,610 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Global Reset */
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    scroll-padding-top: 2rem;
+    scroll-behavior: smooth;
+}
+
+:root {
+    --white: white;
+    --dark-green: #05503a;
+    --hover-button: #204330;
+    --light-green: #90EE90;
+    --v1-gray: #E3E9E8;
+    --v2-gray: #ccc;
+    --v3-gray: #b3b0b0;
+    --hot-pink: #d44a41;
+    --bg-color: #f0f2f5;
+    --text-color: black;
+    --whitesmoke: whitesmoke;
+    --hint-green: #e8f5e9;
+    --new-border: #E3E9E8;
+    --btn: whitesmoke;
+    --disable-input: #e0e0e0;
+    --disable-text: #535353;
+    --table-b-shadow: rgba(0, 0, 0, 0.1);
+
+    --tsm-left: left 0.3s ease;
+    --tsm-width: width 0.3s ease;
+    --tsm-l-w: var(--tsm-left), var(--tsm-width);
+    --tsm-pad: padding-left 0.3s ease;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+img {
+    width: 100%;
+}
+
+/* ======================== Side Bar ========================== */  
+
+.loginNew {
+    width: 100vw;
+    height: 100vh;
+}
+
+.side-bar {
+    position: fixed;
+    top: 0;
+    left: -240px;
+    width: 240px;
+    height: 100%;
+    background: var(--bg-color);
+    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2); 
+    transition: var(--tsm-left);
+    display: flex;
+    flex-direction: column; /* Makes the sidebar a column flex container */
+    z-index: 1000;
+}
+
+.side-bar header {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--dark-green);
+    line-height: 70px;
+    cursor: pointer;
+    padding-left: 60px;
+    transition: var(--tsm-pad);
+}
+
+.side-bar ul {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+}
+
+.side-bar ul a {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 65px;
+    color: var(--text-color);
+    display: block;
+    padding-left: 50px;
+    transition: var(--tsm-pad);
+    box-sizing: border-box;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.side-bar ul .transition a{
+    cursor: pointer;
+}
+
+.side-bar ul .mode a{
+    cursor: default;
+}
+
+.side-bar ul li.transition:hover a {
+    background: var(--v1-gray);
+    padding-left: 60px; 
+    transition: 0.3s;
+    color: var(--dark-green);
+}
+
+.side-bar ul a i {
+    margin-right: 1rem;
+}
+
+.side-bar .bottom-item {
+    margin-top: auto;
+}
+
+.side-bar .mode a {
+    display: flex;
+    align-items: center;
+}
+
+.side-bar .toggle-mode {
+    font-size: 15px;
+    margin-left: 4px;
+}
+
+.side-bar .mode .moon-sun {
+    height: 50px;
+    width: 1.6rem;
+    display: flex;
+    align-items: center;
+}
+
+.side-bar .mode i {
+    position: absolute;
+}
+
+.side-bar .mode i.sun {
+    opacity: 0;
+}
+
+.side-bar .toggle-switch {
+    position: relative;
+    display: flex;
+    height: 24px;
+    width: 40px;
+    justify-content: center;
+    align-items: center;
+    background: var(--v1-gray);
+    border-radius: 12px;
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+/* Open SideBar */
+.check-button, .label-text {
+    display: none;
+}
+
+#check input[type="checkbox"] {
+    display: none;
+}
+
+label[for="check"]{
+    font-size: 15px;
+    padding: 7px 10px;
+    border-radius: 3px;
+    position: absolute;
+    cursor: pointer;
+    color: var(--dark-green);
+    transition: var(--tsm-left);
+    z-index: 1;
+    margin-right: 15px;
+}
+
+#check:checked ~ .side-bar {
+    left: 0;
+    transition: var(--tsm-l-w);
+}
+
+/* ======================== Top Bar ========================== */  
+
+.top-bar {
+    flex: 1;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--bg-color);
+    box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1); 
+    transition: var(--tsm-l-w);
+    min-height: 65px;
+    z-index: 1;
+}
+
+.top-bar header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.top-bar .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-left: 50px; 
+}
+
+.top-bar .top-bar-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    margin-right: 5px;
+}
+
+#check:checked ~ .top-bar {
+    left: 240px;
+    width: calc(100% - 240px); 
+}
+
+/* Notification Button and Pop-up */
+.notification-button {
+    color: var(--text-color);
+    border-radius: 50%;
+    border: 0.06px solid var(--v2-gray);
+    background-color: var(--bg-color);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-button:hover {
+    color: var(--text-color);          
+    border-radius: 50%;
+    border-color: var(--dark-green);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition-duration: 0.4s;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--hot-pink);
+    color: white;
+    border-radius: 50%;
+    padding: 3px 6px;
+    font-size: 12px;
+}
+
+.notification-popup {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+    
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 700px;
+    max-height: 90%; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center; 
+}
+
+.notif {
+    color: var(--dark-green);
+    text-align: center;
+}
+
+.close-btn {
+    float: right;
+    color: var(--dark-green);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--hot-pink);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* User Profile */
+.user-profile {
+    color: var(--text-color);
+    border-radius: 8px; 
+    border: 1px solid var(--v2-gray);
+    padding: 5px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; 
+    cursor: pointer;
+    font-size: 14px; 
+    max-width: fit-content; 
+}
+
+.logout-btn {
+    color: var(--text-color);
+    border: none;
+    border-radius: 4px;
+    background-color: var(--btn);
+    padding: 3px 6px; 
+    font-size: 11px; 
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.logout-btn:hover {
+    background-color: var(--v1-gray); 
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    padding: 2px 1px;
+    top: 80%;
+    right: 3.5%;
+    background-color: var(--whitesmoke); 
+    border: 1px solid var(--v2-gray);
+    border-radius: 5px;
+    width: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    justify-items: center;
+}
+
+.dropdown-menu ul {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-align: center;
+    padding: 5px 20px;
+    transition: background-color 0.3s ease;
+    cursor: default;
+}
+
+.dropdown-menu ul a {
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    padding: 10px 0px;
+    left: 0;
+
+    transition: var(--tsm-pad);
+    box-sizing: border-box;
+}
+
+.dropdown-menu ul li:hover a{
+    color: var(--hot-pink);
+    cursor: pointer;
+}
+
+.dropdown-menu ul li a{
+    color: var(--text-color); 
+    text-decoration: none; 
+    transition: color 0.3s ease;
+}
+
+.dropdown-menu.show {
+    display: block; 
+}
+
+.logout-text {
+    color: var(--text-color);
+}
+
+.required {
+    color: #C50000;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+/* ======================== Summary Container ========================== */  
+
+.sum-container {
+    position: fixed;
+    bottom: 0;
+    left: 0; 
+    width: 100%;
+    height: calc(100% - 65px);
+    box-sizing: border-box;
+    background-color: var(--v1-gray);
+    padding: 10px 30px 20px;
+    transition: var(--tsm-l-w);
+    --child-transform: translateX(0);
+    --child-width: 100%; 
+}
+
+.s-title {
+    position: relative;
+    top: 3px;
+    text-align: left;
+    color: var(--dark-green);
+}
+
+.sum-elements {
+    display: flex;
+    flex-direction: column; 
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    width: var(--child-width);
+    height: calc(100% - 60px); 
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.s-title,
+.sum-elements {
+    transform: var(--child-transform);
+    transition: transform 0.3s ease;
+}
+
+#check:checked ~ .sum-container {
+    left: 220px;
+    width: calc(100% - 220px);
+    --child-transform: translateX(1rem); 
+    --child-width: calc(100% - 10px);
+}
+
+.print-button {
+    background-color:var(--dark-green);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.print-button:hover {
+    background-color: var(--hover-button);
+    /* transform: scale(1.05); */
+}
+
+
+/* ======================== Dark Mode ========================== */  
+
+body.dark-mode {
+    --white: #636161;
+    --dark-green: #7ce57c;
+    --hover-button: #7dc57d;
+    --light-green: #2f4d33;
+    --v1-gray: #333;
+    --v2-gray: #979797;
+    --hot-pink: #ff7070;
+    --bg-color: #1e1e1e;
+    --text-color: #ffffff;
+    --sidebar-bg-color: #1e1e1e;
+    --sidebar-text-color: #ffffff;
+    --sidebar-header-color: var(--dark-green);
+    /* --whitesmoke: #797878; */
+    --whitesmoke: #292929;
+    --hint-green: #929292;
+    --new-border: #868685;
+    --btn: #363636;
+    --disable-input: #505050;
+    --disable-text: #c7c7c7;
+    --table-b-shadow: rgba(255, 255, 255, 0.1);
+}
+
+.switch::before {
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    background: var(--v2-gray);
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: var(--tsm-left), background 0.3s ease;
+}
+
+body.dark-mode .side-bar ul a {
+    color: var(--sidebar-text-color);
+    border-top: 1px solid rgba(255, 255, 255, 0);
+}
+
+body.dark-mode .side-bar .mode i.sun {
+    opacity: 1;
+}
+
+body.dark-mode .side-bar .mode i.moon {
+    opacity: 0;
+}
+
+body.dark-mode .side-bar .dark-mode {
+    background: var(--v2-gray); 
+}
+
+body.dark-mode .switch::before {
+    left: 22px;
+    background: var(--dark-green);
+}
+
+body.dark-mode .form-group .dropdown,
+body.dark-mode .form-group input {
+    border: 1px solid var(--v1-gray);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container, .dashboard-container {
+        max-width: 100%; /* Full width on smaller screens */
+    }
+
+    .side-bar header {
+        padding-left: 50px;
+    }
+
+    .side-bar ul .transition a {
+        padding-left: 40px;
+        transition: var(--tsm-pad);
+    }
+
+    .side-bar ul .mode a {
+        padding-left: 30px;
+        transition: var(--tsm-pad);
+    }
+
+    .search-input {
+        flex: 0.4; /* Search bar takes more space */
+        min-width: 50px;
+        padding: 5px;
+    }
+
+    .filter-select,
+    .new-task-button {
+        flex: 0.3; /* Filter dropdown */
+        min-width: 50px;
+        padding: 5px;
+    }
+
+    #check:checked ~ .dashboard-container {
+        left: 200px;
+        width: calc(100% - 200px);
+    }
+
+    #check:checked ~ .top-bar {
+        left: 220px;
+        width: calc(100% - 220px);
+    }
+
+    #check:checked ~ .side-bar {
+        width: 220px;
+        transition: var(--tsm-l-w);
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "login-helpdesk",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "connect-livereload": "^0.6.1",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "livereload": "^0.9.3",
+    "mysql2": "^3.12.0",
+    "portfinder": "^1.0.32"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "type": "module"
+}
