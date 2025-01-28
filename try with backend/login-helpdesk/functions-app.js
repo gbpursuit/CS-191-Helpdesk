@@ -38,7 +38,7 @@ export async function startServer(app) {
 
         // Now that we have an available port, start the server
         app.listen(availablePort, () => {
-            console.log(`Server running on http://localhost:${availablePort}/internal/enter`);
+            console.log(`Server running on http://localhost:${availablePort}/internal/welcome`);
         });
     } catch (err) {
         console.error('Error finding an available port:', err);
@@ -52,14 +52,17 @@ export function isAuthenticated(req, res, next) {
     return res.redirect('/internal/login.html');
 }
     
-export async function launchServer(app){
+export async function launchServer(app) {
     try {
-        await setupDatabase();
-        console.log('Database setup complete.');
+        // Setup the database and attach the pool to app.locals
+        const db = await setupDatabase();
+        app.locals.db = db;
 
+        // Start livereload and the server
         await startLiveReload();
         await startServer(app);
     } catch (err) {
         console.error('Failed to set up the database:', err);
+        process.exit(1); // Exit on critical failure
     }
 }

@@ -178,13 +178,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             const firstName = data.username.split(' ')[0];
             document.getElementById('userFullName').textContent = firstName; 
             document.getElementById("pagename").textContent = data.username;
-        } else {
-            // Redirect to login page if no username is found
-            window.location.href = '/internal/enter.html';
-        }
+        } 
+        // else {
+        //     // Redirect to login page if no username is found
+        //     window.location.href = '/internal/login/sign-in';
+        // }
     } catch (err) {
         console.error('Error fetching session user:', err);
-        window.location.href = '/internal/enter.html';
+        window.location.href = '/internal/welcome';
     }
 
     function dashboard_open() {

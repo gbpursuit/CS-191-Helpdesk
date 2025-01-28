@@ -39,12 +39,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function handleLogin() {
-        const loginContainer = document.getElementById('loginContainer');
+        const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const usernameError = document.getElementById('usernameError');
 
-        loginContainer.addEventListener('submit', function(event) {
+        loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
             const enteredUsername = usernameInput.value.trim();
@@ -75,12 +75,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function handleNewAccount() {
-
+        // dont mind but dont delete 
     }
 
     toggleView();
     handleLogin();
     UI.handle_darkmode('.d-mode');
 });
-
-

@@ -121,9 +121,9 @@ export const UI = {
                     localStorage.setItem("sidebarState", "closed");
         
                     // Clear history before redirecting to Enter page
-                    window.history.pushState(null, '', '/internal/enter'); // Add a new state in the history stack
-                    window.history.replaceState(null, '', '/internal/enter'); // Replace the state of the current page
-                    window.location.replace("/internal/enter");
+                    window.history.pushState(null, '', '/internal/welcome'); // Add a new state in the history stack
+                    window.history.replaceState(null, '', '/internal/welcome'); // Replace the state of the current page
+                    window.location.replace("/internal/welcome");
         
                 } else {
                     console.error('Logout failed');

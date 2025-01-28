@@ -2,26 +2,18 @@ import express from 'express';
 import path from 'path';
 import connectLivereload from 'connect-livereload';
 import session from 'express-session';
-import mysql from 'mysql2/promise';
 import { fileURLToPath } from 'url';
-import { isAuthenticated, launchServer } from './functions-app.js';
+import { launchServer } from './functions-app.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Database connection pool
-const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'simple_helpdesk',
-});
 
 const app = express();
 app.use(connectLivereload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session configuration
 app.use(
     session({
         secret: 'your-secret-key',
@@ -43,13 +35,12 @@ app.use('/internal', express.static(path.join(__dirname, 'internal')));
 
 // Dynamic route to handle /internal/:page/:view
 app.get('/internal/:page/:view?', (req, res) => {
-    const { page, view } = req.params; 
+    const { page, view } = req.params;
 
     // Valid pages and views
-    const validPages = ['enter', 'login', 'dashboard', 'summary'];  // gusto ko gawing /home/dashboard 
-    const validViews = ['sign-in', 'create-account'];               // or /home/summary
+    const validPages = ['welcome', 'login', 'dashboard', 'summary'];
+    const validViews = ['sign-in', 'create-account'];
 
-    // Check for valid pages
     if (validPages.includes(page)) {
         if (page === 'login' && view) {
             if (validViews.includes(view)) {
@@ -69,7 +60,7 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const [rows] = await db.query(
+        const [rows] = await app.locals.db.query(
             `SELECT * FROM users WHERE CONCAT(first_name, ' ', last_name) = ? AND password = ?`,
             [username, password]
         );
@@ -86,22 +77,24 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// Logout route
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.status(500).json({error: 'Failed to log out' });
+            return res.status(500).json({ error: 'Failed to log out' });
         }
         res.status(200).json({ success: true });
     });
 });
 
-// Fallback route for unmatched paths (optional)
+// Fallback route for unmatched paths
 app.use((req, res) => {
     res.status(404).send('Page not found');
 });
 
-// Start the Application and Launch
+// Start the server
 launchServer(app);
+
 
 
 
