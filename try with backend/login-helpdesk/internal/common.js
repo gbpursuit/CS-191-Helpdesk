@@ -41,6 +41,7 @@ export const UI = {
             event.preventDefault();
             darkmode = localStorage.getItem('dark-mode');
             darkmode !== 'active' ? enableDarkMode() : disableDarkMode();
+
         })
     
     },

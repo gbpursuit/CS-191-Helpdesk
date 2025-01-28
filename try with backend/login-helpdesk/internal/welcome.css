@@ -118,11 +118,62 @@ img {
     margin: 10px 0;
     width: 100%;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .sign-account:hover, .add-account:hover {
     background-color: var(--hover-button);
+    transform: scale(1.01);
+}
+
+.sign-account:active, .add-account:active {
+    background-color: var(--hover-button);
+    transform: scale(0.98);
+}
+
+.d-mode {
+    position: fixed; 
+    bottom: 28px;
+    left: 10px; 
+    cursor: pointer;
+}
+
+.d-mode i {
+    position: absolute;
+}
+
+.d-mode i.sun {
+    opacity: 0; /* Initially hide the sun icon */
+}
+
+.d-mode i.moon{
+    color: var(--dark-green);
+}
+
+body.dark-mode {
+    --white: #636161;
+    --dark-green: #7ce57c;
+    --hover-button: #7dc57d;
+    --light-green: #2f4d33;
+    --v1-gray: #333;
+    --v2-gray: #979797;
+    --hot-pink: #ff7070;
+    --bg-color: #1e1e1e;
+    --text-color: #ffffff;
+    --sidebar-bg-color: #1e1e1e;
+    --sidebar-text-color: #ffffff;
+    --sidebar-header-color: var(--dark-green);
+    --whitesmoke: #292929;
+    --hint-green: #929292;
+    --new-border: #868685;
+    --btn: #363636;
+    --disable-input: #505050;
+    --disable-text: #c7c7c7;
+    --new-white: var(--v1-gray);
+}
+
+.switch-login::before {
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 /* Responsive */

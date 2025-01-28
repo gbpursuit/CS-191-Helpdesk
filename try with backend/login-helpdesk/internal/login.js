@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const usernameError = document.getElementById('usernameError');
+        const loginBack = document.getElementById('loginBack');
 
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -69,16 +70,30 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.error('Error:', error);
                 showError(usernameInput, usernameError, "An error occurred during login. Please try again later.");
             });
+
         });
+
+        loginBack.addEventListener('click', function(event){
+            event.preventDefault();
+            window.location.replace('/internal/welcome');
+        })
 
         forgotPasswordLink();
     }
 
     function handleNewAccount() {
-        // dont mind but dont delete 
+        const newAccForm = document.getElementById('newAccForm');
+        const createBack = document.getElementById('createBack');
+
+        createBack.addEventListener('click', function(event){
+            event.preventDefault();
+            window.location.replace('/internal/welcome');
+        })
     }
 
     toggleView();
     handleLogin();
+    handleNewAccount();
     UI.handle_darkmode('.d-mode');
+    UI.handle_darkmode('.d-mode-again');
 });

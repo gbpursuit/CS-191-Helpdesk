@@ -12,6 +12,15 @@
 <body>
     <div id="createAccountPage" class="create-acc">
         <h2 class="sign-in-login">Create Account</h2>
+        <div id="darkmode-createAccount" class="d-mode-again"> <!-- problem -->
+            <i class="fa-solid fa-moon icon moon"></i>
+            <i class="fa-regular fa-sun icon sun"></i>
+            <span class="switch-login"></span>
+        </div>
+        <button id="createBack" class="create-back">
+            <span class="sr-only">Go back</span>
+            <i class="fa fa-chevron-left arrow-icon"></i>
+        </button>
         <div id = "newContainer" class = "new-container">
             <form id="newAccForm" class="new-form">
                 <label for="new-user">Username<span class="required"> *</span></label>
@@ -24,13 +33,17 @@
             </form>
         </div>
     </div>
-    <div id="login">
+    <div id="login" class = "login-acc">
         <h2 class="sign-in-login">Sign in to Help Desk</h2>
-        <div id="darkmode" class="d-mode">
+        <div id="darkmode-login" class="d-mode"> <!-- problem -->
             <i class="fa-solid fa-moon icon moon"></i>
             <i class="fa-regular fa-sun icon sun"></i>
             <span class="switch-login"></span>
         </div>
+        <button id="loginBack" class="login-back">
+            <span class="sr-only">Go back</span>
+            <i class="fa fa-chevron-left arrow-icon"></i>
+        </button>
         <div id="loginContainer" class="login-container">
             <form id="loginForm" class="login-form">
                 <label for="username">Username<span class="required"> *</span></label>

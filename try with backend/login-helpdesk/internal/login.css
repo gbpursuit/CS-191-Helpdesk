@@ -16,7 +16,7 @@
 /* CSS Variables */
 :root {
     --white: white;
-    --dark-green: #05503a;
+    --dark-green: #066146;
     --hover-button: #204330;
     --light-green: #90EE90;
     --v1-gray: #E3E9E8;
@@ -31,6 +31,7 @@
     --btn: whitesmoke;
     --disable-input: #e0e0e0;
     --disable-text: #535353;
+    --new-white: white;
 
     --tsm-left: left 0.3s ease;
     --tsm-width: width 0.3s ease;
@@ -70,59 +71,52 @@ img {
     box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
-    width: 350px;
-    /* max-width: 500px;
-    width: 100%; */
+    max-width: 350px;
+    width: 100%;
     text-align: center;
 }
 
-.new-form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
 .new-form label {
-    color: var(--dark-green, #4caf50);
+    color: var(--dark-green);
     text-align: left;
+    display: block;
     font-size: 1rem;
     font-weight: 400;
+    margin-bottom: 0.5rem;
 }
 
 .new-form input[type="text"],
 .new-form input[type="password"] {
     box-sizing: border-box;
-    border: 1px solid var(--v2-gray, #ccc);
+    border: 1px solid var(--v2-gray);
     border-radius: 8px;
-    padding: 0.6rem;
+    margin-bottom: 1rem;
+    padding: 0.4rem;
     width: 100%;
     font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: var(--new-white);
 }
 
 .new-form input[type="text"]:focus,
 .new-form input[type="password"]:focus {
-    border-color: var(--dark-green, #4caf50);
+    border-color: var(--dark-green);
     outline: none;
     box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
 }
 
+
 .new-form button {
     border: none;
     border-radius: 8px;
-    background-color: var(--dark-green, #4caf50);
-    color: var(--white, #ffffff);
+    background-color: var(--dark-green);
+    color: var(--white);
     font-size: 16px;
     padding: 10px;
     width: 100%;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.new-form button:hover {
-    background-color: var(--hover-button, #45a049);
-}
 
 /* ======================== Login Page ========================== */  
 .sign-in-login {
@@ -131,27 +125,8 @@ img {
     text-align: center;
 }
 
-#login {
+.login-acc {
     display: none;
-}
-
-#login #darkmode {
-    position: fixed; 
-    bottom: 28px;
-    left: 10px; 
-    cursor: pointer;
-}
-
-#login #darkmode i {
-    position: absolute;
-}
-
-#login #darkmode i.sun {
-    opacity: 0; /* Initially hide the sun icon */
-}
-
-#login #darkmode i.moon {
-    color: var(--dark-green);
 }
 
 .login-container {
@@ -183,6 +158,7 @@ img {
     padding: 0.4rem;
     width: 100%;
     font-size: 1rem;
+    background-color: var(--new-white);
 }
 
 .login-form input[type="text"]:focus,
@@ -222,10 +198,46 @@ img {
     padding: 10px;
     width: 100%;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.create-back,
+.login-back {
+    position: fixed;
+    top: 20px;
+    left: 20px; 
+    background-color: var(--dark-green);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; 
+}
+
+.new-form button:hover,
 .login-form button:hover {
     background-color: var(--hover-button);
+    transform: scale(1.01);
+}
+
+.create-back:hover, .login-back:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.1);
+}
+
+.new-form button:active,
+.login-form button:active,
+.create-back:active, .login-back:active {
+    transform: scale(0.95);
+}
+
+.arrow-icon {
+    color: white;
+    font-size: 1rem;
 }
 
 .required {
@@ -252,6 +264,29 @@ img {
 
 /* ======================== Dark Mode ========================== */  
 
+.create-acc .d-mode-again,
+.login-acc .d-mode {
+    position: fixed; 
+    bottom: 28px;
+    left: 10px; 
+    cursor: pointer;
+}
+
+.create-acc .d-mode-again i,
+.login-acc .d-mode i {
+    position: absolute;
+}
+
+.create-acc .d-mode-again i.sun,
+.login-acc .d-mode i.sun {
+    opacity: 0; /* Initially hide the sun icon */
+}
+
+.create-acc .d-mode-again i.moon,
+.login-acc .d-mode i.moon {
+    color: var(--dark-green);
+}
+
 body.dark-mode {
     --white: #636161;
     --dark-green: #7ce57c;
@@ -265,24 +300,24 @@ body.dark-mode {
     --sidebar-bg-color: #1e1e1e;
     --sidebar-text-color: #ffffff;
     --sidebar-header-color: var(--dark-green);
-    /* --whitesmoke: #797878; */
     --whitesmoke: #292929;
     --hint-green: #929292;
     --new-border: #868685;
     --btn: #363636;
     --disable-input: #505050;
     --disable-text: #c7c7c7;
+    --new-white: var(--v1-gray);
 }
 
 .switch-login::before {
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-body.dark-mode #login #darkmode i.sun {
+body.dark-mode .d-mode i.sun {
     opacity: 1;
 }
 
-body.dark-mode #login #darkmode i.moon {
+body.dark-mode .d-mode i.moon {
     opacity: 0;
 }
 
@@ -291,11 +326,6 @@ body.dark-mode .switch::before {
     background: var(--dark-green);
 }
 
-body.dark-mode .username,
-body.dark-mode .password {
-    background-color: var(--v1-gray);
-    color: var(--text-color);
-}
 
 /* Responsive */
 @media (max-width: 768px) {
