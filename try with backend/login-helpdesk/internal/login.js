@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const enteredPassword = passwordInput.value.trim();
 
             // Send POST request to the server for login
-            fetch('/login', {
+            fetch('/login/sign-in', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -83,7 +83,37 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function handleNewAccount() {
         const newAccForm = document.getElementById('newAccForm');
+        const usernameInput = document.getElementById('new-user');
+        const passwordInput = document.getElementById('new-pass');
         const createBack = document.getElementById('createBack');
+
+        newAccForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const enteredUsername = usernameInput.value.trim();
+            const enteredPassword = passwordInput.value.trim();
+
+            // Send POST request to the server for login
+            fetch('/login/create-account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: enteredUsername, password: enteredPassword }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.replace("/internal/dashboard");
+                } else {
+                    showError(usernameInput, usernameError, "Invalid username or password. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError(usernameInput, usernameError, "An error occurred during login. Please try again later.");
+            });
+
+        });
 
         createBack.addEventListener('click', function(event){
             event.preventDefault();

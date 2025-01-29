@@ -202,6 +202,40 @@ document.addEventListener("DOMContentLoaded", async function () {
         dashElements.searchAndTask.style.display = 'block';
     }
 
+    async function loadTasks() {
+        try {
+            const response = await fetch('/api/tasks');
+            const tasks = await response.json();
+            const tableBody = document.getElementById("taskTableBody");
+
+            tableBody.innerHTML = ""; 
+
+            tasks.forEach(task => {
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>${task.taskId}</td>
+                    <td>${task.taskStatus}</td>
+                    <td>${task.taskDate}</td>
+                    <td>${task.itInCharge}</td>
+                    <td>${task.taskType}</td>
+                    <td>${task.taskDescription}</td>
+                    <td>${task.severity}</td>
+                    <td>${task.requestedBy}</td>
+                    <td>${task.approvedBy}</td>
+                    <td>${task.dateReq}</td>
+                    <td>${task.dateRec}</td>
+                    <td>${task.dateStart}</td>
+                    <td>${task.dateFin}</td>
+                `;
+                newRow.addEventListener('click', () => openTaskInfoModal(task));
+                tableBody.appendChild(newRow);
+            });
+
+        } catch (err) {
+            console.error('Error loading tasks:', err);
+        }
+    }
+
     function getFieldValue(id) {
         let value = document.getElementById(id).value;
         return value.trim() ? value : "--";
@@ -232,7 +266,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         };
 
-        window.addTask = (event) => {
+        window.addTask = async (event) => {
             event.preventDefault();
 
             const taskData = {
@@ -250,6 +284,27 @@ document.addEventListener("DOMContentLoaded", async function () {
                 dateStart: getFieldValue("dateStart"),
                 dateFin: getFieldValue("dateFin")
             };
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(taskData)
+                });
+        
+                if (response.ok) {
+                    const newTask = await response.json();
+                    console.log('Task saved:', newTask);
+                    loadTasks(); // Refresh task list
+                    UI.closeModal('taskModal', true);
+                } else {
+                    console.error('Failed to save task');
+                }
+            } catch (err) {
+                console.error('Error submitting task:', err);
+            }
 
             const tableBody = document.getElementById("taskTableBody");
             const newRow = document.createElement("tr");
@@ -360,5 +415,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Call Functions
     dashboard_open();
     modal_handling();
+    loadTasks();
     
 });

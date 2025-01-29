@@ -112,6 +112,7 @@ img {
     border: none;
     border-radius: 8px;
     background-color: var(--dark-green);
+    /* background-color:  red; */
     color: var(--white);
     font-size: 16px;
     padding: 10px;

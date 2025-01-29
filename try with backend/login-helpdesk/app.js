@@ -1,12 +1,14 @@
 import express from 'express';
+import fs from 'fs';
 import path from 'path';
 import connectLivereload from 'connect-livereload';
 import session from 'express-session';
 import { fileURLToPath } from 'url';
-import { launchServer } from './functions-app.js';
+import { server, account } from './functions-app.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const easyPath = path.join(__dirname, 'internal')
 
 const app = express();
 app.use(connectLivereload());
@@ -31,49 +33,99 @@ app.get('/api/session-user', (req, res) => {
 });
 
 // Serve static files from the "internal" folder
-app.use('/internal', express.static(path.join(__dirname, 'internal')));
+app.use('/internal', express.static(easyPath));
+
+// API to submit a task
+app.post('/api/tasks', async (req, res) => {
+    try {
+        const db = app.locals.db;
+        const {
+            taskId, taskStatus, taskDate, itInCharge, taskType, taskDescription,
+            severity, requestedBy, approvedBy, dateReq, dateRec, dateStart, dateFin
+        } = req.body;
+
+        await db.query(`
+            INSERT INTO tasks (taskId, taskStatus, taskDate, itInCharge, taskType, taskDescription,
+                severity, requestedBy, approvedBy, dateReq, dateRec, dateStart, dateFin)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            taskId, 
+            taskStatus, 
+            taskDate && taskDate !== '--' ? taskDate : null, 
+            itInCharge, 
+            taskType, 
+            taskDescription,
+            severity, 
+            requestedBy, 
+            approvedBy, 
+            dateReq && dateReq !== '--' ? dateReq : null, 
+            dateRec && dateRec !== '--' ? dateRec : null, 
+            dateStart && dateStart !== '--' ? dateStart : null, 
+            dateFin && dateFin !== '--' ? dateFin : null
+        ]);
+
+        res.status(201).json({ success: true, message: 'Task saved successfully' });
+    } catch (err) {
+        console.error('Error saving task:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// API to fetch all tasks
+app.get('/api/tasks', async (req, res) => {
+    try {
+        const db = app.locals.db;
+        const [tasks] = await db.query('SELECT * FROM tasks ORDER BY id DESC');
+        res.json(tasks);
+    } catch (err) {
+        console.error('Error fetching tasks:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+const validViews = ['sign-in', 'create-account'];
 
 // Dynamic route to handle /internal/:page/:view
 app.get('/internal/:page/:view?', (req, res) => {
     const { page, view } = req.params;
 
-    // Valid pages and views
-    const validPages = ['welcome', 'login', 'dashboard', 'summary'];
-    const validViews = ['sign-in', 'create-account'];
+    // Get all the HTML files in the "internal" folder
+    const validPages = fs.readdirSync(easyPath).filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html')); // Remove the ".html" extension
+    const publicPages = ['welcome', 'login'];
 
     if (validPages.includes(page)) {
-        if (page === 'login' && view) {
-            if (validViews.includes(view)) {
-                return res.sendFile(path.join(__dirname, 'internal', `${page}.html`));
+        // Handle public pages
+        if (publicPages.includes(page)) {
+            if (page === 'login' && view && validViews.includes(view)) {
+                return res.sendFile(path.join(easyPath, `${page}.html`));
             }
-            return res.status(404).send('Invalid view');
+            return res.sendFile(path.join(easyPath, `${page}.html`));
         }
 
-        return res.sendFile(path.join(__dirname, 'internal', `${page}.html`));
-    }
+        // Handle protected pages (requires authentication)
+        server.isAuthenticated(req, res, () => {
+            return res.sendFile(path.join(easyPath, `${page}.html`));
+        });
 
-    res.status(404).send('Page not found');
+    } else {
+        res.status(404).send('Page not found');
+    }
 });
 
 // Login route
-app.post('/login', async (req, res) => {
+app.post('/login/:view', async (req, res) => {
+    const { view } = req.params;
     const { username, password } = req.body;
 
-    try {
-        const [rows] = await app.locals.db.query(
-            `SELECT * FROM users WHERE CONCAT(first_name, ' ', last_name) = ? AND password = ?`,
-            [username, password]
-        );
-
-        if (rows.length > 0) {
-            req.session.username = username;
-            return res.status(200).json({ success: true });
+    // Validate the view parameter
+    if (validViews.includes(view)) {
+        if (view === 'sign-in') {
+            await account.signIn(app, req, res, username, password);
+        } else {  // 'create-account'
+            await account.createAccount(app, req, res, username, password);
         }
-
-        return res.status(401).json({ error: 'Invalid username or password' });
-    } catch (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({ error: 'Internal server error' });
+    } else {
+        return res.status(400).json({ error: 'Invalid view' });
     }
 });
 
@@ -93,23 +145,4 @@ app.use((req, res) => {
 });
 
 // Start the server
-launchServer(app);
-
-
-
-
-
-
-
-
-// (async () => {
-//     try {
-//         await setupDatabase();
-//         console.log('Database setup complete.');
-
-//         await startLiveReload();
-//         await startServer();
-//     } catch (err) {
-//         console.error('Failed to set up the database:', err);
-//     }
-// })();
+server.launchServer(app);

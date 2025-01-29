@@ -75,6 +75,7 @@
 
 
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
 
 // Database setup function
 export async function setupDatabase() {
@@ -97,35 +98,77 @@ export async function setupDatabase() {
             database: 'simple_helpdesk',
         });
 
+        // await pool.query('DELETE FROM users');
+        // await pool.query('DROP TABLE IF EXISTS users');
+
         // Create the `users` table
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(100) UNIQUE NOT NULL PRIMARY KEY,
                 first_name VARCHAR(100),
                 last_name VARCHAR(100),
-                password VARCHAR(255),
-                UNIQUE(first_name, last_name)
+                password VARCHAR(255)
+            )
+        `);
+
+        // await pool.query(`
+        //     CREATE TABLE IF NOT EXISTS users (
+        //         id INT AUTO_INCREMENT PRIMARY KEY,
+        //         first_name VARCHAR(100),
+        //         last_name VARCHAR(100),
+        //         password VARCHAR(255)
+        //     )
+        // `);
+
+        // Create the `tasks` table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                taskId VARCHAR(10) UNIQUE NOT NULL,
+                taskStatus VARCHAR(50),
+                taskDate DATE DEFAULT NULL,
+                itInCharge VARCHAR(100),
+                taskType VARCHAR(100),
+                taskDescription TEXT,
+                severity VARCHAR(50),
+                requestedBy VARCHAR(100),
+                approvedBy VARCHAR(100),
+                dateReq DATE DEFAULT NULL,
+                dateRec DATE DEFAULT NULL,
+                dateStart DATE DEFAULT NULL,
+                dateFin DATE DEFAULT NULL
             )
         `);
 
         // Insert default users if they don’t exist
-        const defaultUsers = [
-            ['Lorraine', 'Castrillon', 'password123'],
-            ['Weng', 'Castrillon', 'password456'],
-            ['Gavril', 'Coronel', 'password789'],
-            ['Marcus', 'Pilapil', 'password000'],
-        ];
+        const [existingUsers] = await pool.query('SELECT * FROM users');
 
-        for (const [first_name, last_name, password] of defaultUsers) {
+        for (const user of existingUsers) {
             const [rows] = await pool.query(
-                'SELECT 1 FROM users WHERE first_name = ? AND last_name = ? LIMIT 1',
-                [first_name, last_name]
+                'SELECT 1 FROM users WHERE (first_name = ? AND last_name = ?) OR username = ? LIMIT 1',
+                [user.first_name, user.last_name, user.username]
             );
 
             if (rows.length === 0) {
                 await pool.query(
-                    'INSERT INTO users (first_name, last_name, password) VALUES (?, ?, ?)',
-                    [first_name, last_name, password]
+                    'INSERT INTO users (first_name, last_name, password) VALUES (?, ?, ?, ?)',
+                    [user.username, user.first_name, user.last_name, user.password]
+                );
+            }
+        }
+
+        for (const user of existingUsers) {
+            if (user.password && user.password.startsWith('$2')) { // Common start of hashed values
+                // console.log(`Password for user ${user.first_name} ${user.last_name} is already hashed.`);
+                continue;
+            }
+        
+            if (user.password) {
+                const hashedPassword = await bcrypt.hash(user.password, 10);
+        
+                await pool.query(
+                    'UPDATE users SET password = ? WHERE username = ?',
+                    [hashedPassword, user.username]
                 );
             }
         }

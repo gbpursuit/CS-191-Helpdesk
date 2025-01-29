@@ -51,7 +51,8 @@ export const UI = {
     
         if (button) {
             button.addEventListener('click', function () {
-                window.location.href = targetUrl;
+                event.preventDefault();
+                window.location.replace(targetUrl)
             });
         }
     },
@@ -91,10 +92,34 @@ export const UI = {
         };
     },
 
+    logoutFunction: function() {
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                localStorage.setItem("sidebarState", "closed");
+    
+                // Clear history before redirecting to Enter page
+                window.location.replace("/internal/welcome");
+    
+            } else {
+                console.error('Logout failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error logging out:', error);
+        });
+    },
+
     dropdownToggle: function() {
         const logoutButton = document.querySelector(".logout-btn");
         const profile = document.querySelector(".user-profile");
         const dropdownMenu = document.getElementById("dropdownMenu");
+        const logoutText = document.getElementById('logoutText');
 
         function toggleDropdown(event) {
             event.stopPropagation();
@@ -110,32 +135,10 @@ export const UI = {
             }
         });
 
-        window.logout = function() {
-            fetch('/logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    localStorage.setItem("sidebarState", "closed");
-        
-                    // Clear history before redirecting to Enter page
-                    window.history.pushState(null, '', '/internal/welcome'); // Add a new state in the history stack
-                    window.history.replaceState(null, '', '/internal/welcome'); // Replace the state of the current page
-                    window.location.replace("/internal/welcome");
-        
-                } else {
-                    console.error('Logout failed');
-                }
-            })
-            .catch(error => {
-                console.error('Error logging out:', error);
-            });
-        };
-        
-
+        logoutText.addEventListener("click", function(event) {
+            event.preventDefault();
+            UI.logoutFunction();
+        });
 
         // window.logout = function() {
         //     window.location.replace("/internal/enter");

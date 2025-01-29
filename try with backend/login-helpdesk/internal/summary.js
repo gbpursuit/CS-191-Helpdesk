@@ -12,10 +12,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById('userFullName').textContent = firstName; 
             document.getElementById("pagename").textContent = data.username;
         } 
-        // else {
-        //     // Redirect to login page if no username is found
-        //     window.location.href = '/internal/login/sign-in';
-        // }
     } catch (err) {
         console.error('Error fetching session user:', err);
         window.location.href = '/internal/welcome';

@@ -59,6 +59,10 @@ img {
     width: 100%;
 }
 
+[class] {
+    transition: background-color 0.3s ease;
+}
+
 /* ======================== Create Account Page ========================== */  
 
 .create-acc {
@@ -95,6 +99,7 @@ img {
     width: 100%;
     font-size: 1rem;
     background-color: var(--new-white);
+    color: var(--text-color);
 }
 
 .new-form input[type="text"]:focus,
@@ -159,6 +164,7 @@ img {
     width: 100%;
     font-size: 1rem;
     background-color: var(--new-white);
+    color: var(--text-color);
 }
 
 .login-form input[type="text"]:focus,
