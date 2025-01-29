@@ -122,6 +122,11 @@ img {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.newUser::placeholder {
+    color: var(--v2-gray);
+    font-size: 15px;
+}
+
 
 /* ======================== Login Page ========================== */  
 .sign-in-login {

@@ -84,35 +84,45 @@ document.addEventListener("DOMContentLoaded", function() {
     function handleNewAccount() {
         const newAccForm = document.getElementById('newAccForm');
         const usernameInput = document.getElementById('new-user');
+        const nameInput = document.getElementById('new-name');
         const passwordInput = document.getElementById('new-pass');
+        const usernameError = document.getElementById('newError');
         const createBack = document.getElementById('createBack');
+
+        function checkPassword(password) {
+            return /^[a-zA-Z0-9]+$/.test(password);
+        }
 
         newAccForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
             const enteredUsername = usernameInput.value.trim();
+            const enteredName = nameInput.value.trim();
             const enteredPassword = passwordInput.value.trim();
 
-            // Send POST request to the server for login
+            if (!checkPassword(enteredPassword)) {
+                showError(usernameInput, usernameError, "Password must contain only alphanumeric characters!");
+                return;
+            }
+
             fetch('/login/create-account', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username: enteredUsername, password: enteredPassword }),
+                body: JSON.stringify({ username: enteredUsername, name: enteredName, password: enteredPassword }),
             })
             .then(response => {
                 if (response.ok) {
                     window.location.replace("/internal/dashboard");
                 } else {
-                    showError(usernameInput, usernameError, "Invalid username or password. Please try again.");
+                    showError(usernameInput, usernameError, "Please try a different username.");
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 showError(usernameInput, usernameError, "An error occurred during login. Please try again later.");
             });
-
         });
 
         createBack.addEventListener('click', function(event){

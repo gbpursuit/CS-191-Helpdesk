@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import portfinder from 'portfinder';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { setupDatabase } from './dbSetup.js';
+import { setupDatabase, dumpToSql } from './dbSetup.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,30 +94,29 @@ export const account = {
         }
     },
 
-    createAccount: async function(app, req, res, username, password) {
+    createAccount: async function(app, req, res, username, name, password) {
         try {
-            // You will need to split the username into first_name and last_name
-            const [first_name, last_name] = username.split(' '); // Example of splitting by space
+            const [first_name, last_name] = name.split(' '); // last name is null if undefined
     
             const [rows] = await app.locals.db.query(
-                'SELECT 1 FROM users WHERE first_name = ? AND last_name = ? LIMIT 1',
-                [first_name, last_name]
+                `SELECT * FROM users WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? LIMIT 1`,
+                [name, username]
             );
     
             if (rows.length > 0) {
                 return res.status(400).json({ error: 'User already exists' });
             }
     
-            // Insert new user into the database
             const hashedPassword = await bcrypt.hash(password, 10);
             await app.locals.db.query(
-                'INSERT INTO users (first_name, last_name, password) VALUES (?, ?, ?)',
-                [first_name, last_name, hashedPassword]
+                'INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)',
+                [username, first_name, last_name, hashedPassword]
             );
-            // req.session.username = username;
+            await dumpToSql();
             return res.status(200).json({ success: true, message: 'Account created successfully' });
+    
         } catch (err) {
-            console.error('Database error: ', err);
+            console.error('Database error:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
     }

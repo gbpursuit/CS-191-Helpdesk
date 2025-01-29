@@ -115,15 +115,19 @@ app.get('/internal/:page/:view?', (req, res) => {
 // Login route
 app.post('/login/:view', async (req, res) => {
     const { view } = req.params;
-    const { username, password } = req.body;
 
     // Validate the view parameter
     if (validViews.includes(view)) {
         if (view === 'sign-in') {
+            const { username, password } = req.body; // Only expect username and password for sign-in
             await account.signIn(app, req, res, username, password);
-        } else {  // 'create-account'
-            await account.createAccount(app, req, res, username, password);
-        }
+        } else if (view === 'create-account') {
+            const { username, name, password } = req.body; // Expect username, name, and password for account creation
+            console.log(username);
+            console.log(name);
+            console.log(password);
+            await account.createAccount(app, req, res, username, name, password);
+        } 
     } else {
         return res.status(400).json({ error: 'Invalid view' });
     }
