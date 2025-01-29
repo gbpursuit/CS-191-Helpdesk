@@ -109,21 +109,26 @@ async function readSql(filePath) {
             if (err) {
                 reject(`Error reading SQL file: ${err}`);
             } else {
-                const userInsertPattern = /INSERT INTO `users` .*? \((.*?)\);/g;
+                const userInsertPattern = /INSERT INTO `users` VALUES\s*\((.*?)\);/g;
                 const userMatches = [];
                 let match;
 
                 while ((match = userInsertPattern.exec(data)) !== null) {
-                    const values = match[1].split(',').map(value => value.trim().replace(/'/g, ''));
-                    userMatches.push({
-                        username: values[0],
-                        first_name: values[1],
-                        last_name: values[2],
-                        password: values[3]
+                    const userValues = match[1]; // This contains all the user data in a single string
+                    const userRecords = userValues.split("),(").map(record => record.replace(/[()]/g, '').split(',')); // Split the string into separate user records (based on `),(` pattern)
+                    
+                    userRecords.forEach(record => {
+                        // Clean each record and push to userMatches
+                        userMatches.push({
+                            username: record[0].replace(/'/g, ''),
+                            first_name: record[1] ? record[1].replace(/'/g, '') : null,
+                            last_name: record[2] ? record[2].replace(/'/g, '') : null,
+                            password: record[3].replace(/'/g, '')
+                        });
                     });
                 }
 
-                resolve(userMatches); // Return array of user data extracted from dump
+                resolve(userMatches); // Return array of all user data found
             }
         });
     });
@@ -149,10 +154,38 @@ export async function setupDatabase() {
             database: 'simple_helpdesk',
         });
 
-        // Dump the users data to a SQL file
+        await pool.query(`
+                CREATE TABLE IF NOT EXISTS users (
+                    username VARCHAR(100) UNIQUE NOT NULL,
+                    first_name VARCHAR(100),
+                    last_name VARCHAR(100),
+                    password VARCHAR(255)
+                )
+        `);
+        
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                taskId VARCHAR(10) UNIQUE NOT NULL,
+                taskStatus VARCHAR(50),
+                taskDate DATE DEFAULT NULL,
+                itInCharge VARCHAR(100),
+                taskType VARCHAR(100),
+                taskDescription TEXT,
+                severity VARCHAR(50),
+                requestedBy VARCHAR(100),
+                approvedBy VARCHAR(100),
+                dateReq DATE DEFAULT NULL,
+                dateRec DATE DEFAULT NULL,
+                dateStart DATE DEFAULT NULL,
+                dateFin DATE DEFAULT NULL
+            )
+        `);
+
+        // // Dump the users data to a SQL file
         const dumpFilePath = await dumpToSql();
 
-        // Read the SQL file and extract users
+        // // Read the SQL file and extract users
         const existingUsers = await readSql(dumpFilePath);
 
         // Insert default users if they don’t exist
