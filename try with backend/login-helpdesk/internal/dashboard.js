@@ -169,25 +169,6 @@ import { UI } from './common.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
 
-    try {
-        const response = await fetch('/api/session-user');
-        const data = await response.json();
-
-        if (data.username) {
-            // Dynamically update the user's full name
-            const firstName = data.username.split(' ')[0];
-            document.getElementById('userFullName').textContent = firstName; 
-            document.getElementById("pagename").textContent = data.username;
-        } 
-        // else {
-        //     // Redirect to login page if no username is found
-        //     window.location.href = '/internal/login/sign-in';
-        // }
-    } catch (err) {
-        console.error('Error fetching session user:', err);
-        window.location.href = '/internal/welcome';
-    }
-
     function dashboard_open() {
         const dashElements = {
             dashTitle: document.getElementById('dashTitle'),
@@ -411,6 +392,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     UI.notificationPop();
     UI.dropdownToggle();
     UI.handleSidebarState();
+    await UI.reflectUsername();
 
     // Call Functions
     dashboard_open();

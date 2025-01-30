@@ -112,7 +112,7 @@ export const account = {
                 'INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)',
                 [username, first_name, last_name, hashedPassword]
             );
-            await dumpToSql();
+            // await dumpToSql();
             return res.status(200).json({ success: true, message: 'Account created successfully' });
     
         } catch (err) {

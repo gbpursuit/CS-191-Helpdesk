@@ -25,12 +25,39 @@ app.use(
 );
 
 // API endpoint to get session user
-app.get('/api/session-user', (req, res) => {
-    if (req.session && req.session.username) {
-        return res.json({ username: req.session.username });
+app.get('/api/session-user', async (req, res) => {
+    try {
+        if (req.session && req.session.username) {
+            const db = app.locals.db;
+
+            // Check if session value matches username OR full name
+            const [rows] = await db.query(
+                `SELECT username, first_name, last_name FROM users 
+                 WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? 
+                 LIMIT 1`,
+                [req.session.username, req.session.username]
+            );
+
+            if (rows.length > 0) {
+                const user = rows[0];
+                const fullName = user.first_name + (user.last_name ? ` ${user.last_name}` : '');
+
+                req.session.username = user.username; // username (key)
+                req.session.fullName = fullName; // full name of user
+
+                return res.json({ username: user.username, fullName });
+            } else {
+                return res.status(404).json({ error: 'User not found' });
+            }
+        }
+
+        return res.status(401).json({ error: 'Unauthorized' });
+    } catch (err) {
+        console.error('Error retrieving session user:', err);
+        return res.status(500).json({ error: 'Internal server error' });
     }
-    return res.status(401).json({ error: 'Unauthorized' });
 });
+
 
 // Serve static files from the "internal" folder
 app.use('/internal', express.static(easyPath));

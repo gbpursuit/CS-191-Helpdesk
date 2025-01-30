@@ -144,5 +144,24 @@ export const UI = {
         //     window.location.replace("/internal/enter");
         //     localStorage.setItem("sidebarState", "closed");
         // };
+    },
+
+    reflectUsername: async function() {
+        try {
+            const response = await fetch('/api/session-user');
+            const data = await response.json();
+
+            if (data.fullName) {
+                // Dynamically update the user's full name
+                console.log(data);
+                const firstName = data.fullName.split(' ')[0];
+                document.getElementById('userFullName').textContent = firstName; 
+                document.getElementById("pagename").textContent = data.fullName;
+            } 
+        } catch (err) {
+            console.error('Error fetching session user:', err);
+            window.location.replace('/internal/welcome');
+            // window.location.href = '/internal/welcome';
+        }
     }
 };

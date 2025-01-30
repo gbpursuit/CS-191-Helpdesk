@@ -155,12 +155,12 @@ export async function setupDatabase() {
         });
 
         await pool.query(`
-                CREATE TABLE IF NOT EXISTS users (
-                    username VARCHAR(100) UNIQUE NOT NULL,
-                    first_name VARCHAR(100),
-                    last_name VARCHAR(100),
-                    password VARCHAR(255)
-                )
+            CREATE TABLE IF NOT EXISTS users (
+                username VARCHAR(100) UNIQUE NOT NULL PRIMARY KEY,
+                first_name VARCHAR(100),
+                last_name VARCHAR(100),
+                password VARCHAR(255)
+            )
         `);
         
         await pool.query(`
@@ -183,41 +183,50 @@ export async function setupDatabase() {
         `);
 
         // // Dump the users data to a SQL file
-        const dumpFilePath = await dumpToSql();
+        // const dumpFilePath = await dumpToSql();
 
-        // // Read the SQL file and extract users
-        const existingUsers = await readSql(dumpFilePath);
+        // // // Read the SQL file and extract users
+        // const existingUsers = await readSql(dumpFilePath);
+        const existingUsers = [
+            ['lmcastrillon', 'Lorraine', 'Castrillon', 'password123'],
+            ['wengcastrillon', 'Weng', 'Castrillon', 'password456'],
+            ['gbpursuit', 'Gavril', 'Coronel', 'password789'],
+            ['marcuspilapil', 'Marcus', 'Pilapil', 'password000'],
+            ['newDummy', 'Dummy', 'Account', 'dummypassword'],
+            ['g', 'gg', null, 'ggg'],
+        ];
 
         // Insert default users if they don’t exist
         for (const user of existingUsers) {
             const [rows] = await pool.query(
                 'SELECT 1 FROM users WHERE (first_name = ? AND last_name = ?) OR username = ? LIMIT 1',
-                [user.first_name, user.last_name, user.username]
+                [user[1], user[2], user[0]]
             );
 
             if (rows.length === 0) {
+                const hashedPassword = await bcrypt.hash(user[3], 10);
                 await pool.query(
                     'INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)',
-                    [user.username, user.first_name, user.last_name, user.password]
+                    [user[0], user[1], user[2], hashedPassword]
                 );
             }
         }
 
         // Hash the passwords for users if not already hashed
-        for (const user of existingUsers) {
-            if (user.password && user.password.startsWith('$2')) { // Common start of hashed values
-                continue; // Password is already hashed, skip it
-            }
+        // for (const user of existingUsers) {
+        //     if (user.password && user.password.startsWith('$2')) { // Common start of hashed values
+        //         continue; // Password is already hashed, skip it
+        //     }
 
-            if (user.password) {
-                const hashedPassword = await bcrypt.hash(user.password, 10);
+        //     if (user.password) {
+        //         const hashedPassword = await bcrypt.hash(user.password, 10);
 
-                await pool.query(
-                    'UPDATE users SET password = ? WHERE username = ?',
-                    [hashedPassword, user.username]
-                );
-            }
-        }
+        //         await pool.query(
+        //             'UPDATE users SET password = ? WHERE username = ?',
+        //             [hashedPassword, user.username]
+        //         );
+        //     }
+        // }
 
         return pool; // Return the connection pool
     } catch (err) {
