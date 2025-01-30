@@ -276,13 +276,6 @@
                 </div>
             </div>
 
-            <!-- <div id="taskModal" class="modal">
-                <div id = "modalContent" class="modal-content" onclick = "event.stopPropagation()">            
-                    <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
-                    <h2 class = "add-task">Add New Task</h2>
-                    <form id="newTaskForm" onsubmit="addTask(event)" class="task-form">
-                         -->
-
             <div id="taskInfoModal" class="submitted-modal">
                 <div id="submittedContent" class="submitted-content">
                     <span class="close-task">&times;</span>
@@ -290,11 +283,142 @@
                     <div id="taskInfoContent">
                         <!-- Task details will be populated here -->
                     </div>
-                    <button id="deleteTaskButton" class="delete-btn">Delete Task</button>
                     <button id="editTaskButton" class="edit-btn">Edit Task</button>
+                    <button id="printTaskButton" class="print-btn">Print Task</button>
+                    <button id="deleteTaskButton" class="delete-btn">Delete Task</button>
                 </div>
             </div>
+
+            <div id="taskEditModal" class="edit-modal">
+                <div id="editModalContent" class="edit-modal-content" onclick="event.stopPropagation()">            
+                    <span class="edit-close" onclick="document.getElementById('taskEditModal').style.display='none'">&times;</span>
+                    <h2 class="edit-task-title">Edit Task</h2>
+                    <form id="editTaskForm" onsubmit="updateTask(event)" class="edit-task-form">
+                        
+                        <div class="edit-main-column">
+                            <div class="edit-column-one">
+                                <div class="edit-form-group">
+                                    <label for="editTaskType">Task Type<span class="required"> *</span></label>
+                                    <input type="text" id="editTaskType" placeholder="Enter Task Type">
+                                </div>
             
+                                <div class="edit-form-group">
+                                    <label for="editTaskDescription">Task Description</label>
+                                    <input type="text" id="editTaskDescription" placeholder="Enter Task Description">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editRequestedBy">Requested by<span class="required"> *</span></label>
+                                    <input type="text" id="editRequestedBy" placeholder="Enter Requestor Name">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editApprovedBy">Approved by</label>
+                                    <input type="text" id="editApprovedBy" placeholder="Enter Approver Name">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editDepartment">Department<span class="required"> *</span></label>
+                                    <select id="editDepartment" class="edit-dropdown">
+                                        <option value="" disabled selected>Select Department</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="Executive">Executive</option>
+                                        <option value="Warehouse">Warehouse</option>
+                                        <option value="IT">IT</option>
+                                    </select>
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editDepartmentNo">Department No</label>
+                                    <input type="text" id="editDepartmentNo" placeholder="Enter Dept. No.">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editItInCharge">IT in Charge<span class="required"> *</span></label>
+                                    <select id="editItInCharge" class="edit-dropdown">
+                                        <option value="" disabled selected>Select IT in Charge</option>
+                                        <option value="weng_castrillon">Weng Castrillon</option>
+                                        <option value="anne_ranay">Anne Ranay</option>
+                                        <option value="julius_jara">Julius Jara</option>
+                                    </select>
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editDeviceName">Device Name</label>
+                                    <input type="text" id="editDeviceName" placeholder="Enter Device Name">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editItemName">Item Name</label>
+                                    <input type="text" id="editItemName" placeholder="Enter Item Name">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editApplicationName">Application Name</label>
+                                    <input type="text" id="editApplicationName" placeholder="Enter Application Name">
+                                </div>
+                            </div>
+            
+                            <div class="edit-column-two">
+                                <div class="edit-form-group">
+                                    <label for="editTaskId">Task ID</label>
+                                    <input type="text" id="editTaskId" class="edit-id-box" disabled>
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editTaskDate">Transaction Date</label>
+                                    <input type="date" id="editTaskDate" class="edit-date-box" disabled>
+                                </div>                             
+            
+                                <div class="edit-form-group">
+                                    <label for="editTaskStatus">Status<span class="required"> *</span></label>
+                                    <select id="editTaskStatus" class="edit-dropdown">
+                                        <option value="" disabled selected>Select Status</option>
+                                        <option value="open">Open</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="closed">Closed</option>
+                                        <option value="on-hold">On Hold</option>
+                                    </select>
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editSeverity">Severity<span class="required"> *</span></label>
+                                    <select id="editSeverity" class="edit-dropdown">
+                                        <option value="" disabled selected>Select Severity</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>                    
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editDateReq">Date Requested</label>
+                                    <input type="date" id="editDateReq" placeholder="Enter Date Requested">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editDateRec">Date Received</label>
+                                    <input type="date" id="editDateRec" placeholder="Enter Date Received">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editDateStart">Date Started</label>
+                                    <input type="date" id="editDateStart" placeholder="Enter Date Started">
+                                </div>
+            
+                                <div class="edit-form-group">
+                                    <label for="editDateFin">Date Finished</label>
+                                    <input type="date" id="editDateFin" placeholder="Enter Date Finished">
+                                </div>
+                            </div>
+                        </div>    
+                        <button type="submit" class="edit-button-update">Update Task</button>
+                    </form>
+                </div>
+            </div>
+                    
         </div>
     </div>
 

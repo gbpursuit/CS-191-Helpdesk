@@ -253,6 +253,111 @@
                 console.error("Error deleting task:", err);
             }
         }
+
+        function openEditModal(taskData) {
+            const editModal = document.getElementById('taskEditModal');
+            const editTaskForm = document.getElementById('editTaskForm');
+        
+            // Get Task Information
+            document.getElementById('editTaskId').value = taskData.taskId || "";
+            document.getElementById('editTaskStatus').value = taskData.taskStatus || "";
+            document.getElementById('editTaskType').value = taskData.taskType || "";
+            document.getElementById('editTaskDescription').value = taskData.taskDescription || "";
+            document.getElementById('editRequestedBy').value = taskData.requestedBy || "";
+            document.getElementById('editApprovedBy').value = taskData.approvedBy || "";
+            document.getElementById('editDepartment').value = taskData.department || "";
+            document.getElementById('editDepartmentNo').value = taskData.departmentNo || "";
+            document.getElementById('editItInCharge').value = taskData.itInCharge || "";
+            document.getElementById('editDeviceName').value = taskData.deviceName || "";
+            document.getElementById('editItemName').value = taskData.itemName || "";
+            document.getElementById('editApplicationName').value = taskData.applicationName || "";
+            document.getElementById('editTaskDate').value = taskData.taskDate || "";
+            document.getElementById('editSeverity').value = taskData.severity || "";
+            document.getElementById('editDateReq').value = taskData.dateReq || "";
+            document.getElementById('editDateRec').value = taskData.dateRec || "";
+            document.getElementById('editDateStart').value = taskData.dateStart || "";
+            document.getElementById('editDateFin').value = taskData.dateFin || "";
+        
+            // Submission of Editted Task
+            editTaskForm.onsubmit = async function (event) {
+                event.preventDefault();
+        
+                const taskId = taskData.taskId;
+                const formData = {
+                    taskStatus: document.getElementById("editTaskStatus").value,
+                    taskDate: document.getElementById("editTaskDate").value,
+                    itInCharge: document.getElementById("editItInCharge").value,
+                    taskType: document.getElementById("editTaskType").value,
+                    taskDescription: document.getElementById("editTaskDescription").value,
+                    severity: document.getElementById("editSeverity").value,
+                    requestedBy: document.getElementById("editRequestedBy").value,
+                    approvedBy: document.getElementById("editApprovedBy").value,
+                    dateReq: document.getElementById("editDateReq").value,
+                    dateRec: document.getElementById("editDateRec").value,
+                    dateStart: document.getElementById("editDateStart").value,
+                    dateFin: document.getElementById("editDateFin").value
+                };
+        
+                await updateTask(taskId, formData);
+            };
+        
+            // Show the modal
+            editModal.style.display = "flex";
+        }
+        
+        // Handle submitting edited task
+        async function updateTask(taskId, formData) {
+            try {
+                const response = await fetch(`/api/tasks/${taskId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                });
+        
+                const data = await response.json();
+                if (response.ok) {
+                    console.log("Task updated successfully:", data);
+                    alert("Task updated successfully!"); // Feedback to user
+                    location.reload(); // Reload to reflect changes
+                } else {
+                    console.error("Error updating task:", data.error);
+                    alert("Error updating task: " + data.error);
+                }
+            } catch (error) {
+                console.error("Network or server error:", error);
+                alert("Network error. Please try again.");
+            }
+        }
+        
+        // Attach to form submission event
+        document.getElementById("editTaskForm").onsubmit = async function (event) {
+            event.preventDefault(); // Prevent page refresh
+        
+            const taskId = document.getElementById("editTaskId").value; // Get correct taskId
+            const formData = {
+                taskStatus: document.getElementById("editTaskStatus").value,
+                taskDate: document.getElementById("editTaskDate").value,
+                itInCharge: document.getElementById("editItInCharge").value,
+                taskType: document.getElementById("editTaskType").value,
+                taskDescription: document.getElementById("editTaskDescription").value,
+                severity: document.getElementById("editSeverity").value,
+                requestedBy: document.getElementById("editRequestedBy").value,
+                approvedBy: document.getElementById("editApprovedBy").value,
+                department: document.getElementById("editDepartment").value,
+                departmentNo: document.getElementById("editDepartmentNo").value,
+                deviceName: document.getElementById("editDeviceName").value,
+                itemName: document.getElementById("editItemName").value,
+                applicationName: document.getElementById("editApplicationName").value,
+                dateReq: document.getElementById("editDateReq").value,
+                dateRec: document.getElementById("editDateRec").value,
+                dateStart: document.getElementById("editDateStart").value,
+                dateFin: document.getElementById("editDateFin").value
+            };
+        
+            updateTask(taskId, formData);
+        };
         
         async function loadTasks() {
             try {
@@ -362,6 +467,14 @@
             deleteTaskButton.onclick = async () => {
                 await deleteTask(taskData.taskId);
             };
+
+            const editTaskButton = document.getElementById('editTaskButton');
+            editTaskButton.onclick = async () => {
+                await openEditModal(taskData);
+            };
+            console.log("Editing Task Data:", taskData);
+
+
         }
     
         function modal_handling() {

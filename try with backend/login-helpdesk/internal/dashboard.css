@@ -890,17 +890,18 @@ form button:hover {
 
 .delete-btn {
     padding: 5px 12px;
-    background-color: var(--dark-green);
-    color: var(--white);
+    background-color: var(--hot-pink);
+    color: white;
     border: 1px solid var(--light-gray);
     border-radius: 5px;
     cursor: pointer;
     width: 100px;
+    float: right;
 }
 
 .delete-btn:hover {
-    background-color: var(--hover-button);
-    color: var(--white);
+    background-color: #881111;
+    color: white;
 }
 
 .edit-btn {
@@ -916,6 +917,148 @@ form button:hover {
 .edit-btn:hover {
     background-color: var(--hover-button);
     color: var(--white);
+}
+
+.print-btn {
+    padding: 5px 12px;
+    background-color: var(--dark-green);
+    color: var(--white);
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+}
+
+.print-btn:hover {
+    background-color: var(--hover-button);
+    color: var(--white);
+}
+
+/* ======================== Edit Task Modal ========================== */ 
+
+.edit-modal {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.edit-modal-content {
+    background-color: var(--white);
+    margin: 0 auto;
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 90%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.edit-task-title {
+    color: var(--dark-green);
+    text-align: center;
+}
+
+/* Close button */
+.edit-close {
+    float: right;
+    color: var(--dark-green);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+} 
+
+.edit-close:hover,
+.edit-close:focus {
+    color: var(--hot-pink);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Modal Content */
+.edit-task-form {
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.edit-main-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 25px;
+}
+
+.edit-column-one, .edit-column-two {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    gap: 2px;
+}
+
+.edit-form-group {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-form-group label {
+    font-weight: bold;
+    font-size: 0.825rem;
+    width: 120px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.edit-form-group .edit-dropdown,
+.edit-form-group input {
+    flex: 1;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--v2-gray);
+    border-radius: 4px;
+    font-size: 0.765rem;
+    color: var(--text-color);
+    background-color: var(--white);
+}
+
+.edit-form-group input::placeholder {
+    color: var(--text-color);
+}
+
+.edit-task-form button {
+    padding: 9px 20px;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.825rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.edit-task-form button:hover {
+    background-color: var(--hover-button);
+}
+
+/* Disabled Fields */
+.edit-date-box[disabled], 
+.edit-id-box[disabled] {
+    background-color: var(--disable-input);
+    color: var(--disable-text);
+    cursor: not-allowed;
+    flex: 1;
 }
 
 /* ======================== Dark Mode ========================== */  

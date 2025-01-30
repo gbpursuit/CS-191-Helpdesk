@@ -77,18 +77,18 @@ app.post('/api/tasks', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             taskId, 
-            taskStatus, 
-            taskDate !== '--' ? taskDate : 'null', 
+            taskStatus,
+            taskDate !== '--' ? taskDate : null, 
             itInCharge, 
             taskType, 
             taskDescription,
             severity, 
             requestedBy, 
             approvedBy, 
-            dateReq !== '--' ? dateReq : 'null', 
-            dateRec !== '--' ? dateRec : 'null', 
-            dateStart !== '--' ? dateStart : 'null', 
-            dateFin !== '--' ? dateFin : 'null'
+            dateReq !== '--' ? dateReq : null, 
+            dateRec !== '--' ? dateRec : null, 
+            dateStart !== '--' ? dateStart : null, 
+            dateFin !== '--' ? dateFin : null
         ]);
 
         res.status(201).json({ success: true, message: 'Task saved successfully' });
@@ -166,15 +166,29 @@ app.delete('/api/tasks/:taskId', async (req, res) => {
 
 // Edit Tasks
 app.put('/api/tasks/:taskId', async (req, res) => {
+    console.log("Received Task Update:", req.body, "Task ID:", req.params.taskId);
+
     try {
         const db = app.locals.db;
-        const { taskId } = req.params;
+        const taskId = req.params.taskId; // Keep as a string
+
         const {
             taskStatus, taskDate, itInCharge, taskType, taskDescription,
             severity, requestedBy, approvedBy, dateReq, dateRec, dateStart, dateFin
         } = req.body;
 
-        console.log(`Updating task with ID: ${taskId}`);
+        // Convert empty values to NULL
+        const convertToNull = (value) => (value === '' ? null : value);
+
+        // Validate Date format
+        const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
+
+        const updatedFields = [
+            convertToNull(taskStatus), isValidDate(taskDate), convertToNull(itInCharge), convertToNull(taskType),
+            convertToNull(taskDescription), convertToNull(severity), convertToNull(requestedBy), convertToNull(approvedBy),
+            isValidDate(dateReq), isValidDate(dateRec), isValidDate(dateStart), isValidDate(dateFin),
+            taskId
+        ];
 
         const [result] = await db.query(`
             UPDATE tasks SET 
@@ -182,35 +196,19 @@ app.put('/api/tasks/:taskId', async (req, res) => {
                 taskDescription = ?, severity = ?, requestedBy = ?, approvedBy = ?, 
                 dateReq = ?, dateRec = ?, dateStart = ?, dateFin = ?
             WHERE taskId = ?
-        `, [
-            taskStatus, 
-            taskDate !== '--' ? taskDate : null, 
-            itInCharge, 
-            taskType, 
-            taskDescription,
-            severity, 
-            requestedBy, 
-            approvedBy, 
-            dateReq !== '--' ? dateReq : null, 
-            dateRec !== '--' ? dateRec : null, 
-            dateStart !== '--' ? dateStart : null, 
-            dateFin !== '--' ? dateFin : null,
-            taskId
-        ]);
+        `, updatedFields);
 
         if (result.affectedRows > 0) {
-            console.log(`Task ID ${taskId} successfully updated.`);
             res.json({ success: true, message: 'Task updated successfully' });
         } else {
-            console.error(`Task ID ${taskId} not updated. Check database constraints.`);
             res.status(404).json({ error: 'Task not found' });
         }
-
     } catch (err) {
         console.error('Error updating task:', err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: err.sqlMessage || 'Internal server error' });
     }
 });
+
 
 const validViews = ['sign-in', 'create-account'];
 
