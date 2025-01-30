@@ -165,32 +165,81 @@
 //     handleDashBoard();
 // })
 
-import { UI } from './common.js';
+    // separate function to load database
+        // dbsetup.js
 
-document.addEventListener("DOMContentLoaded", async function () {
+    // separate function to add task dun sa database -> load
+        // dbsetup.js
+        // dashboard.js
+        // app.js (check nalang if need)
 
-    function dashboard_open() {
-        const dashElements = {
-            dashTitle: document.getElementById('dashTitle'),
-            dashContainer: document.getElementById('dashboardContainer'),
-            taskTable: document.querySelector('.task-table'),
-            searchAndTask: document.querySelector('.fixed-head')
-        };
+    // Current code:
+    //     no display 
+    //     nagkakadisplay if mag add -> loadTasks
 
-        dashElements.dashTitle.innerText = "IT Management - Dashboard";
-        dashElements.dashContainer.style.display = 'block';
-        dashElements.taskTable.style.display = 'table';
-        dashElements.searchAndTask.style.display = 'block';
-    }
+    ////////////////////////////////////////////////////////////////////////
 
-    async function loadTasks() {
-        try {
-            const response = await fetch('/api/tasks');
-            const tasks = await response.json();
+    import { UI } from './common.js';
+
+    document.addEventListener("DOMContentLoaded", async function () {
+    
+        function dashboard_open() {
+            const dashElements = {
+                dashTitle: document.getElementById('dashTitle'),
+                dashContainer: document.getElementById('dashboardContainer'),
+                taskTable: document.querySelector('.task-table'),
+                searchAndTask: document.querySelector('.fixed-head')
+            };
+    
+            dashElements.dashTitle.innerText = "IT Management - Dashboard";
+            dashElements.dashContainer.style.display = 'block';
+            dashElements.taskTable.style.display = 'table';
+            dashElements.searchAndTask.style.display = 'block';
+        }
+    
+        function getFieldValue(id) {
+            let value = document.getElementById(id).value;
+            return value.trim() ? value : "--";
+        }
+    
+        async function fetchTasksFromDatabase() {
+            try {
+                const response = await fetch('/api/tasks');
+                return await response.json();
+            } catch (err) {
+                console.error('Error fetching tasks:', err);
+                return [];
+            }
+        }
+    
+        async function addTaskToDatabase(taskData) {
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(taskData)
+                });
+    
+                return response.ok ? await response.json() : null;
+            } catch (err) {
+                console.error('Error adding task:', err);
+                return null;
+            }
+        }
+
+        function getCurrentDate() {
+            const now = new Date();
+            return now.toISOString().split('T')[0]; // Extract YYYY-MM-DD directly
+        }
+        
+            
+        async function loadTasks() {
+            const tasks = await fetchTasksFromDatabase();
+            // console.log(tasks)
             const tableBody = document.getElementById("taskTableBody");
-
-            tableBody.innerHTML = ""; 
-
+    
+            tableBody.innerHTML = "";
+    
             tasks.forEach(task => {
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
@@ -208,110 +257,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                     <td>${task.dateStart}</td>
                     <td>${task.dateFin}</td>
                 `;
-                newRow.addEventListener('click', () => openTaskInfoModal(task));
+                newRow.addEventListener('click', async function (event) {
+                    event.preventDefault();
+                    await openTaskInfoModal(task);
+                });
                 tableBody.appendChild(newRow);
             });
-
-        } catch (err) {
-            console.error('Error loading tasks:', err);
         }
-    }
-
-    function getFieldValue(id) {
-        let value = document.getElementById(id).value;
-        return value.trim() ? value : "--";
-    }
-
-    function modal_handling() {
-        const taskModal = document.getElementById('taskModal');
-        const currentDate = new Date().toISOString().split('T')[0];
-        const topbar = document.getElementById('topbar');
-        const pop = document.querySelector('.notification-popup');
-        const closeButton = document.querySelector('.close');
-
-        const taskInfoModal = document.getElementById('taskInfoModal');
-        const closeTaskButton = document.querySelector('.close-task');
-        
-
-        function generateUniqueId() {
-            return Array.from({ length: 4 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('');
-        }
-
-        window.openModal = function () {
-            taskModal.style.display = "flex";
-            document.getElementById('taskDate').value = currentDate;
-
-            const taskIdInput = document.getElementById('taskId');
-            if (taskIdInput) {
-                taskIdInput.value = generateUniqueId();
-            }
-        };
-
-        window.addTask = async (event) => {
-            event.preventDefault();
-
-            const taskData = {
-                taskId: document.getElementById('taskId').value,
-                taskStatus: getFieldValue("taskStatus"),
-                taskDate: currentDate,
-                itInCharge: getFieldValue("itInCharge"),
-                taskType: getFieldValue("taskType"),
-                taskDescription: getFieldValue("taskDescription"),
-                severity: getFieldValue("severity"),
-                requestedBy: getFieldValue("requestedBy"),
-                approvedBy: getFieldValue("approvedBy"),
-                dateReq: getFieldValue("dateReq"),
-                dateRec: getFieldValue("dateRec"),
-                dateStart: getFieldValue("dateStart"),
-                dateFin: getFieldValue("dateFin")
-            };
-
-            try {
-                const response = await fetch('/api/tasks', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(taskData)
-                });
-        
-                if (response.ok) {
-                    const newTask = await response.json();
-                    console.log('Task saved:', newTask);
-                    loadTasks(); // Refresh task list
-                    UI.closeModal('taskModal', true);
-                } else {
-                    console.error('Failed to save task');
-                }
-            } catch (err) {
-                console.error('Error submitting task:', err);
-            }
-
-            const tableBody = document.getElementById("taskTableBody");
-            const newRow = document.createElement("tr");
-            newRow.innerHTML = `
-                <td>${taskData.taskId}</td>
-                <td>${taskData.taskStatus}</td>
-                <td>${taskData.taskDate}</td>
-                <td>${taskData.itInCharge}</td>
-                <td>${taskData.taskType}</td>
-                <td>${taskData.taskDescription}</td>
-                <td>${taskData.severity}</td>
-                <td>${taskData.requestedBy}</td>
-                <td>${taskData.approvedBy}</td>
-                <td>${taskData.dateReq}</td>
-                <td>${taskData.dateRec}</td>
-                <td>${taskData.dateStart}</td>
-                <td>${taskData.dateFin}</td>
-            `;
-
-            newRow.addEventListener('click', () => openTaskInfoModal(taskData));
-            tableBody.appendChild(newRow);
-            UI.closeModal('taskModal', true);
-        };
-
-        function openTaskInfoModal(taskData) {
+    
+        async function openTaskInfoModal(taskData) {
+            const taskInfoModal = document.getElementById('taskInfoModal');
             const taskInfoContent = document.getElementById('taskInfoContent');
+            
             taskInfoContent.innerHTML = `
                 <table class="task-info-table">
                     <tr>
@@ -370,33 +327,84 @@ document.addEventListener("DOMContentLoaded", async function () {
                     </tr>
                 </table>
             `;
+        
             taskInfoModal.style.display = "flex";
         }
-            
-        taskModal.addEventListener('click', (event) => UI.closeOutsideModal(event, 'modalContent', 'taskModal'));
-        pop.addEventListener('click', (event) => UI.closeOutsideModal(event, 'popupContent', 'notificationPopup'));
-        topbar.addEventListener('click', (event) => UI.closeOutsideModal(event, 'modalContent', 'taskModal'));
-
-        if (closeButton) closeButton.addEventListener('click', () => UI.closeModal('taskModal', true));
-        if (closeTaskButton) {
-            closeTaskButton.addEventListener('click', () => {
-                taskInfoModal.style.display = "none"; // Hide the modal
-            });
-        }
-
-    }
-
-    // UI Actions
-    UI.handle_darkmode(".toggle-switch");
-    UI.page_navigation("summary", "/internal/summary")
-    UI.notificationPop();
-    UI.dropdownToggle();
-    UI.handleSidebarState();
-    await UI.reflectUsername();
-
-    // Call Functions
-    dashboard_open();
-    modal_handling();
-    loadTasks();
     
-});
+        function modal_handling() {
+            const taskModal = document.getElementById('taskModal');
+            const taskInfoModal = document.getElementById('taskInfoModal');
+            const closeTaskButton = document.querySelector('.close-task');
+            const closeButton = document.querySelector('.close');
+            const topbar = document.getElementById('topbar');
+            const pop = document.querySelector('.notification-popup');
+            // const currentDate = new Date().toISOString().split('T')[0];
+            const currentDate = getCurrentDate();
+
+
+    
+            function generateUniqueId() {
+                return Array.from({ length: 4 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('');
+            }
+    
+            window.openModal = function () {
+                taskModal.style.display = "flex";
+                document.getElementById('taskDate').value = currentDate;
+                document.getElementById('taskId').value = generateUniqueId();
+            };
+    
+            window.addTask = async (event) => {
+                event.preventDefault();
+    
+                const taskData = {
+                    taskId: document.getElementById('taskId').value,
+                    taskStatus: getFieldValue("taskStatus"),
+                    taskDate: currentDate,
+                    itInCharge: getFieldValue("itInCharge"),
+                    taskType: getFieldValue("taskType"),
+                    taskDescription: getFieldValue("taskDescription"),
+                    severity: getFieldValue("severity"),
+                    requestedBy: getFieldValue("requestedBy"),
+                    approvedBy: getFieldValue("approvedBy"),
+                    dateReq: getFieldValue("dateReq"),
+                    dateRec: getFieldValue("dateRec"),
+                    dateStart: getFieldValue("dateStart"),
+                    dateFin: getFieldValue("dateFin")
+                };
+    
+                const newTask = await addTaskToDatabase(taskData);
+                if (newTask) {
+                    console.log('Task saved:', newTask);
+                    await loadTasks();
+                    UI.closeModal('taskModal', true);
+                } else {
+                    console.error('Failed to save task');
+                }
+            };
+    
+            taskModal.addEventListener('click', (event) => UI.closeOutsideModal(event, 'modalContent', 'taskModal'));
+            pop.addEventListener('click', (event) => UI.closeOutsideModal(event, 'popupContent', 'notificationPopup'));
+            topbar.addEventListener('click', (event) => UI.closeOutsideModal(event, 'modalContent', 'taskModal'));
+    
+            if (closeButton) closeButton.addEventListener('click', () => UI.closeModal('taskModal', true));
+            if (closeTaskButton) {
+                closeTaskButton.addEventListener('click', () => {
+                    taskInfoModal.style.display = "none";
+                });
+            }
+        }
+    
+        // UI Actions
+        UI.handle_darkmode(".toggle-switch");
+        UI.page_navigation("summary", "/internal/summary");
+        UI.notificationPop();
+        UI.dropdownToggle();
+        UI.handleSidebarState();
+        await UI.reflectUsername();
+    
+        // Initialize
+        dashboard_open();
+        modal_handling();
+        await loadTasks();
+    });
+    

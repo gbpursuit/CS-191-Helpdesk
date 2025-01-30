@@ -182,6 +182,8 @@ export async function setupDatabase() {
             )
         `);
 
+        // const existingTable = await pool.query('SELECT * FROM table');
+
         // // Dump the users data to a SQL file
         // const dumpFilePath = await dumpToSql();
 

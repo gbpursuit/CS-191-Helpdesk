@@ -78,17 +78,17 @@ app.post('/api/tasks', async (req, res) => {
         `, [
             taskId, 
             taskStatus, 
-            taskDate && taskDate !== '--' ? taskDate : null, 
+            taskDate !== '--' ? taskDate : null, 
             itInCharge, 
             taskType, 
             taskDescription,
             severity, 
             requestedBy, 
             approvedBy, 
-            dateReq && dateReq !== '--' ? dateReq : null, 
-            dateRec && dateRec !== '--' ? dateRec : null, 
-            dateStart && dateStart !== '--' ? dateStart : null, 
-            dateFin && dateFin !== '--' ? dateFin : null
+            dateReq !== '--' ? dateReq : null, 
+            dateRec !== '--' ? dateRec : null, 
+            dateStart !== '--' ? dateStart : null, 
+            dateFin !== '--' ? dateFin : null
         ]);
 
         res.status(201).json({ success: true, message: 'Task saved successfully' });
