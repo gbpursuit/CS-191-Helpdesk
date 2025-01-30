@@ -109,6 +109,7 @@ app.post('/api/tasks', async (req, res) => {
 //         res.status(500).json({ error: 'Internal server error' });
 //     }
 // });
+
 app.get('/api/tasks', async (req, res) => {
     try {
         const db = app.locals.db;
@@ -131,6 +132,85 @@ app.get('/api/tasks', async (req, res) => {
     }
 });
 
+// Delete Tasks
+app.delete('/api/tasks/:taskId', async (req, res) => {
+    try {
+        const db = app.locals.db;
+        const { taskId } = req.params;
+
+        console.log(`Attempting to delete task with ID: ${taskId}`);
+
+        // Check if task exists before deleting
+        const [taskExists] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
+        if (taskExists.length === 0) {
+            console.warn(`Task ID ${taskId} not found in database.`);
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Execute DELETE query
+        const [result] = await db.query('DELETE FROM tasks WHERE taskId = ?', [taskId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`Task ID ${taskId} successfully deleted.`);
+            res.json({ success: true, message: 'Task deleted successfully' });
+        } else {
+            console.error(`Task ID ${taskId} not deleted. Check database constraints.`);
+            res.status(500).json({ error: 'Failed to delete task' });
+        }
+
+    } catch (err) {
+        console.error('Error deleting task:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Edit Tasks
+app.put('/api/tasks/:taskId', async (req, res) => {
+    try {
+        const db = app.locals.db;
+        const { taskId } = req.params;
+        const {
+            taskStatus, taskDate, itInCharge, taskType, taskDescription,
+            severity, requestedBy, approvedBy, dateReq, dateRec, dateStart, dateFin
+        } = req.body;
+
+        console.log(`Updating task with ID: ${taskId}`);
+
+        const [result] = await db.query(`
+            UPDATE tasks SET 
+                taskStatus = ?, taskDate = ?, itInCharge = ?, taskType = ?, 
+                taskDescription = ?, severity = ?, requestedBy = ?, approvedBy = ?, 
+                dateReq = ?, dateRec = ?, dateStart = ?, dateFin = ?
+            WHERE taskId = ?
+        `, [
+            taskStatus, 
+            taskDate !== '--' ? taskDate : null, 
+            itInCharge, 
+            taskType, 
+            taskDescription,
+            severity, 
+            requestedBy, 
+            approvedBy, 
+            dateReq !== '--' ? dateReq : null, 
+            dateRec !== '--' ? dateRec : null, 
+            dateStart !== '--' ? dateStart : null, 
+            dateFin !== '--' ? dateFin : null,
+            taskId
+        ]);
+
+        if (result.affectedRows > 0) {
+            console.log(`Task ID ${taskId} successfully updated.`);
+            res.json({ success: true, message: 'Task updated successfully' });
+        } else {
+            console.error(`Task ID ${taskId} not updated. Check database constraints.`);
+            res.status(404).json({ error: 'Task not found' });
+        }
+
+    } catch (err) {
+        console.error('Error updating task:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 const validViews = ['sign-in', 'create-account'];
 

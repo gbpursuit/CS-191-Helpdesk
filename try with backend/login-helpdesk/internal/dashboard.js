@@ -230,11 +230,33 @@
                 return null;
             }
         }
-            
+
+        async function deleteTask(taskId) {
+            if (!confirm("Are you sure you want to delete this task?")) return;
+        
+            try {
+                const response = await fetch(`/api/tasks/${taskId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+        
+                if (response.ok) {
+                    console.log("Task deleted successfully.");
+                    UI.closeModal('taskInfoModal', true); // Close the modal
+                    await loadTasks(); // Refresh the task list
+                } else {
+                    console.error("Failed to delete task.");
+                }
+            } catch (err) {
+                console.error("Error deleting task:", err);
+            }
+        }
+        
         async function loadTasks() {
             try {
-                const response = await fetch('/api/tasks');
-                const tasks = await response.json();
+                const tasks = await fetchTasksFromDatabase();
                 const tableBody = document.getElementById("taskTableBody");
         
                 tableBody.innerHTML = ""; 
@@ -269,7 +291,6 @@
                 console.error('Error loading tasks:', err);
             }
         }
-        
     
         async function openTaskInfoModal(taskData) {
             const taskInfoModal = document.getElementById('taskInfoModal');
@@ -335,6 +356,12 @@
             `;
         
             taskInfoModal.style.display = "flex";
+
+            // Set up delete button event listener
+            const deleteTaskButton = document.getElementById('deleteTaskButton');
+            deleteTaskButton.onclick = async () => {
+                await deleteTask(taskData.taskId);
+            };
         }
     
         function modal_handling() {

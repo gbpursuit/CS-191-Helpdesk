@@ -888,6 +888,35 @@ form button:hover {
     cursor: pointer;
 }
 
+.delete-btn {
+    padding: 5px 12px;
+    background-color: var(--dark-green);
+    color: var(--white);
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+}
+
+.delete-btn:hover {
+    background-color: var(--hover-button);
+    color: var(--white);
+}
+
+.edit-btn {
+    padding: 5px 12px;
+    background-color: var(--dark-green);
+    color: var(--white);
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+}
+
+.edit-btn:hover {
+    background-color: var(--hover-button);
+    color: var(--white);
+}
 
 /* ======================== Dark Mode ========================== */  
 
