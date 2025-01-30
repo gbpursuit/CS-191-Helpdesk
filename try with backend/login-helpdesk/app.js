@@ -78,17 +78,17 @@ app.post('/api/tasks', async (req, res) => {
         `, [
             taskId, 
             taskStatus, 
-            taskDate !== '--' ? taskDate : null, 
+            taskDate !== '--' ? taskDate : 'null', 
             itInCharge, 
             taskType, 
             taskDescription,
             severity, 
             requestedBy, 
             approvedBy, 
-            dateReq !== '--' ? dateReq : null, 
-            dateRec !== '--' ? dateRec : null, 
-            dateStart !== '--' ? dateStart : null, 
-            dateFin !== '--' ? dateFin : null
+            dateReq !== '--' ? dateReq : 'null', 
+            dateRec !== '--' ? dateRec : 'null', 
+            dateStart !== '--' ? dateStart : 'null', 
+            dateFin !== '--' ? dateFin : 'null'
         ]);
 
         res.status(201).json({ success: true, message: 'Task saved successfully' });
@@ -99,16 +99,38 @@ app.post('/api/tasks', async (req, res) => {
 });
 
 // API to fetch all tasks
+// app.get('/api/tasks', async (req, res) => {
+//     try {
+//         const db = app.locals.db;
+//         const [tasks] = await db.query('SELECT * FROM tasks ORDER BY id DESC');
+//         res.json(tasks);
+//     } catch (err) {
+//         console.error('Error fetching tasks:', err);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
 app.get('/api/tasks', async (req, res) => {
     try {
         const db = app.locals.db;
         const [tasks] = await db.query('SELECT * FROM tasks ORDER BY id DESC');
-        res.json(tasks);
+
+        // Convert task dates to 'YYYY-MM-DD' format
+        const formattedTasks = tasks.map(task => ({
+            ...task,
+            taskDate: task.taskDate ? new Date(task.taskDate).toISOString().split('T')[0] : null,
+            dateReq: task.dateReq ? new Date(task.dateReq).toISOString().split('T')[0] : null,
+            dateRec: task.dateRec ? new Date(task.dateRec).toISOString().split('T')[0] : null,
+            dateStart: task.dateStart ? new Date(task.dateStart).toISOString().split('T')[0] : null,
+            dateFin: task.dateFin ? new Date(task.dateFin).toISOString().split('T')[0] : null
+        }));
+
+        res.json(formattedTasks);
     } catch (err) {
         console.error('Error fetching tasks:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 const validViews = ['sign-in', 'create-account'];
 

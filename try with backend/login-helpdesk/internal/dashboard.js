@@ -201,6 +201,10 @@
             let value = document.getElementById(id).value;
             return value.trim() ? value : "--";
         }
+
+        function formatDate(date) {
+            return date && date !== "null" ? date : "--";
+        }        
     
         async function fetchTasksFromDatabase() {
             try {
@@ -211,7 +215,7 @@
                 return [];
             }
         }
-    
+
         async function addTaskToDatabase(taskData) {
             try {
                 const response = await fetch('/api/tasks', {
@@ -226,44 +230,46 @@
                 return null;
             }
         }
-
-        function getCurrentDate() {
-            const now = new Date();
-            return now.toISOString().split('T')[0]; // Extract YYYY-MM-DD directly
-        }
-        
             
         async function loadTasks() {
-            const tasks = await fetchTasksFromDatabase();
-            // console.log(tasks)
-            const tableBody = document.getElementById("taskTableBody");
-    
-            tableBody.innerHTML = "";
-    
-            tasks.forEach(task => {
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = `
-                    <td>${task.taskId}</td>
-                    <td>${task.taskStatus}</td>
-                    <td>${task.taskDate}</td>
-                    <td>${task.itInCharge}</td>
-                    <td>${task.taskType}</td>
-                    <td>${task.taskDescription}</td>
-                    <td>${task.severity}</td>
-                    <td>${task.requestedBy}</td>
-                    <td>${task.approvedBy}</td>
-                    <td>${task.dateReq}</td>
-                    <td>${task.dateRec}</td>
-                    <td>${task.dateStart}</td>
-                    <td>${task.dateFin}</td>
-                `;
-                newRow.addEventListener('click', async function (event) {
-                    event.preventDefault();
-                    await openTaskInfoModal(task);
+            try {
+                const response = await fetch('/api/tasks');
+                const tasks = await response.json();
+                const tableBody = document.getElementById("taskTableBody");
+        
+                tableBody.innerHTML = ""; 
+        
+                tasks.forEach(task => {
+                    const newRow = document.createElement("tr");
+                    newRow.innerHTML = `
+                        <td>${task.taskId}</td>
+                        <td>${task.taskStatus}</td>
+                        <td>${formatDate(task.taskDate)}</td>
+                        <td>${task.itInCharge}</td>
+                        <td>${task.taskType}</td>
+                        <td>${task.taskDescription}</td>
+                        <td>${task.severity}</td>
+                        <td>${task.requestedBy}</td>
+                        <td>${task.approvedBy}</td>
+                        <td>${formatDate(task.dateReq)}</td>
+                        <td>${formatDate(task.dateRec)}</td>
+                        <td>${formatDate(task.dateStart)}</td>
+                        <td>${formatDate(task.dateFin)}</td>
+                    `;
+        
+                    newRow.addEventListener('click', async function(event) {
+                        event.preventDefault();
+                        await openTaskInfoModal(task); 
+                    });
+        
+                    tableBody.appendChild(newRow);
                 });
-                tableBody.appendChild(newRow);
-            });
+        
+            } catch (err) {
+                console.error('Error loading tasks:', err);
+            }
         }
+        
     
         async function openTaskInfoModal(taskData) {
             const taskInfoModal = document.getElementById('taskInfoModal');
@@ -315,15 +321,15 @@
                     </tr>
                     <tr>
                         <td><strong>Date Requested:</strong></td>
-                        <td>${taskData.dateReq}</td>
+                        <td>${formatDate(taskData.dateReq)}</td>
                         <td><strong>Date Received:</strong></td>
-                        <td>${taskData.dateRec}</td>
+                        <td>${formatDate(taskData.dateRec)}</td>
                     </tr>
                     <tr>
                         <td><strong>Date Started:</strong></td>
-                        <td>${taskData.dateStart}</td>
+                        <td>${formatDate(taskData.dateStart)}</td>
                         <td><strong>Date Finished:</strong></td>
-                        <td>${taskData.dateFin}</td>
+                        <td>${formatDate(taskData.dateFin)}</td>
                     </tr>
                 </table>
             `;
@@ -338,10 +344,7 @@
             const closeButton = document.querySelector('.close');
             const topbar = document.getElementById('topbar');
             const pop = document.querySelector('.notification-popup');
-            // const currentDate = new Date().toISOString().split('T')[0];
-            const currentDate = getCurrentDate();
-
-
+            const currentDate = new Date().toISOString().split('T')[0];
     
             function generateUniqueId() {
                 return Array.from({ length: 4 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('');
