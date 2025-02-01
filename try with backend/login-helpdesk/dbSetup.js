@@ -163,24 +163,50 @@ export async function setupDatabase() {
             )
         `);
         
+        // await pool.query(`DROP TABLE IF EXISTS tasks`);
+
         await pool.query(`
             CREATE TABLE IF NOT EXISTS tasks (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 taskId VARCHAR(10) UNIQUE NOT NULL,
-                taskStatus VARCHAR(50),
                 taskDate DATE DEFAULT NULL,
-                itInCharge VARCHAR(100),
+                taskStatus VARCHAR(50),
+                severity VARCHAR(50),
                 taskType VARCHAR(100),
                 taskDescription TEXT,
-                severity VARCHAR(50),
+                itInCharge VARCHAR(100),
+                department VARCHAR(100), 
+                departmentNo VARCHAR(100),
                 requestedBy VARCHAR(100),
                 approvedBy VARCHAR(100),
+                itemName VARCHAR(100),
+                deviceName VARCHAR(100),
+                applicationName VARCHAR(100),
                 dateReq DATE DEFAULT NULL,
                 dateRec DATE DEFAULT NULL,
                 dateStart DATE DEFAULT NULL,
                 dateFin DATE DEFAULT NULL
             )
         `);
+
+        // await pool.query(`
+        //     CREATE TABLE IF NOT EXISTS tasks (
+        //         id INT AUTO_INCREMENT PRIMARY KEY,
+        //         taskId VARCHAR(10) UNIQUE NOT NULL,
+        //         taskStatus VARCHAR(50),
+        //         taskDate DATE DEFAULT NULL,
+        //         itInCharge VARCHAR(100),
+        //         taskType VARCHAR(100),
+        //         taskDescription TEXT,
+        //         severity VARCHAR(50),
+        //         requestedBy VARCHAR(100),
+        //         approvedBy VARCHAR(100),
+        //         dateReq DATE DEFAULT NULL,
+        //         dateRec DATE DEFAULT NULL,
+        //         dateStart DATE DEFAULT NULL,
+        //         dateFin DATE DEFAULT NULL
+        //     )
+        // `);
 
         // const existingTable = await pool.query('SELECT * FROM table');
 

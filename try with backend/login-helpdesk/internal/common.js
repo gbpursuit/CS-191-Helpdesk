@@ -46,13 +46,14 @@ export const UI = {
     
     },
     
-    page_navigation: function(buttonId, targetUrl) {
-        const button = document.getElementById(buttonId);
-    
+    page_navigation: function(buttonId) {
+        const button = document.getElementById(buttonId);    
+        let url = "/internal/";
+
         if (button) {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function (event) {
                 event.preventDefault();
-                window.location.replace(targetUrl)
+                window.location.replace(url + buttonId);
             });
         }
     },
@@ -92,7 +93,7 @@ export const UI = {
         };
     },
 
-    logoutFunction: function() {
+    logoutFunction: function(bool=false) {
         fetch('/logout', {
             method: 'POST',
             headers: {
@@ -102,9 +103,11 @@ export const UI = {
         .then(response => {
             if (response.ok) {
                 localStorage.setItem("sidebarState", "closed");
-    
-                // Clear history before redirecting to Enter page
-                window.location.replace("/internal/welcome");
+                
+                let text = "/internal/"
+                text += (bool) ? 'login/sign-in' : 'welcome';
+
+                window.location.replace(text);
     
             } else {
                 console.error('Logout failed');

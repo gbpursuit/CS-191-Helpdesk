@@ -78,14 +78,48 @@
                         <div class="left-section">
                             <input type="text" placeholder="Search for task" class="search-input">
                             <select class="filter-select" aria-label="Filter options">
-                                <option value="">Filter by</option>
-                                <option value="status">Status</option>
-                                <option value="date">Date</option>
+                                <option value="filter">Filter by</option>
+                                <option value="taskStatus">Status</option>
+                                <option value="taskDate">Date</option>
                                 <option value="severity">Severity</option>
                                 <option value="taskType">Task Type</option>
                             </select>
+                            
+                            <!-- <select class="status-options" aria-label="Status Options">
+                                <option value="" disabled selected>Status</option>
+                                <option value="back">Back</option>
+                                <option value="open">Open</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="closed">Closed</option>
+                                <option value="on-hold">On Hold</option>
+                            </select>
+                            
+                            <select class="status-options" aria-label="Date Options">
+                                <option value="" disabled selected>Filter by</option>
+                                <option value="open">Open</option>
+                                <option value="closed">Closed</option>
+                                <option value="in-progress">In Progress</option>
+                            </select>
+                            
+                            <select class="severity-options" aria-label="Severity Options">
+                                <option value="" disabled selected>Severity</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                            
+                            <select class="task-options" aria-label="Task Options">
+                                <option value="" disabled selected>Task Type</option>
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
+                            </select> -->
+
+
+
                         </div>
-                        <button class="new-task-button" onclick="openModal()">+ New Task</button>
+                        <button type = "button" class="new-task-button" onclick="openModal()">+ New Task</button>
                     </div>
                 </div>
                 
@@ -96,14 +130,19 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Task Date</th>
                                 <th>Status</th>
-                                <th>Trx Date</th>
-                                <th>IT in Charge</th>
+                                <th>Severity</th>
                                 <th>Task Type</th>
                                 <th>Task Description</th>
-                                <th>Severity</th>
+                                <th>IT in Charge</th>
+                                <th>Department</th>
+                                <th>Department Number</th>
                                 <th>Requested By</th>
                                 <th>Approved By</th>
+                                <th>Item Name</th>
+                                <th>Device Name</th>
+                                <th>Application Name</th>
                                 <th>Date Requested</th>
                                 <th>Date Received</th>
                                 <th>Date Started</th>
@@ -169,8 +208,8 @@
 
                                 <div class="form-group">
                                     <label for="department">Department<span class="required"> *</span></label>
-                                    <select id="department" class = "dropdown">
-                                        <option value="" disabled selected>Select Department</option>
+                                    <select id="department" class = "dropdown" required>
+                                        <option value="" class="option-values" disabled selected>Select Department</option>
                                         <option value="Marketing">Marketing</option>
                                         <option value="Executive">Executive</option>
                                         <option value="Warehouse">Warehouse</option>
@@ -185,8 +224,8 @@
 
                                 <div class="form-group">
                                     <label for="itInCharge">IT in Charge<span class="required"> *</span></label>
-                                    <select id="itInCharge" class = "dropdown">
-                                        <option value="" disabled selected>Select IT in Charge</option>
+                                    <select id="itInCharge" class = "dropdown" required>
+                                        <option value="" class="option-values" disabled selected>Select IT in Charge</option>
                                         <option value="weng_castrillon">Weng Castrillon</option>
                                         <option value="anne_ranay">Anne Ranay</option>
                                         <option value="julius_jara">Julius Jara</option>
@@ -218,13 +257,13 @@
 
                                 <div class="form-group">
                                     <label for="taskDate">Transaction Date</label>
-                                    <input type="date" id="taskDate" class = "date-box" disabled>
+                                    <input type="text" id="taskDate" class = "date-box" disabled>
                                 </div>                             
 
                                 <div class="form-group">
                                     <label for="taskStatus">Status<span class="required"> *</span></label>
-                                    <select id="taskStatus" class = "dropdown">
-                                        <option value="" disabled selected>Select Status</option>
+                                    <select id="taskStatus" class = "dropdown" required>
+                                        <option value="" class="option-values" disabled selected>Select Status</option>
                                         <option value="open">Open</option>
                                         <option value="in-progress">In Progress</option>
                                         <option value="closed">Closed</option>
@@ -234,8 +273,8 @@
 
                                 <div class="form-group">
                                     <label for="severity">Severity<span class="required"> *</span></label>
-                                    <select id="severity" class = "dropdown">
-                                        <option value="" disabled selected>Select Severity</option>
+                                    <select id="severity" class = "dropdown" required>
+                                        <option value="" class="option-values" disabled selected>Select Severity</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -251,7 +290,7 @@
 
                                 <div class="form-group">
                                     <label for="dateReq">Date Requested</label>
-                                    <input type="date" id="dateReq" placeholder="Enter Date Requested">
+                                    <input type="date" id="dateReq" placeholder="Enter Date Requested" >
                                 </div>
 
                                 <div class="form-group">
@@ -320,8 +359,8 @@
                                 <div class="edit-form-group">
                                     <label for="editDepartment">Department<span class="required"> *</span></label>
                                     <select id="editDepartment" class="edit-dropdown">
-                                        <option value="" disabled selected>Select Department</option>
-                                        <option value="Marketing">Marketing</option>
+                                        <option value="" class="option-values" disabled selected>Select Department</option>
+                                        <option value="Marketing" class="update-values">Marketing</option>
                                         <option value="Executive">Executive</option>
                                         <option value="Warehouse">Warehouse</option>
                                         <option value="IT">IT</option>
@@ -336,7 +375,7 @@
                                 <div class="edit-form-group">
                                     <label for="editItInCharge">IT in Charge<span class="required"> *</span></label>
                                     <select id="editItInCharge" class="edit-dropdown">
-                                        <option value="" disabled selected>Select IT in Charge</option>
+                                        <option value="" class="option-values" disabled selected>Select IT in Charge</option>
                                         <option value="weng_castrillon">Weng Castrillon</option>
                                         <option value="anne_ranay">Anne Ranay</option>
                                         <option value="julius_jara">Julius Jara</option>
@@ -367,13 +406,13 @@
             
                                 <div class="edit-form-group">
                                     <label for="editTaskDate">Transaction Date</label>
-                                    <input type="date" id="editTaskDate" class="edit-date-box" disabled>
+                                    <input type="text" id="editTaskDate" class="edit-date-box" disabled>
                                 </div>                             
             
                                 <div class="edit-form-group">
                                     <label for="editTaskStatus">Status<span class="required"> *</span></label>
                                     <select id="editTaskStatus" class="edit-dropdown">
-                                        <option value="" disabled selected>Select Status</option>
+                                        <option value="" class="option-values" disabled selected>Select Status</option>
                                         <option value="open">Open</option>
                                         <option value="in-progress">In Progress</option>
                                         <option value="closed">Closed</option>
@@ -384,7 +423,7 @@
                                 <div class="edit-form-group">
                                     <label for="editSeverity">Severity<span class="required"> *</span></label>
                                     <select id="editSeverity" class="edit-dropdown">
-                                        <option value="" disabled selected>Select Severity</option>
+                                        <option value="" class="option-values" disabled selected>Select Severity</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>

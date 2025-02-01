@@ -127,6 +127,62 @@ img {
     font-size: 15px;
 }
 
+/* ======================== Logged-in Page ========================== */  
+.logged-in {
+    display: none;
+}
+
+.logged-container {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 35px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.user-logged {
+    display: none;
+}
+
+.text-logged {
+    margin-bottom: 10px;
+    color: var(--dark-green);
+    text-align: center;
+}
+
+.button-options {
+    flex: 0 0 48%; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logging-in, .change-acc {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--dark-green);
+    color: var(--white);
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logging-in:hover, .change-acc:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.01);
+}
+
+.logging-in:active, .change-acc:active {
+    background-color: var(--hover-button);
+    transform: scale(0.98);
+}
 
 /* ======================== Login Page ========================== */  
 .sign-in-login {

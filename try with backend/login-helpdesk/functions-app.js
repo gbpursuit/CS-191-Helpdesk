@@ -121,3 +121,171 @@ export const account = {
         }
     }
 }
+
+export const task = { 
+
+    fetchingTasks: async function(db, bool = false, query = null) {
+        let baseQuery = `SELECT * FROM tasks`;
+        const params = bool ? [`%${query}%`] : [];
+
+        if(bool) {
+            baseQuery += ` WHERE taskType LIKE ?`;
+        }
+
+        const [columns] = await db.query(`SHOW COLUMNS FROM tasks`);
+        const columnNames = columns.map(col => col.Field);
+
+        if(query && columnNames.includes(query)) {
+            baseQuery += ` ORDER BY ?? DESC`;
+            params.push(query);
+
+        } else {
+            baseQuery += ` ORDER BY id DESC`;
+        }
+
+        const [tasks] = await db.query(baseQuery, params);
+
+        return tasks.map(task => ({
+            ...task,
+            taskDate: task.taskDate ? new Date(task.taskDate).toLocaleDateString('en-CA') : null,
+            dateReq: task.dateReq ? new Date(task.dateReq).toLocaleDateString('en-CA') : null,
+            dateRec: task.dateRec ? new Date(task.dateRec).toLocaleDateString('en-CA') : null,
+            dateStart: task.dateStart ? new Date(task.dateStart).toLocaleDateString('en-CA') : null,
+            dateFin: task.dateFin ? new Date(task.dateFin).toLocaleDateString('en-CA') : null
+        }));
+
+
+    },
+
+    // fetchingTasks: async function(db, bool = false, query = null) {
+    //     const baseQuery = `SELECT * FROM tasks ${bool ? 'WHERE taskType LIKE ?' : ''} ORDER BY id DESC`;
+    //     const params = bool ? [`%${query}%`] : [];
+    //     const [tasks] = await db.query(baseQuery, params);
+
+    //     return tasks.map(task => ({
+    //         ...task,
+    //         taskDate: task.taskDate ? new Date(task.taskDate).toLocaleDateString('en-CA') : null,
+    //         dateReq: task.dateReq ? new Date(task.dateReq).toLocaleDateString('en-CA') : null,
+    //         dateRec: task.dateRec ? new Date(task.dateRec).toLocaleDateString('en-CA') : null,
+    //         dateStart: task.dateStart ? new Date(task.dateStart).toLocaleDateString('en-CA') : null,
+    //         dateFin: task.dateFin ? new Date(task.dateFin).toLocaleDateString('en-CA') : null
+    //     }));
+    // },
+
+    searchInput: async function (db, req, res) {
+        try {
+            const { query } = req.body;
+            if (!query.trim()) {
+                const formattedTasks = await task.fetchingTasks(db);
+                return res.status(200).json(formattedTasks); 
+            }
+    
+            const rows = await task.fetchingTasks(db, true, query);
+    
+            if (rows.length > 0) {
+                return res.status(200).json(rows); 
+            }
+    
+            return res.status(404).json({ message: 'No matching tasks found' });
+    
+        } catch (err) {
+            console.error('Error fetching task:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    sortingBy: async function (db, req, res) {
+        try {
+            const { query } = req.body;
+
+            if (query == 'filter') {
+                const formattedTasks = await task.fetchingTasks(db);
+                return res.status(200).json(formattedTasks); 
+            }
+
+            const rows = await task.fetchingTasks(db, false, query);
+
+            if(rows.length > 0) {
+                return res.status(200).json(rows);
+            }
+
+            return res.status(404).json({ error: 'Error sorting tasks' });
+
+        } catch (err) {
+            console.error('Error sorting:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    addTask: async function (db, req, res) {
+        try {
+            const {
+                taskId, taskDate, taskStatus, severity, taskType, taskDescription,
+                itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
+                dateReq, dateRec, dateStart, dateFin
+            } = req.body;
+    
+            // Ensure dates are valid and empty strings are converted to NULL
+            const convertDate = (date) => date && date !== '--' ? date : null;
+    
+            await db.query(`
+                INSERT INTO tasks (taskId, taskDate, taskStatus, severity, taskType, taskDescription, itInCharge, department, departmentNo,
+                    requestedBy, approvedBy, itemName, deviceName, applicationName, dateReq, dateRec, dateStart, dateFin)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [
+                taskId, convertDate(taskDate), taskStatus,  severity, 
+                taskType, taskDescription, itInCharge, department, 
+                departmentNo, requestedBy,  approvedBy,  itemName, 
+                deviceName, applicationName, convertDate(dateReq),
+                convertDate(dateRec), convertDate(dateStart), convertDate(dateFin)
+            ]);
+    
+            res.status(201).json({ success: true, message: 'Task saved successfully' });
+        } catch (err) {
+            console.error('Error saving task:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    sessionUser: async function(db, req, res) {
+        try {
+            if (req.session && req.session.username) {
+                // Check if session value matches username OR full name
+                const [rows] = await db.query(
+                    `SELECT username, first_name, last_name FROM users 
+                    WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? 
+                    LIMIT 1`,
+                    [req.session.username, req.session.username]
+                );
+
+                if (rows.length > 0) {
+                    const user = rows[0];
+                    const fullName = user.first_name + (user.last_name ? ` ${user.last_name}` : '');
+
+                    req.session.username = user.username; // username (key)
+                    req.session.fullName = fullName; // full name of user
+
+                    return res.json({ username: user.username, fullName });
+                } else {
+                    return res.status(404).json({ error: 'User not found' });
+                }
+            }
+
+            return res.status(401).json({ error: 'Unauthorized' });
+        } catch (err) {
+            console.error('Error retrieving session user:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    getTask: async function (db, req, res) {
+        try {
+            const formattedTasks = await task.fetchingTasks(db);
+            
+            res.json(formattedTasks);
+        } catch (err) {
+            console.error('Error fetching tasks:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+}

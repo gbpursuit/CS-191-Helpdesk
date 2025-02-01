@@ -5,10 +5,19 @@ document.addEventListener("DOMContentLoaded", function() {
         const signAcc = document.getElementById('signAccount');
         const addAccount = document.getElementById('addAccount');
 
-        signAcc.addEventListener('click', function(event) {
+        signAcc.addEventListener('click', async function(event) {
             event.preventDefault();
-            console.log('test')
-            window.location.replace("/internal/login/sign-in");
+
+            try {
+                const response = await fetch('/api/session-user');
+                if (response.ok) {
+                    window.location.replace('/internal/login/logged-in')
+                } else {
+                    window.location.replace("/internal/login/sign-in");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+            }
             // window.location.href = "/internal/login.html?view=sign-in";
         });
 

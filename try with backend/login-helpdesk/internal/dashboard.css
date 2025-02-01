@@ -485,7 +485,6 @@ label[for="check"]{
 /* Search and Filter Button */
 
 .fixed-head {
-    overflow: hidden;
     left: 0;
     right: 0;
     z-index: 10; 
@@ -514,13 +513,12 @@ label[for="check"]{
     width: 200px;
 }
 
-
-
 .search-input::placeholder {
     color: var(--dark-green)
 }
 
 .filter-select {
+    display: flex;
     padding: 8px 12px;
     color: var(--dark-green);
     border: 1px solid var(--new-border);
@@ -762,10 +760,19 @@ label[for="check"]{
     background-color: var(--white); /* Ensure background is white for contrast */
 }
 
-
-.form-group input::placeholder {
-    color: var(--text-color); /* Adjust placeholder color if needed */
+.form-group .dropdown,
+.form-group .dropdown option:disabled,
+.form-group input::placeholder,
+.form-group input[type="date"] {
+    color: var(--v2-gray);
 }
+
+.form-group .dropdown option,
+.form-group .dropdown:valid {
+    color: var(--text-color); 
+} 
+
+
 
 form button {
     padding: 9px 20px;

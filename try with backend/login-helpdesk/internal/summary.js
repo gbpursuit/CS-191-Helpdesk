@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // UI Actions
     UI.handle_darkmode(".toggle-switch");
-    UI.page_navigation("dashboard", "/internal/dashboard")
+    UI.page_navigation("dashboard");
     UI.notificationPop();
     UI.dropdownToggle();
     UI.handleSidebarState();
