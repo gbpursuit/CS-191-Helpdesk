@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.replace("/internal/dashboard");
+                    window.location.replace("/internal/login/logged-in");
                 } else {
                     showError(usernameInput, usernameError, "Please try a different username.");
                 }

@@ -65,6 +65,13 @@ export const server = {
         setTimeout(() => {
             return res.redirect('/internal/welcome');
         }, 1000);  // Adjust the delay time as needed (in milliseconds)
+    },
+
+    checkSession: function(req, res, next) {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({ loggedIn: false });
+        }
+        next();
     }
 }
 
@@ -137,7 +144,7 @@ export const task = {
         const columnNames = columns.map(col => col.Field);
 
         if(query && columnNames.includes(query)) {
-            baseQuery += ` ORDER BY ?? DESC`;
+            baseQuery += ` ORDER BY ?? ASC`;
             params.push(query);
 
         } else {

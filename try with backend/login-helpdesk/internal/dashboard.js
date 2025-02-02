@@ -1,184 +1,3 @@
-// document.addEventListener("DOMContentLoaded", function(){
-
-//     /* ========= DARK MODE TOGGLE ========= */
-//     function handleDarkModeToggle() {
-//         const toggleSwitch = document.querySelector(".toggle-switch")
-//         const body = document.body;
-
-//         toggleSwitch.addEventListener('click', function(event){
-//             event.preventDefault();
-//             body.classList.toggle("toggle-switch");
-//         })
-//     }
-
-//     function handleDashBoard() {
-        
-//         /* ========= DASHBOARD NAVIGATION ========= */
-//         const headerBar = document.getElementById('headerbar');
-//         const dashboard = document.getElementById('dashboard');
-//         const dashTitle = document.getElementById('dashTitle');
-//         const dashContainer = document.getElementById('dashboardContainer');
-//         const dashElements = document.getElementById('dashElements');
-//         const taskTable = document.querySelector('.task-table');
-//         const searchAndTask = document.querySelector('.fixed-head');  
-
-//         let modalcheck = false;
-        
-//         function dashBoardclick(event){
-//             event.preventDefault();
-//             dashTitle.innerText = "IT Management - Dashboard";
-//             dashContainer.style.display = 'block';
-        
-//             taskTable.style.display = 'table';
-//             searchAndTask.style.display = 'block';
-//             dashElements.style.display = 'block';
-//         }
-
-//         dashboard.addEventListener('click', dashBoardclick);
-//         headerBar.addEventListener('click', dashBoardclick);
-
-//         summary.addEventListener('click', function() {
-//             window.location.href = "/internal/summary.html";
-//         })
-
-//         /* ========= MODAL HANDLING ========= */
-//         const form = document.getElementById('newTaskForm')
-//         const currentDate = new Date().toISOString().split('T')[0];
-//         const dropdownMenu = document.getElementById("dropdownMenu");
-
-//         function toggleDropdown(event) {
-//             event.stopPropagation();
-//             dropdownMenu.classList.toggle("show");
-//         }
-
-//         function getFieldValue(id) {
-//             let value = document.getElementById(id).value;
-//             return value.trim() ? value : "--";
-//         }
-
-//         // function checkStatus(status) {
-            
-//         // }
-
-//         const topbar = document.getElementById('topbar');
-//         const logoutButton = document.querySelector(".logout-btn");
-//         const profile = document.querySelector(".user-profile"); 
-//         const taskModal = document.getElementById('taskModal'); 
-
-//         function closeOutsideModal(event) {
-//             const modalcontent = document.querySelector(".modal-content");
-//             if (event) {
-//                 console.log("Event target:", event.target);
-        
-//                 if (event.target != modalcontent && modalcheck) {
-//                     closeModal();
-//                 }
-//             }
-//         }
-
-//         taskModal.addEventListener('click', closeOutsideModal);
-//         topbar.addEventListener('click', closeOutsideModal);
-//         profile.addEventListener('click', closeOutsideModal);
-
-//         window.openModal = function() {
-//             modalcheck = true;
-//             console.log("hello");
-//             taskModal.style.display = "flex";
-//             document.getElementById('taskDate').value = currentDate;
-//         };
-
-//         window.closeModal = function() {
-//             modalcheck = false;
-//             taskModal.style.display = "none";
-//             form.reset()
-//         };
-
-//         /* ========= ADD TASK TO TABLE ========= -> need ata tong naka backend na para nakastore every time nagaadd ng task*/ 
-//         window.addTask = function(event) {
-//             event.preventDefault();
-//             const greenCircleEmoji = "🟢";
-
-//             let taskStatus = greenCircleEmoji + getFieldValue("taskStatus");
-//             let taskDate = currentDate;  
-//             let itInCharge = getFieldValue("itInCharge");
-//             let taskType = getFieldValue("taskType");
-//             let taskDescription = getFieldValue("taskDescription");
-//             let severity = getFieldValue("severity");
-//             let requestedBy = getFieldValue("requestedBy");
-//             let approvedBy = getFieldValue("approvedBy");
-//             let dateReq = getFieldValue("dateReq");
-//             let dateRec = getFieldValue("dateRec");
-//             let dateStart = getFieldValue("dateStart");
-//             let dateFin = getFieldValue("dateFin");
-
-//             // Create a new row in the table
-//             let tableBody = document.getElementById("taskTableBody");
-//             let newRow = document.createElement("tr");
-
-//             newRow.innerHTML = `
-//                 <td>${taskStatus}</td>
-//                 <td>${taskDate}</td>
-//                 <td>${itInCharge}</td>
-//                 <td>${taskType}</td>
-//                 <td>${taskDescription}</td>
-//                 <td>${severity}</td>
-//                 <td>${requestedBy}</td>
-//                 <td>${approvedBy}</td>
-//                 <td>${dateReq}</td>
-//                 <td>${dateRec}</td>
-//                 <td>${dateStart}</td>
-//                 <td>${dateFin}</td>
-//             `;
-            
-//             tableBody.appendChild(newRow);
-//             closeModal();
-//         };
-
-//         /* ========= NOTIFICATION POP-UP ========= */
-//         const notificationPopup = document.getElementById("notificationPopup");
-
-//         window.openNotificationPopup = function() {
-//             notificationPopup.style.display = "block";
-//         };
-
-//         window.closeNotificationPopup = function() {
-//             notificationPopup.style.display = "none";
-//         };
-
-//         /* ========= DROPDOWN TOGGLE ========= */
-//         logoutButton.addEventListener("click", toggleDropdown);
-//         profile.addEventListener("click", toggleDropdown);
-
-//         document.addEventListener("click", function(event) {
-//             if (!dropdownMenu.contains(event.target) && !logoutButton.contains(event.target)) {
-//                 dropdownMenu.classList.remove("show");
-//             }
-//         });
-
-//         /* ========= LOGOUT FUNCTION ========= */
-//         window.logout = function() {
-//             window.location.href = "/internal/login.html";
-//         };
-//     }
-
-//     handleDarkModeToggle();
-//     handleDashBoard();
-// })
-
-    // separate function to load database
-        // dbsetup.js
-
-    // separate function to add task dun sa database -> load
-        // dbsetup.js
-        // dashboard.js
-        // app.js (check nalang if need)
-
-    // Current code:
-    //     no display 
-    //     nagkakadisplay if mag add -> loadTasks
-
-    ////////////////////////////////////////////////////////////////////////
-
 import { UI } from './common.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -338,17 +157,53 @@ document.addEventListener("DOMContentLoaded", async function () {
             alert("Network error. Please try again.");
         }
     }
+
+    let currentPage = 1;
+    const tasksPerPage = 9;
+
+    const prevButton = document.getElementById("prevPage");
+    const nextButton = document.getElementById("nextPage");
+
+    function updatePagination(totalPages) {
+        const currentPageSpan = document.getElementById("currentPage");    
+        currentPageSpan.textContent = `${currentPage}`;
+    
+        // Enable/disable buttons based on page limits
+        prevButton.disabled = (currentPage === 1);
+        nextButton.disabled = (currentPage === totalPages);
+    }
+
+    function goToPreviousPage() {
+        prevButton.addEventListener('click', async () => {
+            if (currentPage > 1) {
+                currentPage--;
+                await loadTasks(); // Reload tasks for new page
+            }
+        })
+    }
+    
+    function goToNextPage() {
+        nextButton.addEventListener('click', async () => {
+            currentPage++;
+            await loadTasks(); // Reload tasks for new page
+        })
+    }
        
     async function loadTasks(query = null) {
         try {
             const tasks = (query) ? query : await fetchTasksFromDatabase();
             const tableBody = document.getElementById("taskTableBody");
+            const totalPages = Math.ceil(tasks.length / tasksPerPage);
     
             tableBody.innerHTML = ""; 
 
+            const startIndex = (currentPage - 1) * tasksPerPage;
+            const endIndex = startIndex + tasksPerPage;
+            const paginatedTasks = tasks.slice(startIndex, endIndex);
+
             // console.log('formatted date', formatDate(tasks[0].taskDate));
     
-            tasks.forEach(task => {
+            paginatedTasks.forEach(task => {
                 const newRow = document.createElement("tr");
                     newRow.innerHTML = `
                     <td>${task.taskId}</td>
@@ -378,6 +233,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     
                 tableBody.appendChild(newRow);
             });
+
+            updatePagination(totalPages);
     
         } catch (err) {
             console.error('Error loading tasks:', err);
@@ -500,6 +357,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         window.addTask = async (event) => {
             event.preventDefault();
+
+            const response = await fetch('/check-session');
+            const data = await response.json();
+            
+            console.log(data);
+
+            if (!data.loggedIn) {
+                alert("Session expired. Please log in again.");
+                window.location.replace('/internal/login/sign-in');
+                return;
+            }
+            
             const taskData = {
                 taskId: document.getElementById('taskId').value,
                 taskDate: currentDate,
@@ -548,11 +417,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     function searchFilter() {
         let timeout;
         const searchInput = document.querySelector('.search-input');
+        // const savedQuery = localStorage.getItem('searchQuery');
+        // if (savedQuery) {
+        //     searchInput.value = savedQuery;
+        //     applySear
+        // }
         
         searchInput.addEventListener('input', function() {
             clearTimeout(timeout); // search requests only after the users stop typing for 500ms
     
             timeout = setTimeout(async () => {
+                let totalPages;
                 try {
                     const queryValue = searchInput.value.trim();
     
@@ -567,14 +442,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                     } else {
                         const data = await response.json();
                         console.log("Search Results:", data);
-    
-                        // Clear current task table
+
                         const tableBody = document.getElementById("taskTableBody");
-                        tableBody.innerHTML = "";
-    
+                        totalPages = Math.ceil(data.length / tasksPerPage);
+                        currentPage = 1;
+                
+                        tableBody.innerHTML = ""; 
+            
+                        const startIndex = (currentPage - 1) * tasksPerPage;
+                        const endIndex = startIndex + tasksPerPage;
+                        const paginatedTasks = data.slice(startIndex, endIndex);
+
                         // If search results are available, display them
-                        if (data.length > 0) {
-                            data.forEach(task => {
+                        if (paginatedTasks.length > 0) {
+                            paginatedTasks.forEach(task => {
                                 const newRow = document.createElement("tr");
                                 newRow.innerHTML = `
                                     <td>${task.taskId}</td>
@@ -610,6 +491,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 } catch (error) {
                     console.error('Error:', error.message);
                 }
+                updatePagination(totalPages);
             }, 500);
         });
     }
@@ -652,6 +534,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     modal_handling();
     searchFilter();
     filterDropdown();
+    goToPreviousPage();
+    goToNextPage();
     await loadTasks();
-});
-    
+
+}); 

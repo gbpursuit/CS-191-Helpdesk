@@ -50,6 +50,14 @@ app.get('/api/:type', async (req, res) => {
 
 });
 
+app.get('/check-session', (req, res) => {
+    if (req.session && req.session.username) {
+        res.json({ loggedIn: true });
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
 const validViews = ['sign-in', 'create-account'];
 
 // Dynamic route to handle /internal/:page/:view

@@ -201,8 +201,8 @@ img {
     box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
-    max-width: 350px;
-    width: 100%;
+    width: 350px;
+    /* width: 100%; */
     text-align: center;
 }
 
