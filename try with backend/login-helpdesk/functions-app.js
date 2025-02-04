@@ -136,22 +136,31 @@ export const task = {
         let baseQuery = `SELECT * FROM tasks`;
         const params = [];
         const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
+
+        console.log(bool, query, type, order, filterBy, value);
     
-        // If search is provided, apply search for taskType
-        if (bool && type) {
-            baseQuery +=  ` WHERE ?? LIKE ?`; 
-            params.push(type, `%${query}%`); 
+        if (bool && type && query) {
+            baseQuery += ` WHERE ?? LIKE ?`; 
+            params.push(type, `%${query}%`);
         }
-    
-        // If filter is provided, apply filter based on the field
-        if (filterBy && value) {
-            baseQuery += ` AND ?? = ?`;
+        
+        if (filterBy && value && filterBy !== 'taskDate' && filterBy !== 'department') {
+            if (params.length > 0) {
+                baseQuery += ` AND ?? = ?`;
+            } else {
+                baseQuery += ` WHERE ?? = ?`;
+            }
             params.push(filterBy, value);
         }
-    
-        // Apply sorting based on the column (taskType, etc.)
+        
+        let sortField = 'id'; 
+        if (filterBy === 'taskDate' || filterBy === 'department' || type === 'taskDate' || type === 'department') {
+            sortField = filterBy || type;
+        }
+        
         baseQuery += ` ORDER BY ?? ${sortOrder}`;
-        params.push('id'); // Ensure sorting by taskType or whichever field you want
+        params.push(sortField);
+
     
         console.log(baseQuery);
         console.log(params);
@@ -167,72 +176,6 @@ export const task = {
             dateFin: task.dateFin ? new Date(task.dateFin).toLocaleDateString('en-CA') : null
         }));
     },
-
-    // fetchingTasks: async function(db, bool = false, query = null) {
-    //     const baseQuery = `SELECT * FROM tasks ${bool ? 'WHERE taskType LIKE ?' : ''} ORDER BY id DESC`;
-    //     const params = bool ? [`%${query}%`] : [];
-    //     const [tasks] = await db.query(baseQuery, params);
-
-    //     return tasks.map(task => ({
-    //         ...task,
-    //         taskDate: task.taskDate ? new Date(task.taskDate).toLocaleDateString('en-CA') : null,
-    //         dateReq: task.dateReq ? new Date(task.dateReq).toLocaleDateString('en-CA') : null,
-    //         dateRec: task.dateRec ? new Date(task.dateRec).toLocaleDateString('en-CA') : null,
-    //         dateStart: task.dateStart ? new Date(task.dateStart).toLocaleDateString('en-CA') : null,
-    //         dateFin: task.dateFin ? new Date(task.dateFin).toLocaleDateString('en-CA') : null
-    //     }));
-    // },
-
-    // searchTask: async function (db, req, res) {
-    //     try {
-    //         const { query } = req.body;
-    //         if (!query.trim()) {
-    //             const formattedTasks = await task.fetchingTasks(db, false, null, 'id');
-    //             return res.status(200).json(formattedTasks); 
-    //         }
-    
-    //         const rows = await task.fetchingTasks(db, true, query, 'taskType');
-    
-    //         if (rows.length > 0) {
-    //             return res.status(200).json(rows); 
-    //         }
-    
-    //         return res.status(404).json({ message: 'No matching tasks found' });
-    
-    //     } catch (err) {
-    //         console.error('Error fetching task:', err);
-    //         return res.status(500).json({ error: 'Internal server error' });
-    //     }
-    // },
-
-    // filterBy: async function (db, req, res) {
-    //     try {
-    //         const { columnHead, query } = req.body;
-
-    //         let formattedTasks;
-
-    //         if (query == 'stop') {
-    //             formattedTasks = await task.fetchingTasks(db, false, null, 'id');
-    //             return res.status(200).json({ tasks: formattedTasks, hideFilterDropdown: true });
-    //         } else if (columnHead == 'taskDate' || columnHead == 'department') {
-                
-    //             formattedTasks = await task.fetchingTasks(db, false, null, columnHead, query);
-    //         } else {
-    //             formattedTasks = await task.fetchingTasks(db, true, query, columnHead);
-    //         }
-
-
-    //         if(formattedTasks.length > 0) {
-    //             return res.status(200).json({ tasks: formattedTasks, hideFilterDropdown: false });
-    //         }
-
-    //         return res.status(404).json({ error: 'Error sorting tasks' });
-
-    //     } catch (err) {
-    //         console.error('Error sorting:', err);
-    //         return res.status(500).json({ error: 'Internal server error' });
-    //     }
-    // },
 
     addTask: async function (db, req, res) {
         try {
@@ -315,7 +258,7 @@ export const task = {
             if (search && filterBy && value) {
                 // Apply both search for taskType and filter for another field
                 if (filterBy == 'taskDate' || filterBy == 'department') {
-                    tasks = await task.fetchingTasks(db, false, search, 'taskType', value, filterBy, value);
+                    tasks = await task.fetchingTasks(db, true, search, 'taskType', value, filterBy, value);
                 } else {
                     tasks = await task.fetchingTasks(db, true, search, 'taskType', 'DESC', filterBy, value);
                 }
