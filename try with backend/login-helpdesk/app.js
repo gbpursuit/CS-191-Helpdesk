@@ -104,10 +104,10 @@ app.post('/api/tasks/:type', async (req, res) => {
                 await task.addTask(db, req, res);
                 break;
             case 'search-input':
-                await task.searchInput(db, req, res);
+                await task.searchTask(db, req, res);
                 break;
             case 'filterBy':
-                await task.sortingBy(db, req, res);
+                await task.filterBy(db, req, res);
                 break;
             default:
                 res.status(400).json({ error: 'Invalid task type' });

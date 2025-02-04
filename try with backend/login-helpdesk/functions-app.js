@@ -132,24 +132,21 @@ export const account = {
 
 export const task = { 
 
-    fetchingTasks: async function(db, bool = false, query = null) {
+    fetchingTasks: async function(db, bool = false, query = null, type = null, order = 'DESC') {
         let baseQuery = `SELECT * FROM tasks`;
-        const params = bool ? [`%${query}%`] : [];
+        const params = [];
+        const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
 
-        if(bool) {
-            baseQuery += ` WHERE taskType LIKE ?`;
-        }
-
-        const [columns] = await db.query(`SHOW COLUMNS FROM tasks`);
-        const columnNames = columns.map(col => col.Field);
-
-        if(query && columnNames.includes(query)) {
-            baseQuery += ` ORDER BY ?? ASC`;
-            params.push(query);
-
+        if (bool && type) {
+            baseQuery +=  ` WHERE ?? LIKE ?`; 
+            params.push(type, `%${query}%`); 
         } else {
-            baseQuery += ` ORDER BY id DESC`;
+            baseQuery +=  ` ORDER BY ?? ${sortOrder}`;
+            params.push(type); 
         }
+
+        console.log(baseQuery);
+        console.log(params);
 
         const [tasks] = await db.query(baseQuery, params);
 
@@ -180,50 +177,56 @@ export const task = {
     //     }));
     // },
 
-    searchInput: async function (db, req, res) {
-        try {
-            const { query } = req.body;
-            if (!query.trim()) {
-                const formattedTasks = await task.fetchingTasks(db);
-                return res.status(200).json(formattedTasks); 
-            }
+    // searchTask: async function (db, req, res) {
+    //     try {
+    //         const { query } = req.body;
+    //         if (!query.trim()) {
+    //             const formattedTasks = await task.fetchingTasks(db, false, null, 'id');
+    //             return res.status(200).json(formattedTasks); 
+    //         }
     
-            const rows = await task.fetchingTasks(db, true, query);
+    //         const rows = await task.fetchingTasks(db, true, query, 'taskType');
     
-            if (rows.length > 0) {
-                return res.status(200).json(rows); 
-            }
+    //         if (rows.length > 0) {
+    //             return res.status(200).json(rows); 
+    //         }
     
-            return res.status(404).json({ message: 'No matching tasks found' });
+    //         return res.status(404).json({ message: 'No matching tasks found' });
     
-        } catch (err) {
-            console.error('Error fetching task:', err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-    },
+    //     } catch (err) {
+    //         console.error('Error fetching task:', err);
+    //         return res.status(500).json({ error: 'Internal server error' });
+    //     }
+    // },
 
-    sortingBy: async function (db, req, res) {
-        try {
-            const { query } = req.body;
+    // filterBy: async function (db, req, res) {
+    //     try {
+    //         const { columnHead, query } = req.body;
 
-            if (query == 'filter') {
-                const formattedTasks = await task.fetchingTasks(db);
-                return res.status(200).json(formattedTasks); 
-            }
+    //         let formattedTasks;
 
-            const rows = await task.fetchingTasks(db, false, query);
+    //         if (query == 'stop') {
+    //             formattedTasks = await task.fetchingTasks(db, false, null, 'id');
+    //             return res.status(200).json({ tasks: formattedTasks, hideFilterDropdown: true });
+    //         } else if (columnHead == 'taskDate' || columnHead == 'department') {
+                
+    //             formattedTasks = await task.fetchingTasks(db, false, null, columnHead, query);
+    //         } else {
+    //             formattedTasks = await task.fetchingTasks(db, true, query, columnHead);
+    //         }
 
-            if(rows.length > 0) {
-                return res.status(200).json(rows);
-            }
 
-            return res.status(404).json({ error: 'Error sorting tasks' });
+    //         if(formattedTasks.length > 0) {
+    //             return res.status(200).json({ tasks: formattedTasks, hideFilterDropdown: false });
+    //         }
 
-        } catch (err) {
-            console.error('Error sorting:', err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-    },
+    //         return res.status(404).json({ error: 'Error sorting tasks' });
+
+    //     } catch (err) {
+    //         console.error('Error sorting:', err);
+    //         return res.status(500).json({ error: 'Internal server error' });
+    //     }
+    // },
 
     addTask: async function (db, req, res) {
         try {
@@ -286,11 +289,37 @@ export const task = {
         }
     },
 
-    getTask: async function (db, req, res) {
-        try {
-            const formattedTasks = await task.fetchingTasks(db);
+    // getTask: async function (db, req, res) {
+    //     try {
+    //         const formattedTasks = await task.fetchingTasks(db, false, null, 'id');
             
-            res.json(formattedTasks);
+    //         res.json(formattedTasks);
+    //     } catch (err) {
+    //         console.error('Error fetching tasks:', err);
+    //         res.status(500).json({ error: 'Internal server error' });
+    //     }
+    // }
+
+    getTask: async function (db, req, res) {
+        const { search, filterBy, value } = req.query; // Get search and filter values from the URL
+
+        try {
+            let tasks;
+    
+            if (search) {
+                tasks = await task.fetchingTasks(db, true, search, 'taskType');
+            } else if (filterBy && value) {
+                console.log('filterBy:', filterBy, 'value:', value);
+                if (filterBy == 'taskDate' || filterBy == 'department'){
+                    tasks = await task.fetchingTasks(db, false, null, filterBy, value);
+                } else {
+                    tasks = await task.fetchingTasks(db, true, value, filterBy);
+                }
+            } else {
+                tasks = await task.fetchingTasks(db, false, null, 'id');
+            }
+    
+            res.status(200).json(tasks);
         } catch (err) {
             console.error('Error fetching tasks:', err);
             res.status(500).json({ error: 'Internal server error' });

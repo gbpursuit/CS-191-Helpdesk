@@ -495,14 +495,24 @@ label[for="check"]{
 
 .search-filter {
     display: flex;
+    flex: 1;
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    height: 100%;
 }
 
 .left-section {
+    width: 50%;
+    /* width: 500px; */
     display: flex;
-    gap: 10px; 
+    gap: 3px;
+}
+
+.right-section {
+    width: 50%;
+    /* width: 150px; */
+    display: flex;
 }
 
 .search-input {
@@ -511,13 +521,17 @@ label[for="check"]{
     background: var(--light-gray);
     padding: 5px;
     border-radius: 5px;
-    width: 200px;
+    width: 30%;
 }
 
 .search-input::placeholder {
     color: var(--dark-green)
 }
 
+.status-options,
+.date-options,
+.severity-options,
+.dept-options,
 .filter-select {
     display: flex;
     padding: 8px 12px;
@@ -525,12 +539,13 @@ label[for="check"]{
     border: 1px solid var(--new-border);
     border-radius: 5px;
     cursor: pointer;
-    width: 100px;
+    width: 20%;
     background: var(--light-gray);
 }
 
 /* New Task Button */
 .new-task-button {
+    margin-left: auto;
     padding: 5px 12px;
     background-color: var(--dark-green);
     color: var(--white);
@@ -538,6 +553,7 @@ label[for="check"]{
     border-radius: 5px;
     cursor: pointer;
     width: 100px;
+    /* width: 100px; */
 }
 
 .new-task-button:hover {
@@ -809,7 +825,7 @@ form button:hover {
 
 .submitted-modal {
     display: none;
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
     width: 100%;
@@ -828,17 +844,28 @@ form button:hover {
 }
 
 .submitted-content {
-    position: relative; 
+    position: absolute; 
     margin: 0 auto;
     background-color: var(--white);
     padding: 25px;
     border-radius: 8px;
-    width: 90%; 
+    width: 80%; 
     max-width: 800px;
     max-height: 90%;
     overflow-y: auto; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+/* .submitted-content {
+    background-color: var(--white);
+    margin: 0 auto;
+    padding: 25px; 
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 90%; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+} */
 
 .task-info-table {
     width: 100%; 
@@ -1137,9 +1164,21 @@ body.dark-mode .form-group input {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .login-container, .dashboard-container {
         max-width: 100%; /* Full width on smaller screens */
+    }
+
+    .left-section {
+        width: 75%;
+    }
+    
+    .right-section {
+        width: 25%;
+    }
+
+    .search-input {
+        width: 50%;
     }
 
     .side-bar header {
@@ -1162,12 +1201,11 @@ body.dark-mode .form-group input {
         padding: 5px;
     }
 
-    .filter-select,
-    .new-task-button {
-        flex: 0.3; /* Filter dropdown */
+    /* .filter-select{
+        flex: 0.7; 
         min-width: 50px;
         padding: 5px;
-    }
+    } */
 
     #check:checked ~ .dashboard-container {
         left: 200px;

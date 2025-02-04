@@ -54,6 +54,7 @@ export const UI = {
             button.addEventListener('click', function (event) {
                 event.preventDefault();
                 window.location.replace(url + buttonId);
+                // window.location.href = url + buttonId;
             });
         }
     },

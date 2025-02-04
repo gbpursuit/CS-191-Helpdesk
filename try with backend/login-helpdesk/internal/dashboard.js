@@ -160,52 +160,87 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let currentPage = 1;
     const tasksPerPage = 9;
-
+    
     const prevButton = document.getElementById("prevPage");
     const nextButton = document.getElementById("nextPage");
-
+    
     function updatePagination(totalPages) {
         const currentPageSpan = document.getElementById("currentPage");    
         currentPageSpan.textContent = `${currentPage}`;
     
-        // Enable/disable buttons based on page limits
-        prevButton.disabled = (currentPage === 1);
-        nextButton.disabled = (currentPage === totalPages);
-    }
-
-    function goToPreviousPage() {
-        prevButton.addEventListener('click', async () => {
-            if (currentPage > 1) {
-                currentPage--;
-                await loadTasks(); // Reload tasks for new page
-            }
-        })
+        // Disable "Previous" button if on the first page
+        prevButton.disabled = (currentPage <= 1);
+        // Disable "Next" button if on the last page
+        nextButton.disabled = (currentPage >= totalPages);
     }
     
-    function goToNextPage() {
-        nextButton.addEventListener('click', async () => {
-            currentPage++;
-            await loadTasks(); // Reload tasks for new page
-        })
+    // ✅ FIX: Ensure we pass resetPage = false when navigating pages
+    prevButton.onclick = async () => {
+        if (currentPage > 1) {
+            currentPage--;
+            updateURL();
+            await loadTasks(null, false); // Preserve page number when navigating
+        }
+    };
+    
+    nextButton.onclick = async () => {
+        currentPage++;
+        updateURL();
+        await loadTasks(null, false); // Preserve page number when navigating
+    };
+    
+    function updateURL() {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('page', currentPage);
+        window.history.pushState({}, '', newUrl);
     }
-       
-    async function loadTasks(query = null) {
+
+
+
+    async function loadTasks(query = null, resetPage = false) {
         try {
-            const tasks = (query) ? query : await fetchTasksFromDatabase();
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = query || urlParams.get('search') || '';
+            const filterBy = urlParams.get('filterBy');
+            const filterValue = urlParams.get('value');
+    
+            if (resetPage) {
+                currentPage = 1;  // Reset to page 1 only when applying a new search or filter
+            } else {
+                currentPage = parseInt(urlParams.get('page')) || currentPage;
+            }
+    
+            let url = `/api/tasks?page=${currentPage}`;
+    
+            const params = new URLSearchParams();
+            if (searchQuery) params.set('search', searchQuery);
+            if (filterBy && filterValue) {
+                params.set('filterBy', filterBy);
+                params.set('value', filterValue);
+            }
+            if (params.toString()) {
+                url += `&${params.toString()}`;
+            }
+    
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.error("Error fetching tasks:", response.status);
+                return;
+            }
+    
+            const tasks = await response.json();
             const tableBody = document.getElementById("taskTableBody");
             const totalPages = Math.ceil(tasks.length / tasksPerPage);
     
             tableBody.innerHTML = ""; 
-
+    
             const startIndex = (currentPage - 1) * tasksPerPage;
             const endIndex = startIndex + tasksPerPage;
             const paginatedTasks = tasks.slice(startIndex, endIndex);
-
-            // console.log('formatted date', formatDate(tasks[0].taskDate));
     
             paginatedTasks.forEach(task => {
                 const newRow = document.createElement("tr");
-                    newRow.innerHTML = `
+                newRow.innerHTML = `
                     <td>${task.taskId}</td>
                     <td>${formatDate(task.taskDate)}</td>
                     <td>${task.taskStatus}</td>
@@ -225,7 +260,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     <td>${formatDate(task.dateStart)}</td>
                     <td>${formatDate(task.dateFin)}</td>
                 `;
-            
+    
                 newRow.addEventListener('click', async function(event) {
                     event.preventDefault();
                     await openTaskInfoModal(task); 
@@ -233,13 +268,98 @@ document.addEventListener("DOMContentLoaded", async function () {
     
                 tableBody.appendChild(newRow);
             });
-
+    
             updatePagination(totalPages);
+    
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('page', currentPage); // Always update page number
+            if (searchQuery) {
+                newUrl.searchParams.set('search', searchQuery);
+            } else {
+                newUrl.searchParams.delete('search');
+            }
+            if (filterBy && filterValue) {
+                newUrl.searchParams.set('filterBy', filterBy);
+                newUrl.searchParams.set('value', filterValue);
+            } else {
+                newUrl.searchParams.delete('filterBy');
+                newUrl.searchParams.delete('value');
+            }
+            window.history.pushState({}, '', newUrl);
     
         } catch (err) {
             console.error('Error loading tasks:', err);
         }
     }
+    
+    
+       
+    // async function loadTasks(query = null) {
+    //     try {
+
+    //         const urlParams = new URLSearchParams(window.location.search);
+    //         const searchQuery = query || urlParams.get('search') || '';
+    //         const filterBy = urlParams.get('filterBy');
+    //         const filterValue = urlParams.get('value');
+    
+    //         let url = `/api/tasks`;
+    
+    //         if (searchQuery) {
+    //             url += `?search=${encodeURIComponent(searchQuery)}`;
+    //         } else if (filterBy && filterValue) {
+    //             url += `?filterBy=${encodeURIComponent(filterBy)}&value=${encodeURIComponent(filterValue)}`;
+    //         }
+
+
+    //         const tasks = (query) ? query : await fetchTasksFromDatabase();
+    //         const tableBody = document.getElementById("taskTableBody");
+    //         const totalPages = Math.ceil(tasks.length / tasksPerPage);
+    
+    //         tableBody.innerHTML = ""; 
+
+    //         const startIndex = (currentPage - 1) * tasksPerPage;
+    //         const endIndex = startIndex + tasksPerPage;
+    //         const paginatedTasks = tasks.slice(startIndex, endIndex);
+
+    //         // console.log('formatted date', formatDate(tasks[0].taskDate));
+    
+    //         paginatedTasks.forEach(task => {
+    //             const newRow = document.createElement("tr");
+    //                 newRow.innerHTML = `
+    //                 <td>${task.taskId}</td>
+    //                 <td>${formatDate(task.taskDate)}</td>
+    //                 <td>${task.taskStatus}</td>
+    //                 <td>${task.severity}</td>
+    //                 <td>${task.taskType}</td>
+    //                 <td>${task.taskDescription}</td>
+    //                 <td>${task.itInCharge}</td>
+    //                 <td>${task.department}</td>
+    //                 <td>${task.departmentNo}</td>
+    //                 <td>${task.requestedBy}</td>
+    //                 <td>${task.approvedBy}</td>
+    //                 <td>${task.itemName}</td>
+    //                 <td>${task.deviceName}</td>
+    //                 <td>${task.applicationName}</td>
+    //                 <td>${formatDate(task.dateReq)}</td>
+    //                 <td>${formatDate(task.dateRec)}</td>
+    //                 <td>${formatDate(task.dateStart)}</td>
+    //                 <td>${formatDate(task.dateFin)}</td>
+    //             `;
+            
+    //             newRow.addEventListener('click', async function(event) {
+    //                 event.preventDefault();
+    //                 await openTaskInfoModal(task); 
+    //             });
+    
+    //             tableBody.appendChild(newRow);
+    //         });
+
+    //         updatePagination(totalPages);
+    
+    //     } catch (err) {
+    //         console.error('Error loading tasks:', err);
+    //     }
+    // }
 
     async function openTaskInfoModal(taskData) {
         const taskInfoModal = document.getElementById('taskInfoModal');
@@ -403,8 +523,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         taskInfoModal.addEventListener('click', (event) => UI.closeOutsideModal(event, 'submittedContent', 'taskInfoModal'));
         taskModal.addEventListener('click', (event) => UI.closeOutsideModal(event, 'modalContent', 'taskModal'));
         pop.addEventListener('click', (event) => UI.closeOutsideModal(event, 'popupContent', 'notificationPopup'));
-        topbar.addEventListener('click', (event) => UI.closeOutsideModal(event, 'modalContent', 'taskModal'));
-        topbar.addEventListener('click', (event) => UI.closeOutsideModal(event, 'submittedContent', 'taskInfoModal'));
 
         if (closeButton) closeButton.addEventListener('click', () => UI.closeModal('taskModal', true));
         if (closeTaskButton) {
@@ -417,109 +535,138 @@ document.addEventListener("DOMContentLoaded", async function () {
     function searchFilter() {
         let timeout;
         const searchInput = document.querySelector('.search-input');
-        // const savedQuery = localStorage.getItem('searchQuery');
-        // if (savedQuery) {
-        //     searchInput.value = savedQuery;
-        //     applySear
-        // }
-        
-        searchInput.addEventListener('input', function() {
-            clearTimeout(timeout); // search requests only after the users stop typing for 500ms
+    
+        searchInput.addEventListener('input', function () {
+            clearTimeout(timeout);
     
             timeout = setTimeout(async () => {
-                let totalPages;
-                try {
-                    const queryValue = searchInput.value.trim();
+                const queryValue = searchInput.value.trim();
+                const newUrl = new URL(window.location.href);
     
-                    const response = await fetch('/api/tasks/search-input', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ query: queryValue })
-                    });
-    
-                    if (!response.ok) {
-                        console.error("No equivalent task found.", response.status);
-                    } else {
-                        const data = await response.json();
-                        console.log("Search Results:", data);
-
-                        const tableBody = document.getElementById("taskTableBody");
-                        totalPages = Math.ceil(data.length / tasksPerPage);
-                        currentPage = 1;
-                
-                        tableBody.innerHTML = ""; 
-            
-                        const startIndex = (currentPage - 1) * tasksPerPage;
-                        const endIndex = startIndex + tasksPerPage;
-                        const paginatedTasks = data.slice(startIndex, endIndex);
-
-                        // If search results are available, display them
-                        if (paginatedTasks.length > 0) {
-                            paginatedTasks.forEach(task => {
-                                const newRow = document.createElement("tr");
-                                newRow.innerHTML = `
-                                    <td>${task.taskId}</td>
-                                    <td>${formatDate(task.taskDate)}</td>
-                                    <td>${task.taskStatus}</td>
-                                    <td>${task.severity}</td>
-                                    <td>${task.taskType}</td>
-                                    <td>${task.taskDescription}</td>
-                                    <td>${task.itInCharge}</td>
-                                    <td>${task.department}</td>
-                                    <td>${task.departmentNo}</td>
-                                    <td>${task.requestedBy}</td>
-                                    <td>${task.approvedBy}</td>
-                                    <td>${task.itemName}</td>
-                                    <td>${task.deviceName}</td>
-                                    <td>${task.applicationName}</td>
-                                    <td>${formatDate(task.dateReq)}</td>
-                                    <td>${formatDate(task.dateRec)}</td>
-                                    <td>${formatDate(task.dateStart)}</td>
-                                    <td>${formatDate(task.dateFin)}</td>
-                                `;
-                                newRow.addEventListener('click', async function(event) {
-                                    event.preventDefault();
-                                    await openTaskInfoModal(task); 
-                                });
-    
-                                tableBody.appendChild(newRow);
-                            });
-                        } else {
-                            tableBody.innerHTML = "<tr><td colspan='16'>No matching tasks found.</td></tr>";
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error:', error.message);
+                if (queryValue) {
+                    newUrl.searchParams.set('search', queryValue);
+                } else {
+                    newUrl.searchParams.delete('search');
                 }
-                updatePagination(totalPages);
+    
+                window.history.pushState({}, '', newUrl);
+                await loadTasks(); // Reload tasks with the new search query
             }, 500);
         });
     }
 
     function filterDropdown() {
-        const filterSelect = document.querySelector('.filter-select');  // Target the <select> inside the div
+        const filterSelect = document.querySelector('.filter-select');
     
-        filterSelect.addEventListener('change', async function() {  
-            const newValue = this.value;
-            try {
-                const response = await fetch(`/api/tasks/filterBy`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: newValue })
+        const newDropdown = {
+            taskStatus: document.querySelector('.status-options'),
+            taskDate: document.querySelector('.date-options'),
+            severity: document.querySelector('.severity-options'),
+            department: document.querySelector('.dept-options')
+        };
+    
+        Object.values(newDropdown).forEach(dropdown => { dropdown.style.display = 'none'; });
+    
+        filterSelect.addEventListener('change', function () {
+            const selectedFilter = this.value;
+    
+            Object.values(newDropdown).forEach(dropdown => {
+                dropdown.style.display = 'none';
+                dropdown.value = 'filter';
+            });
+    
+            if (newDropdown[selectedFilter]) {
+                newDropdown[selectedFilter].style.display = 'block';
+    
+                newDropdown[selectedFilter].addEventListener('change', async function () {
+                    const newValue = this.value;
+                    console.log('selected:', selectedFilter, 'newValue:', newValue);
+    
+                    const newUrl = new URL(window.location.href);
+    
+                    if (newValue !== 'stop') {
+                        newUrl.searchParams.set('filterBy', selectedFilter);
+                        newUrl.searchParams.set('value', newValue);
+                    } else {
+                        Object.values(newDropdown).forEach(dropdown => { dropdown.style.display = 'none'; });
+                        filterSelect.value = 'filter';
+                        newDropdown[selectedFilter].value = 'none';
+                        newUrl.searchParams.delete('filterBy');
+                        newUrl.searchParams.delete('value');
+                    }
+    
+                    window.history.pushState({}, '', newUrl);
+                    await loadTasks(); // Reload tasks with the new filter applied
                 });
-
-                if (!response.ok) {
-                    console.error("Error sorting tasks: ", response.status);
-                } else {
-                    const data = await response.json();
-                    console.log("Search Results:", data);
-                    await loadTasks(data);
-                }
-            } catch (error) {
-                console.error('Error:', error.message);
             }
         });
     }
+    
+
+    // function filterDropdown() {
+    //     const filterSelect = document.querySelector('.filter-select');  // Target the <select> inside the div
+
+    //     const newDropdown = {
+    //         taskStatus: document.querySelector('.status-options'),
+    //         taskDate: document.querySelector('.date-options'),
+    //         severity: document.querySelector('.severity-options'),
+    //         department: document.querySelector('.dept-options')
+    //     };
+
+    //     Object.values(newDropdown).forEach(dropdown => { dropdown.style.display = 'none'; });
+
+
+    //     filterSelect.addEventListener('change', function() {
+    //         const selectedFilter = this.value;
+    
+    //         Object.values(newDropdown).forEach(dropdown => { dropdown.style.display = 'none'; });
+
+    //         if (newDropdown[selectedFilter]) {
+    //             newDropdown[selectedFilter].style.display = 'block';
+    
+    //             newDropdown[selectedFilter].addEventListener('change', async function() {
+    //                 const newValue = this.value;
+    //                 console.log('selected:', selectedFilter, 'newValue:', newValue);
+
+    //                 const newUrl = new URL(window.location.href);
+    //                 if (newValue !== 'stop') {
+    //                     newUrl.searchParams.set('filterBy', selectedFilter);
+    //                     newUrl.searchParams.set('value', newValue);
+    //                 } else {
+    //                     newUrl.searchParams.delete('filterBy');
+    //                     newUrl.searchParams.delete('value');
+    //                 }
+    
+    //                 window.history.pushState({}, '', newUrl);
+    //                 try {
+    //                     const response = await fetch(`/api/tasks/filterBy`, {
+    //                         method: 'POST',
+    //                         headers: { 'Content-Type': 'application/json' },
+    //                         body: JSON.stringify({ columnHead: selectedFilter, query: newValue })
+    //                     });
+
+                        
+    //                     if (!response.ok) {
+    //                         console.error("Error sorting tasks: ", response.status);
+    //                     } else {
+    //                         const data = await response.json();
+
+    //                         if (data.hideFilterDropdown) {
+    //                             Object.values(newDropdown).forEach(dropdown => { dropdown.style.display = 'none'; });
+    //                             filterSelect.value = 'filter'
+    //                             newDropdown[selectedFilter].value = 'filter'
+    //                         }
+    //                         await loadTasks(data.tasks);
+    //                     }
+    //                 } catch (error) {
+    //                     console.error('Error:', error.message);
+    //                 }
+        
+    //             });
+    //         }
+    //     });
+        
+    // }
 
     // UI Actions
     UI.handle_darkmode(".toggle-switch");
@@ -534,8 +681,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     modal_handling();
     searchFilter();
     filterDropdown();
-    goToPreviousPage();
-    goToNextPage();
     await loadTasks();
 
 }); 
