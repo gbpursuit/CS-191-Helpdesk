@@ -132,24 +132,32 @@ export const account = {
 
 export const task = { 
 
-    fetchingTasks: async function(db, bool = false, query = null, type = null, order = 'DESC') {
+    fetchingTasks: async function (db, bool = false, query = null, type = null, order = 'DESC', filterBy = null, value = null) {
         let baseQuery = `SELECT * FROM tasks`;
         const params = [];
         const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
-
+    
+        // If search is provided, apply search for taskType
         if (bool && type) {
             baseQuery +=  ` WHERE ?? LIKE ?`; 
             params.push(type, `%${query}%`); 
-        } else {
-            baseQuery +=  ` ORDER BY ?? ${sortOrder}`;
-            params.push(type); 
         }
-
+    
+        // If filter is provided, apply filter based on the field
+        if (filterBy && value) {
+            baseQuery += ` AND ?? = ?`;
+            params.push(filterBy, value);
+        }
+    
+        // Apply sorting based on the column (taskType, etc.)
+        baseQuery += ` ORDER BY ?? ${sortOrder}`;
+        params.push('taskType'); // Ensure sorting by taskType or whichever field you want
+    
         console.log(baseQuery);
         console.log(params);
-
+    
         const [tasks] = await db.query(baseQuery, params);
-
+    
         return tasks.map(task => ({
             ...task,
             taskDate: task.taskDate ? new Date(task.taskDate).toLocaleDateString('en-CA') : null,
@@ -158,8 +166,6 @@ export const task = {
             dateStart: task.dateStart ? new Date(task.dateStart).toLocaleDateString('en-CA') : null,
             dateFin: task.dateFin ? new Date(task.dateFin).toLocaleDateString('en-CA') : null
         }));
-
-
     },
 
     // fetchingTasks: async function(db, bool = false, query = null) {
@@ -302,20 +308,29 @@ export const task = {
 
     getTask: async function (db, req, res) {
         const { search, filterBy, value } = req.query; // Get search and filter values from the URL
-
+    
         try {
             let tasks;
-    
-            if (search) {
-                tasks = await task.fetchingTasks(db, true, search, 'taskType');
+            
+            if (search && filterBy && value) {
+                // Apply both search for taskType and filter for another field
+                if (filterBy == 'taskDate' || filterBy == 'department') {
+                    tasks = await task.fetchingTasks(db, false, search, 'taskType', value, filterBy, value);
+                } else {
+                    tasks = await task.fetchingTasks(db, true, search, 'taskType', 'DESC', filterBy, value);
+                }
+            } else if (search) {
+                // Apply only search for taskType
+                tasks = await task.fetchingTasks(db, true, search, 'taskType', 'DESC');
             } else if (filterBy && value) {
-                console.log('filterBy:', filterBy, 'value:', value);
-                if (filterBy == 'taskDate' || filterBy == 'department'){
+                // Apply only filter
+                if (filterBy == 'taskDate' || filterBy == 'department') {
                     tasks = await task.fetchingTasks(db, false, null, filterBy, value);
                 } else {
-                    tasks = await task.fetchingTasks(db, true, value, filterBy);
+                    tasks = await task.fetchingTasks(db, true, value, filterBy, 'DESC');
                 }
             } else {
+                // Fetch all tasks if no search or filter is provided
                 tasks = await task.fetchingTasks(db, false, null, 'id');
             }
     
@@ -325,4 +340,5 @@ export const task = {
             res.status(500).json({ error: 'Internal server error' });
         }
     }
+    
 }

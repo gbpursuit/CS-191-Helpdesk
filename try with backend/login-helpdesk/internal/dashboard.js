@@ -195,8 +195,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         window.history.pushState({}, '', newUrl);
     }
 
-
-
     async function loadTasks(query = null, resetPage = false) {
         try {
             const urlParams = new URLSearchParams(window.location.search);
