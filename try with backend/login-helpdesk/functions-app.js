@@ -151,7 +151,7 @@ export const task = {
     
         // Apply sorting based on the column (taskType, etc.)
         baseQuery += ` ORDER BY ?? ${sortOrder}`;
-        params.push('taskType'); // Ensure sorting by taskType or whichever field you want
+        params.push('id'); // Ensure sorting by taskType or whichever field you want
     
         console.log(baseQuery);
         console.log(params);

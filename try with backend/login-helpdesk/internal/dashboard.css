@@ -768,17 +768,20 @@ label[for="check"]{
 
 .form-group .dropdown,
 .form-group input {
-    flex: 1; /* Allows input fields to adjust based on available space */
-    width: 100%; /* Ensure input fills available width */
+    flex: 1;
+    width: 100%; 
     padding: 8px;
     border: 1px solid var(--v2-gray);
     border-radius: 4px;
     font-size: 0.765rem;
-    color: var(--text-color); /* Adjust text color for better readability */
-    background-color: var(--white); /* Ensure background is white for contrast */
+    color: var(--text-color); 
+    background-color: var(--white); 
 }
 
-.form-group .dropdown,
+.form-group input::placeholder {
+    color: var(--text-color); 
+}
+/* .form-group .dropdown,
 .form-group .dropdown option:disabled,
 .form-group input::placeholder,
 .form-group input[type="date"] {
@@ -788,7 +791,7 @@ label[for="check"]{
 .form-group .dropdown option,
 .form-group .dropdown:valid {
     color: var(--text-color); 
-} 
+}  */
 
 
 
