@@ -608,6 +608,15 @@ label[for="check"]{
     font-size: 0.85rem;
 }
 
+.task-table th, .task-table td {
+    white-space: nowrap; /* Prevents text from wrapping (clean look) */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds "..." if text is too long */
+    max-width: 150px; /* Adjust as needed */
+}
+
+
+
 .table::-webkit-scrollbar {
     width: 4px;  /* Vertical scrollbar width */
     height: 4px; /* Horizontal scrollbar height */

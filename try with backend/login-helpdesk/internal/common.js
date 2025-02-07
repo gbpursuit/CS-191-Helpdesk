@@ -3,15 +3,21 @@ export const UI = {
     // Functions
     handleSidebarState: function() {
         const sidebarCheckbox = document.getElementById("check");
-        console.log("sidebar is: ", localStorage.getItem("sidebarState"));
+    
         if (!sidebarCheckbox) return; 
-
+    
+        // if (localStorage.getItem("sidebarState") === null) {
+        //     localStorage.setItem("sidebarState", "closed");
+        // }
+    
+        // Set the checkbox based on the stored state
         if (localStorage.getItem("sidebarState") === "open") {
             sidebarCheckbox.checked = true;
         } else {
             sidebarCheckbox.checked = false;
         }
-
+    
+        // Listen for checkbox change events
         sidebarCheckbox.addEventListener("change", () => {
             if (sidebarCheckbox.checked) {
                 localStorage.setItem("sidebarState", "open");
@@ -19,7 +25,15 @@ export const UI = {
                 localStorage.setItem("sidebarState", "closed");
             }
         });
+    
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 850) {
+                localStorage.setItem("sidebarState", "closed");
+                sidebarCheckbox.checked = false;  
+            }
+        });
     },
+    
 
     handle_darkmode: function(toggleSelector) {
         let darkmode = localStorage.getItem('dark-mode');
@@ -167,5 +181,14 @@ export const UI = {
             window.location.replace('/internal/welcome');
             // window.location.href = '/internal/welcome';
         }
+    },
+
+    // make async soon if may backend na
+    showProfile: function () {
+        const profile = document.getElementById('profileText');
+        profile.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.location.replace('/internal/profile')
+        });
     }
 };

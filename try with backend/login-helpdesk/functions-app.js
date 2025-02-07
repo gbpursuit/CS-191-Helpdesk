@@ -137,7 +137,7 @@ export const task = {
         const params = [];
         const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
 
-        console.log(bool, query, type, order, filterBy, value);
+        // console.log(bool, query, type, order, filterBy, value);
     
         if (bool && type && query) {
             baseQuery += ` WHERE ?? LIKE ?`; 
@@ -162,8 +162,8 @@ export const task = {
         params.push(sortField);
 
     
-        console.log(baseQuery);
-        console.log(params);
+        // console.log(baseQuery);
+        // console.log(params);
     
         const [tasks] = await db.query(baseQuery, params);
     

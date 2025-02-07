@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     let currentPage = 1;
-    const tasksPerPage = 9;
+    const tasksPerPage = 14;
     
     const prevButton = document.getElementById("prevPage");
     const nextButton = document.getElementById("nextPage");
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const filterValue = urlParams.get('value');
     
             if (resetPage) {
-                currentPage = 1;  // Reset to page 1 only when applying a new search or filter
+                currentPage = 1;  
             } else {
                 currentPage = parseInt(urlParams.get('page')) || currentPage;
             }
@@ -459,7 +459,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             let value;
 
             if (field.tagName == "SELECT") {
-                value = field.options[field.selectedIndex]?.text || "--";
+                value = field.value || "--";
             } else {
                 value = field.value.trim();
             }
@@ -666,12 +666,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         
     // }
 
+    console.log(window.innerWidth);
+
     // UI Actions
     UI.handle_darkmode(".toggle-switch");
     UI.page_navigation("summary");
     UI.notificationPop();
     UI.dropdownToggle();
     UI.handleSidebarState();
+    UI.showProfile();
     await UI.reflectUsername();
 
     // Initialize
