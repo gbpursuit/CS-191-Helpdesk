@@ -25,17 +25,17 @@
                 <div class="top-bar-right">
                     <button class="notification-button" onclick="openNotificationPopup()">
                         <i class="fa-solid fa-bell"></i>
-                        <span class="notification-badge">3</span>  <!-- Example count -->
+                        <!-- <span class="notification-badge">3</span>-->
                     </button>
                     
                     <div class="user-profile">
                         <span class="page-name" id="pagename">Username</span>
-                        <button class="logout-btn" aria-label="Toggle user options" onclick="toggleDropdown()">
+                        <button type = "button" class="logout-btn" aria-label="Toggle user options">
                             <i class="fa fa-chevron-down arrow-icon"></i> <!-- check for error -->
                         </button>
                         <div id="dropdownMenu" class="dropdown-menu">
                             <ul class="logout-elem">
-                                <li class = "profile-text"><a href = "#">Profile</a></li>
+                                <li id = "profileText" class = "profile-text"><a href = "#">Profile</a></li>
                                 <li id = "logoutText" class = "logout-text"><a href="#">Logout</a></li>
                             </ul>
                         </div>
@@ -48,7 +48,7 @@
             <header id = "headerbar">IT HELPDESK</header>
             <ul>
                 <li id = "dashboard" class="transition"><a href="#"><i class="fa-solid fa-house"></i>Dashboard</a></li>
-                <li id = "summary" class="transition"><a href="#"><i class="fa-regular fa-user"></i>Summary</a></li>
+                <li id = "summary" class="transition"><a href="#"><i class="fa-solid fa-file"></i>Summary</a></li>
                 <li class="mode bottom-item"><a href="#">
                     <div class="moon-sun">
                         <i class="fa-solid fa-moon icon moon"></i>

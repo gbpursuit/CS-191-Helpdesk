@@ -111,14 +111,27 @@
             <!-- Security Page -->
             <div id="securityPage" class="security-page new">
                 <div class="header-container">
-                    <button type = "button" class="create-back prev">
+                    <button type="button" class="create-back prev">
                         <span class="sr-only">Go back</span>
                         <i class="fa fa-chevron-left arrow-icon"></i>
                     </button>
-                    <!-- <h2 class="over-h">OVERVIEW</h2> -->
+                    <h2 class="over-h">SECURITY SETTINGS</h2>
                 </div>
-                <div class="user-detail">
-                    <p>Security</p>
+                
+                <div class="security-content">
+                    <h3>Change Password</h3>
+                    <form id="securityForm" class="security-form">
+                        <label for="currentPassword">Current Password:</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+
+                        <label for="confirmPassword">Confirm New Password:</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+                        <button type="submit" id="saveSecurityChanges">Save Changes</button>
+                    </form>
                 </div>
             </div>
 

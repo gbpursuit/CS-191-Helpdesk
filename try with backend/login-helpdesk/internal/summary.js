@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     UI.notificationPop();
     UI.dropdownToggle();
     UI.handleSidebarState();
+    UI.showProfile();
     await UI.reflectUsername();
 
     // Call Functions

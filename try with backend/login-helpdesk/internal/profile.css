@@ -322,6 +322,121 @@ img {
 
 }
 
+/* ======================== Security Page ========================== */  
+/* Security Page */
+.security-page {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: var(--bg-color);
+}
+
+/* Security Header */
+.security-page .header-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+}
+
+.security-page h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--dark-green);
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* Security Form Container */
+.security-content {
+    background: linear-gradient(to bottom, var(--v1-gray) 20%, var(--whitesmoke));
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 25px;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Form Title */
+.security-content h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    color: var(--dark-green2);
+    margin-bottom: 15px;
+}
+
+/* Security Form */
+.security-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Labels */
+.security-form label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-color);
+    text-align: left;
+    display: block;
+}
+
+/* Input Fields */
+.security-form input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--new-border);
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: var(--whitesmoke);
+    color: var(--text-color);
+    transition: border-color 0.3s ease;
+}
+
+.security-form input:focus {
+    outline: none;
+    border-color: var(--dark-green);
+    box-shadow: 0 0 5px rgba(5, 80, 58, 0.4);
+}
+
+/* Save Button */
+#saveSecurityChanges {
+    background: var(--dark-green);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s ease;
+}
+
+#saveSecurityChanges:hover {
+    background: var(--dark-green2);
+    transform: scale(1.03);
+}
+
+#saveSecurityChanges:active {
+    transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .security-content {
+        width: 90%;
+    }
+}
+
+
 
 
 
