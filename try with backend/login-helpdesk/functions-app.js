@@ -1,9 +1,12 @@
 import livereload from 'livereload';
 import bcrypt from 'bcrypt';
 import portfinder from 'portfinder';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { setupDatabase, dumpToSql } from './dbSetup.js';
+import { setupDatabase } from './dbSetup.js';
+import rateLimit from 'express-rate-limit'; // npm install express-rate-limit
+import validator from 'validator'; // npm install validator
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,34 +70,71 @@ export const server = {
         }, 1000);  // Adjust the delay time as needed (in milliseconds)
     },
 
-    checkSession: function(req, res, next) {
-        if (!req.session || !req.session.user) {
-            return res.status(401).json({ loggedIn: false });
-        }
-        next();
+    servePage: function(res, filePath) {
+        return res.sendFile(filePath);
+    },
+
+    getValidPages: function(easyPath, callback) {
+        const publicPath = path.join(easyPath, 'public');
+        const protectedPath = path.join(easyPath, 'protected');
+
+        fs.readdir(publicPath, (err, publicFiles) => { // Read "public/" directory
+            if (err) return callback(err, null);
+
+            fs.readdir(protectedPath, (err, protectedFiles) => { // Read "protected/" directory
+                if (err) return callback(err, null);
+
+                // Call the callback function, passing the collected public and protected page names
+                callback(null, {
+                    public: publicFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html')),
+                    protected: protectedFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html'))
+                });
+            });
+        });
     }
+
+    // checkSession: function(req, res, next) {
+    //     if (!req.session || !req.session.user) {
+    //         return res.status(401).json({ loggedIn: false });
+    //     }
+    //     next();
+    // }
 }
 
 export const account = {
     signIn: async function(app, req, res, username, password) {
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Username and password are required' });
+        }
+
         try {
             const [rows] = await app.locals.db.query(
-                `SELECT * FROM users WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? LIMIT 1`,
-                [username, username]
+                `SELECT * FROM users WHERE username = ? LIMIT 1`,
+                [username]
             );
-            // 'SELECT 1 FROM users WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '') OR username = ? LIMIT 1',
-            // [user.first_name, user.last_name, user.username]
+            // const [rows] = await app.locals.db.query(
+            //     SELECT * FROM users WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? LIMIT 1,
+            //     [username, username]
+            // );
 
-            if (rows.length > 0) {
-                const user = rows[0];
-                const match = await bcrypt.compare(password, user.password); 
+            // if (rows.length === 0) {
+            //     return res.status(401).json({ error: 'Invalid username or password' });
+            // }
 
-                if (match) {
-                    req.session.username = username; 
-                    return res.status(200).json({ success: true });
-                }
-            }
-            return res.status(401).json({ error: 'Invalid username or password' });
+            if (!rows.length) throw new Error('User not found');
+
+            const user = rows[0];
+            const match = await bcrypt.compare(password, user.password);
+            
+            // if (!match) {
+            //     return res.status(401).json({ error: 'Invalid username or password' });
+            // }
+
+            if (!match) throw new Error('Invalid password');
+
+            req.session.username = user.username;
+            return res.status(200).json({ success: true });
+
         } catch (err) {
             console.error('Database error:', err);
             return res.status(500).json({ error: 'Internal server error' });
@@ -102,14 +142,49 @@ export const account = {
     },
 
     createAccount: async function(app, req, res, username, name, password) {
+
+        // Prevent SQL Injection or security vulnerabilities
+        username = username?.trim();
+        name = name?.trim();
+        password = password?.trim();
+
+        if (!username || !name || !password) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        // Validate username (letters at numbers lang)
+        if (!validator.isAlphanumeric(username)) {
+            return res.status(400).json({ error: 'Invalid username. Only letters and numbers allowed.' });
+        }
+
+        // Validate full name (letters and spaces lang)
+        if (!validator.matches(name, /^[a-zA-Z\s]+$/)) {
+            return res.status(400).json({ error: 'Invalid name. Only letters and spaces allowed.' });
+        }
+
+        // Validate password length
+        // if (!validator.isLength(password, { min: 8 })) {
+        //     return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
+        // }
+
+        // Clean / Sanitize Inputs
+        username = validator.escape(username);
+        name = validator.escape(name);
+        password = validator.escape(password);
+
         try {
-            const [first_name, last_name] = name.split(' '); // last name is null if undefined
+            const [first_name, ...lastParts] = name.split(' ');
+            const last_name = lastParts.length ? lastParts.join(' ') : null;
+
+            // if (!first_name) {
+            //     return res.status(400).json({ error: 'Invalid name. Please provide a valid first name.' });
+            // }
     
             const [rows] = await app.locals.db.query(
-                `SELECT * FROM users WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? LIMIT 1`,
-                [name, username]
+                `SELECT * FROM users WHERE username = ? LIMIT 1`,
+                [username]
             );
-    
+
             if (rows.length > 0) {
                 return res.status(400).json({ error: 'User already exists' });
             }
@@ -119,7 +194,7 @@ export const account = {
                 'INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)',
                 [username, first_name, last_name, hashedPassword]
             );
-            // await dumpToSql();
+
             req.session.username = username;
             return res.status(200).json({ success: true, message: 'Account created successfully' });
     
@@ -161,10 +236,6 @@ export const task = {
         baseQuery += ` ORDER BY ?? ${sortOrder}`;
         params.push(sortField);
 
-    
-        // console.log(baseQuery);
-        // console.log(params);
-    
         const [tasks] = await db.query(baseQuery, params);
     
         return tasks.map(task => ({
@@ -210,7 +281,6 @@ export const task = {
     sessionUser: async function(db, req, res) {
         try {
             if (req.session && req.session.username) {
-                // Check if session value matches username OR full name
                 const [rows] = await db.query(
                     `SELECT username, first_name, last_name FROM users 
                     WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? 
@@ -237,17 +307,6 @@ export const task = {
             return res.status(500).json({ error: 'Internal server error' });
         }
     },
-
-    // getTask: async function (db, req, res) {
-    //     try {
-    //         const formattedTasks = await task.fetchingTasks(db, false, null, 'id');
-            
-    //         res.json(formattedTasks);
-    //     } catch (err) {
-    //         console.error('Error fetching tasks:', err);
-    //         res.status(500).json({ error: 'Internal server error' });
-    //     }
-    // }
 
     getTask: async function (db, req, res) {
         const { search, filterBy, value } = req.query; // Get search and filter values from the URL
@@ -285,3 +344,24 @@ export const task = {
     }
     
 }
+
+export const limiter = {
+    loginLimit: rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 10, // Max 10 task submissions per 10 minutes
+        message: { error: 'Too many requests, please try again later.' }
+    }),
+
+    taskLimit: rateLimit({
+        windowMs: 10 * 60 * 1000, 
+        max: 50, 
+        message: { error: 'Task submission limit exceeded, try again later.' }
+    }),
+
+    deleteLimit: rateLimit({
+        windowMs: 10 * 60 * 1000,
+        max: 10,
+        message: { error: 'Too many delete requests, try again later.'}
+    }),
+
+};

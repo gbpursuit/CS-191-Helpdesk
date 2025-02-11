@@ -1,0 +1,499 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+/* Global Reset */
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    scroll-padding-top: 2rem;
+    scroll-behavior: smooth;
+}
+
+:root {
+    --white: white;
+    --dark-green: #05503a;
+    --dark-green2: #098560;
+    --hover-button: #204330;
+    --light-green: #90EE90;
+    --v1-gray: #E3E9E8;
+    --v2-gray: #ccc;
+    --v3-gray: #b3b0b0;
+    --hot-pink: #d44a41;
+    --bg-color: #f0f2f5;
+    --text-color: black;
+    --whitesmoke: whitesmoke;
+    --hint-green: #e8f5e9;
+    --new-border: #E3E9E8;
+    --btn: whitesmoke;
+    --disable-input: #e0e0e0;
+    --disable-text: #535353;
+    --table-b-shadow: rgba(0, 0, 0, 0.1);
+
+    --tsm-left: left 0.3s ease;
+    --tsm-width: width 0.3s ease;
+    --tsm-l-w: var(--tsm-left), var(--tsm-width);
+    --tsm-pad: padding-left 0.3s ease;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    height: 100vh;
+    width: 100vw;
+    transition: background-color 0.5s ease;
+}
+
+img {
+    width: 100%;
+}
+
+/* ======================== Profile Page ========================== */  
+
+.big-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.p-container {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, var(--v1-gray) 20%, var(--whitesmoke)); 
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.5s ease, background 0.5s ease, box-shadow 0.5s ease;
+    padding: 10px;
+    width: 100%;
+    max-width: 700px;
+    gap: 10px;
+}
+
+.header-container {
+    position: fixed;
+    display: flex;
+    flex-grow: 1;
+    top:0;
+    left: 10px;
+    margin-top: 10px;
+    width: 100%;
+
+}
+
+.create-back {
+    font-size: 1rem;
+    color: var(--white);
+    background-color: var(--dark-green);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; 
+}
+
+.create-back:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.1);
+}
+
+.create-back:active {
+    transform: scale(0.95);
+}
+
+.image-container {
+    width: 100%;
+    height: 50%;
+    /* background-color: green; */
+}
+
+.content-container {
+    width: 100%;
+    height: 50%;
+}
+
+.bottom-side {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.first-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.first-list li {
+    width: 50px; 
+    height: 50px;
+    transition: all 0.25s ease-out;
+    overflow: hidden;
+    border-radius: 30px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(0, 0, 0, 0.6);
+    position: relative;
+}
+
+.first-list li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    white-space: nowrap;
+    color: var(--text-color);
+    padding: 10px;
+    font-size: 18px;
+}
+
+.first-list li i {
+    transition: 300ms;
+    transition-delay: 150ms;
+}
+
+.first-list li a span {
+    position: absolute;
+    opacity: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease;
+    color: var(--white);
+}
+
+.first-list li.t-home:hover {
+    width: 100px; 
+    background: #E26750;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.first-list li.t-acc:hover {
+    width: 120px;
+    background: #B7163C; 
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.first-list li.t-sec:hover {
+    width: 120px;
+    background: #6ECCD1; 
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.first-list li.t-task:hover {
+    width: 140px;
+    background: #2A7BAB; 
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.first-list li:hover a i {
+    z-index: 2;
+    transform: scale(0);
+    margin: 0;
+    transition: margin 0s ;
+}
+
+.first-list li:hover a span {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1); /* Pops up */
+}
+
+.first-list li:not(:hover) a span {
+    transition: opacity 0s ease-in-out; /* Instantly disappear */
+    opacity: 0;
+}
+
+.first-list li:active {
+    color: var(--hover-button);
+    background-color: var(--v2-gray);
+    transform: scale(0.95); 
+    opacity: 0.8; 
+}
+
+@media (max-width: 1330px), (max-height: 850px) {
+    .profile-account, .right-side{
+        max-width: 100%; /* Full width on smaller screens */
+    }
+
+    .right-side {
+        width: 100%;
+    }
+
+    .first-col, .second-col {
+        width: 30%;
+    }
+
+    .third-col {
+        width: 40%;
+    }
+
+}
+
+@media (max-width: 1100px) { 
+    .header {
+        text-align: center;
+    }
+
+    .content-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .first-col {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 30%;
+    }
+    
+    .second-col {
+        width: 100%;
+        height: 30%;
+    }
+    
+    .third-col {
+        width: 100%;
+        height: 40%;
+    }
+
+
+    .s-box {
+        width: 50%;
+        height: 100%;
+        border-radius: 10px;
+    }
+    
+    .image-prof {
+        width: auto;
+        height: 100%; 
+    }
+    
+    
+    .new-image {
+        width: 100%;  
+        height: 100%;   
+        object-fit: cover;
+    }
+    
+    .second-col, .third-col {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+
+}
+
+/* ======================== Security Page ========================== */  
+/* Security Page */
+.security-page {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: var(--bg-color);
+}
+
+/* Security Header */
+.security-page .header-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+}
+
+.security-page h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--dark-green);
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* Security Form Container */
+.security-content {
+    background: linear-gradient(to bottom, var(--v1-gray) 20%, var(--whitesmoke));
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 25px;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Form Title */
+.security-content h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    color: var(--dark-green2);
+    margin-bottom: 15px;
+}
+
+/* Security Form */
+.security-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Labels */
+.security-form label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-color);
+    text-align: left;
+    display: block;
+}
+
+/* Input Fields */
+.security-form input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--new-border);
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: var(--whitesmoke);
+    color: var(--text-color);
+    transition: border-color 0.3s ease;
+}
+
+.security-form input:focus {
+    outline: none;
+    border-color: var(--dark-green);
+    box-shadow: 0 0 5px rgba(5, 80, 58, 0.4);
+}
+
+/* Save Button */
+#saveSecurityChanges {
+    background: var(--dark-green);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s ease;
+}
+
+#saveSecurityChanges:hover {
+    background: var(--dark-green2);
+    transform: scale(1.03);
+}
+
+#saveSecurityChanges:active {
+    transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .security-content {
+        width: 90%;
+    }
+}
+
+
+
+
+
+
+/* .image-prof {
+    display: flex;
+    justify-content: center;  
+    align-items: center;     
+    width: 150px; 
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, var(--v1-gray) 50%, var(--bg-color)); 
+    overflow: hidden; 
+}
+
+.new-image {
+    width: 100%; 
+    height: 100%;
+    object-fit: cover; 
+} */
+
+
+/* Left side that contains picture and list buttons */
+/* .left-side {
+    width: 15%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+}
+
+.prof-image {
+    height: 30%;
+}
+
+.image-content {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+
+.list-container {
+    height: 70%;
+}
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    height: 250px;
+}
+
+.item-list a {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 65px;
+    color: var(--text-color);
+    display: flex; 
+    align-items: center;
+    padding: 10px;
+    padding-inline-start: 20%;
+    border-bottom: 1px solid rgb(90, 90, 90, 0.15);
+    background-color: var(--bg-color);
+    gap: 10px;
+}
+
+.item-list a:hover{
+    color: var(--hover-button);
+    background-color: var(--disable-input);
+    padding-left: 30%;
+    transition: padding-left 0.53s ease;
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(134, 134, 134, 0.1); 
+
+}
+
+.item-list a:active {
+    color: var(--hover-button);
+    background-color: var(--v2-gray);
+    transform: scale(1);
+} */

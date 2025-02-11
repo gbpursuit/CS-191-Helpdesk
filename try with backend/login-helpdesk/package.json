@@ -10,12 +10,15 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "connect-livereload": "^0.6.1",
     "express": "^4.21.1",
+    "express-rate-limit": "^7.5.0",
     "express-session": "^1.18.1",
     "livereload": "^0.9.3",
     "mysql2": "^3.12.0",
-    "portfinder": "^1.0.32"
+    "portfinder": "^1.0.32",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

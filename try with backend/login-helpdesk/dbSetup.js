@@ -1,138 +1,5 @@
-// import mysql from 'mysql2';
-
-// // Database setup function
-// export async function setupDatabase() {
-//     return new Promise((resolve, reject) => {
-//         const db = mysql.createConnection({
-//             host: 'localhost',
-//             user: 'root',
-//             password: 'password',
-//         });
-
-//         db.connect((err) => {
-//             if (err) return reject(err);
-
-//             // console.log('Connected to MySQL!');
-//             db.query('CREATE DATABASE IF NOT EXISTS simple_helpdesk', (err) => {
-//                 if (err) return reject(err);
-//                 // console.log('Database created or already exists.');
-
-//                 db.changeUser({ database: 'simple_helpdesk' }, (err) => {
-//                     if (err) return reject(err);
-
-//                     const createUsersTable = `
-//                         CREATE TABLE IF NOT EXISTS users (
-//                             id INT AUTO_INCREMENT PRIMARY KEY,
-//                             first_name VARCHAR(100),
-//                             last_name VARCHAR(100),
-//                             password VARCHAR(255),
-//                             UNIQUE(first_name, last_name)  -- Ensures no duplicate users
-//                         );
-//                     `;
-
-//                     db.query(createUsersTable, (err) => {
-//                         if (err) return reject(err);
-//                         // console.log('Users table created or already exists.');
-
-//                         // Check if users exist before inserting
-//                         const defaultUsers = [
-//                             ['Lorraine', 'Castrillon', 'password123'],
-//                             ['Weng', 'Castrillon', 'password456'],
-//                             ['Gavril', 'Coronel', 'password789'],
-//                             ['Marcus', 'Pilapil', 'password000']
-//                         ];
-
-//                         defaultUsers.forEach(([first_name, last_name, password]) => {
-//                             const checkUserExists = `
-//                                 SELECT 1 FROM users WHERE first_name = ? AND last_name = ? LIMIT 1;
-//                             `;
-
-//                             db.query(checkUserExists, [first_name, last_name], (err, results) => {
-//                                 if (err) return reject(err);
-
-//                                 if (results.length === 0) {
-//                                     // Insert if the user does not exist
-//                                     const insertUser = `
-//                                         INSERT INTO users (first_name, last_name, password)
-//                                         VALUES (?, ?, ?);
-//                                     `;
-//                                     db.query(insertUser, [first_name, last_name, password], (err) => {
-//                                         if (err) return reject(err);
-//                                         console.log(`${first_name} ${last_name} added.`);
-//                                     });
-//                                 }
-//                             });
-//                         });
-
-//                         db.end();
-//                         resolve();
-//                     });
-//                 });
-//             });
-//         });
-//     });
-// }
-
-
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
-import { exec } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export async function dumpToSql() {
-    return new Promise((resolve, reject) => {
-        const dumpFilePath = path.join(__dirname, 'users_dump.sql');
-        process.env.MYSQL_PWD = 'password';  // Replace 'password' with your MySQL root password
-        
-        const command = `mysqldump -u root simple_helpdesk users > "${dumpFilePath}"`;
-
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                reject(`Error executing mysqldump: ${error}`);
-            } else if (stderr) {
-                reject(`stderr: ${stderr}`);
-            } else {
-                resolve(dumpFilePath); // Return the path to the SQL file
-            }
-        });
-    });
-}
-
-async function readSql(filePath) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf8', (err, data) => {
-            if (err) {
-                reject(`Error reading SQL file: ${err}`);
-            } else {
-                const userInsertPattern = /INSERT INTO `users` VALUES\s*\((.*?)\);/g;
-                const userMatches = [];
-                let match;
-
-                while ((match = userInsertPattern.exec(data)) !== null) {
-                    const userValues = match[1]; // This contains all the user data in a single string
-                    const userRecords = userValues.split("),(").map(record => record.replace(/[()]/g, '').split(',')); // Split the string into separate user records (based on `),(` pattern)
-                    
-                    userRecords.forEach(record => {
-                        // Clean each record and push to userMatches
-                        userMatches.push({
-                            username: record[0].replace(/'/g, ''),
-                            first_name: record[1] ? record[1].replace(/'/g, '') : null,
-                            last_name: record[2] ? record[2].replace(/'/g, '') : null,
-                            password: record[3].replace(/'/g, '')
-                        });
-                    });
-                }
-
-                resolve(userMatches); // Return array of all user data found
-            }
-        });
-    });
-}
 
 export async function setupDatabase() {
     try {
@@ -189,6 +56,33 @@ export async function setupDatabase() {
             )
         `);
 
+        // Insert default users if they don’t exist
+        const [existingUsers] = await pool.query('SELECT * FROM users');
+
+        for (const user of existingUsers) {
+            const [rows] = await pool.query(
+                'SELECT 1 FROM users WHERE (first_name = ? AND last_name = ?) OR username = ? LIMIT 1',
+                [user.first_name, user.last_name, user.username] 
+            );
+        
+            if (rows.length === 0) {
+                const hashedPassword = await bcrypt.hash(user.password, 10);
+                await pool.query(
+                    'INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)',
+                    [user.username, user.first_name, user.last_name, hashedPassword]
+                );
+            }
+        }
+
+        return pool; 
+    } catch (err) {
+        console.error('Database setup failed:', err);
+        throw err; 
+    }
+}
+
+
+
         // await pool.query(`
         //     CREATE TABLE IF NOT EXISTS tasks (
         //         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -215,32 +109,16 @@ export async function setupDatabase() {
 
         // // // Read the SQL file and extract users
         // const existingUsers = await readSql(dumpFilePath);
-        const existingUsers = [
-            ['lmcastrillon', 'Lorraine', 'Castrillon', 'password123'],
-            ['wengcastrillon', 'Weng', 'Castrillon', 'password456'],
-            ['gbpursuit', 'Gavril', 'Coronel', 'password789'],
-            ['marcuspilapil', 'Marcus', 'Pilapil', 'password000'],
-            ['newDummy', 'Dummy', 'Account', 'dummypassword'],
-            ['g', 'gg', null, 'ggg'],
-        ];
+        // const existingUsers = [
+        //     ['lmcastrillon', 'Lorraine', 'Castrillon', 'password123'],
+        //     ['wengcastrillon', 'Weng', 'Castrillon', 'password456'],
+        //     ['gbpursuit', 'Gavril', 'Coronel', 'password789'],
+        //     ['marcuspilapil', 'Marcus', 'Pilapil', 'password000'],
+        //     ['newDummy', 'Dummy', 'Account', 'dummypassword'],
+        //     ['g', 'gg', null, 'ggg'],
+        // ];
 
-        // Insert default users if they don’t exist
-        for (const user of existingUsers) {
-            const [rows] = await pool.query(
-                'SELECT 1 FROM users WHERE (first_name = ? AND last_name = ?) OR username = ? LIMIT 1',
-                [user[1], user[2], user[0]]
-            );
-
-            if (rows.length === 0) {
-                const hashedPassword = await bcrypt.hash(user[3], 10);
-                await pool.query(
-                    'INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)',
-                    [user[0], user[1], user[2], hashedPassword]
-                );
-            }
-        }
-
-        // Hash the passwords for users if not already hashed
+                // Hash the passwords for users if not already hashed
         // for (const user of existingUsers) {
         //     if (user.password && user.password.startsWith('$2')) { // Common start of hashed values
         //         continue; // Password is already hashed, skip it
@@ -255,10 +133,3 @@ export async function setupDatabase() {
         //         );
         //     }
         // }
-
-        return pool; // Return the connection pool
-    } catch (err) {
-        console.error('Database setup failed:', err);
-        throw err; // Propagate the error to the caller
-    }
-}

@@ -1,10 +1,9 @@
 import express from 'express';
-import fs from 'fs';
 import path from 'path';
 import connectLivereload from 'connect-livereload';
 import session from 'express-session';
 import { fileURLToPath } from 'url';
-import { server, account, task } from './functions-app.js';
+import { server, account, task, limiter } from './functions-app.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +22,12 @@ app.use(
         saveUninitialized: true,
     })
 );
+
+// Prevent storing history
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
 
 // Serve static files from the "internal" folder
 app.use('/internal', express.static(easyPath));
@@ -47,7 +52,6 @@ app.get('/api/:type', async (req, res) => {
         console.error('Error in task API:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
-
 });
 
 app.get('/check-session', (req, res) => {
@@ -58,39 +62,32 @@ app.get('/check-session', (req, res) => {
     }
 });
 
-const validViews = ['sign-in', 'create-account'];
+app.use('/internal/public', express.static(path.join(easyPath, 'public')));
+app.use('/internal/protected', express.static(path.join(easyPath, 'protected')));
 
-// Dynamic route to handle /internal/:page/:view
+const validViews = ['sign-in'];
+
 app.get('/internal/:page/:view?', (req, res) => {
     const { page, view } = req.params;
 
-    // Get all the HTML files in the "internal" folder
-    const validPages = fs.readdirSync(easyPath).filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html')); // Remove the ".html" extension
-    const publicPages = ['welcome', 'login'];
+    server.getValidPages(easyPath, (err, { public: publicPages, protected: protectedPages }) => {
+        if (err) return res.status(500).send('Error reading files');
 
-    if (validPages.includes(page)) {
         if (publicPages.includes(page)) {
-            if (page === 'login') {
-                if (view && validViews.includes(view)) {
-                    return res.sendFile(path.join(easyPath, `${page}.html`));
-                } else {
-                    server.isAuthenticated(req, res, () => {
-                        return res.sendFile(path.join(easyPath, `${page}.html`));
-                    });
-                } 
-            } else if (page === 'welcome') {
-                return res.sendFile(path.join(easyPath, `${page}.html`));
+            if (page === 'login' && (!view || validViews.includes(page))) {
+                return server.isAuthenticated(req, res, () => servePage(res, path.join(easyPath, 'public', `${page}.html`)));
             }
-        } else {
-            // Handle protected pages (authentication required)
-            server.isAuthenticated(req, res, () => {
-                return res.sendFile(path.join(easyPath, `${page}.html`));
+            return server.servePage(res, path.join(easyPath, 'public', `${page}.html`));
+        }
+
+        if (protectedPages.includes(page)) {
+            return server.isAuthenticated(req, res, () => {
+                server.servePage(res, path.join(easyPath, 'protected', `${page}.html`));
             });
         }
 
-    } else {
-        res.status(404).send('Page not found');
-    }
+        return res.status(404).send('Page not found');
+    });
 });
 
 // API to submit / filter a task
@@ -119,29 +116,29 @@ app.post('/api/tasks/:type', async (req, res) => {
 });
 
 // Login route
-app.post('/login/:view', async (req, res) => {
-    const { view } = req.params;
+app.post('/api/auth/:action', async (req, res) => {
+    const { action } = req.params;
 
-    // Validate the view parameter
-    if (validViews.includes(view)) {
-        if (view === 'sign-in') {
-            const { username, password } = req.body; // Only expect username and password for sign-in
-            await account.signIn(app, req, res, username, password);
-        } else if (view === 'create-account') {
-            const { username, name, password } = req.body; // Expect username, name, and password for account creation
-            await account.createAccount(app, req, res, username, name, password);
-        } 
-    } else {
-        return res.status(400).json({ error: 'Invalid view' });
+    if (action === 'sign-in') {
+        const { username, password } = req.body;
+        return account.signIn(app, req, res, username, password);
+    } 
+    
+    if (action === 'create-account') {
+        const { username, name, password } = req.body;
+        return account.createAccount(app, req, res, username, name, password);
     }
-});
+
+    return res.status(400).json({ error: 'Invalid authentication action' })
+})
 
 // Logout route
 app.post('/logout', (req, res) => {
+
     req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to log out' });
-        }
+        if (err) return res.status(500).json({ error: 'Failed to log out' });
+
+        res.clearCookie('connect.sid', { path: '/' });
         res.status(200).json({ success: true });
     });
 });
@@ -184,23 +181,31 @@ app.put('/api/tasks/:taskId', async (req, res) => {
         const db = app.locals.db;
         const taskId = req.params.taskId;
 
-        const {
-            taskDate, taskStatus, severity, taskType, taskDescription,
-            itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
-            dateReq, dateRec, dateStart, dateFin
-        } = req.body;
+        // const {
+        //     taskDate, taskStatus, severity, taskType, taskDescription,
+        //     itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
+        //     dateReq, dateRec, dateStart, dateFin
+        // } = req.body;
 
         // Convert empty values to NULL
         const convertToNull = (value) => (value === '' ? null : value);
         const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
 
-        const updatedFields = [
-            isValidDate(taskDate), convertToNull(taskStatus), convertToNull(severity), convertToNull(taskType),
-            convertToNull(taskDescription), convertToNull(itInCharge), convertToNull(department), convertToNull(departmentNo),
-            convertToNull(requestedBy), convertToNull(approvedBy), convertToNull(itemName), convertToNull(deviceName),
-            convertToNull(applicationName), isValidDate(dateReq), isValidDate(dateRec), isValidDate(dateStart),
-            isValidDate(dateFin), taskId
-        ];
+        const validatedFields = Object.fromEntries(
+            Object.entries(req.body).map(([key, value]) => [
+                key, key.toLowerCase().includes('date') ? isValidDate(value) : convertToNull(value)
+            ])
+        );
+
+        // const updatedFields = [
+        //     isValidDate(taskDate), convertToNull(taskStatus), convertToNull(severity), convertToNull(taskType),
+        //     convertToNull(taskDescription), convertToNull(itInCharge), convertToNull(department), convertToNull(departmentNo),
+        //     convertToNull(requestedBy), convertToNull(approvedBy), convertToNull(itemName), convertToNull(deviceName),
+        //     convertToNull(applicationName), isValidDate(dateReq), isValidDate(dateRec), isValidDate(dateStart),
+        //     isValidDate(dateFin), taskId
+        // ];
+
+        const updatedFields = [...Object.values(validatedFields), taskId];
 
         const [result] = await db.query(`
             UPDATE tasks SET 

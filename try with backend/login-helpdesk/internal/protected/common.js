@@ -1,0 +1,177 @@
+export const UI = {
+
+    // Functions
+    handleSidebarState: function() {
+        const sidebarCheckbox = document.getElementById("check");
+    
+        if (!sidebarCheckbox) return; 
+    
+        // Set the checkbox based on the stored state
+        if (localStorage.getItem("sidebarState") === "open") {
+            sidebarCheckbox.checked = true;
+        } else {
+            sidebarCheckbox.checked = false;
+        }
+    
+        // Listen for checkbox change events
+        sidebarCheckbox.addEventListener("change", () => {
+            if (sidebarCheckbox.checked) {
+                localStorage.setItem("sidebarState", "open");
+            } else {
+                localStorage.setItem("sidebarState", "closed");
+            }
+        });
+    
+        let lastWidth = window.innerWidth;
+
+        window.addEventListener('resize', () => {
+            if (lastWidth !== window.innerWidth) {
+                localStorage.setItem("sidebarState", "closed");
+                sidebarCheckbox.checked = false; 
+                lastWidth = window.innerWidth; 
+            }
+        });
+    },
+    
+
+    handle_darkmode: function(toggleSelector) {
+        let darkmode = localStorage.getItem('dark-mode');
+        const toggleSwitch = document.querySelector(toggleSelector);
+        
+        const enableDarkMode = () => {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('dark-mode', 'active');
+        }
+        
+        const disableDarkMode = () => {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('dark-mode', null);
+        }
+    
+        if(darkmode === 'active') enableDarkMode()
+        
+        toggleSwitch.addEventListener('click', function(event) {
+            event.preventDefault();
+            darkmode = localStorage.getItem('dark-mode');
+            darkmode !== 'active' ? enableDarkMode() : disableDarkMode();
+
+        })
+    
+    },
+    
+    page_navigation: function(buttonId) {
+        const button = document.getElementById(buttonId);    
+        let url = "/internal/";
+
+        if (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.replace(url + buttonId);
+            });
+        }
+    },
+
+    closeModal: function(modalId, check) {
+        const modal = document.getElementById(modalId);
+        const form = document.getElementById('newTaskForm'); // Assuming form is the same for task modal
+        console.log("Modal:", modal);
+        if (modal) {
+            // console.log("Modal:", modal);
+            modal.style.display = "none";
+            if (check && form) {
+                form.reset(); // Reset form if check is true
+            }
+        }
+    },
+
+    closeOutsideModal: function(event, content, close) {
+        const targetContent = document.getElementById(content);
+        if (event) {
+            // console.log("Event target:", event.target);
+    
+            if (event.target != targetContent) {
+                console.log(event.target, targetContent, close);
+                UI.closeModal(close, close === 'taskModal');
+            }
+        }
+    },
+
+    logoutFunction: function(bool=false) {
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                localStorage.setItem("sidebarState", "closed");
+                
+                let text = "/internal/"
+                text += (bool) ? 'login/sign-in' : 'welcome';
+
+                window.location.replace(text);
+    
+            } else {
+                console.error('Logout failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error logging out:', error);
+        });
+    },
+
+    dropdownToggle: function() {
+        const logoutButton = document.querySelector(".logout-btn");
+        const profile = document.querySelector(".user-profile");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        const logoutText = document.getElementById('logoutText');
+
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            dropdownMenu.classList.toggle("show");
+        }
+
+        logoutButton.addEventListener("click", toggleDropdown);
+        profile.addEventListener("click", toggleDropdown);
+
+        document.addEventListener("click", function(event) {
+            if (!dropdownMenu.contains(event.target) && !logoutButton.contains(event.target)) {
+                dropdownMenu.classList.remove("show");
+            }
+        });
+
+        logoutText.addEventListener("click", function(event) {
+            event.preventDefault();
+            UI.logoutFunction();
+        });
+
+    },
+
+    reflectUsername: async function() {
+        try {
+            const response = await fetch('/api/session-user');
+            const data = await response.json();
+
+            if (data.fullName) {
+                // Dynamically update the user's full name
+                console.log(data);
+                const firstName = data.fullName.split(' ')[0];
+                document.getElementById('userFullName').textContent = firstName; 
+                document.getElementById("pagename").textContent = data.username;
+            } 
+        } catch (err) {
+            console.error('Error fetching session user:', err);
+            window.location.replace('/internal/welcome');
+        }
+    },
+
+    // make async soon if may backend na
+    showProfile: function () {
+        const profile = document.getElementById('profileText');
+        profile.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.location.replace('/internal/profile')
+        });
+    }
+};
