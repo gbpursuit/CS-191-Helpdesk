@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
 
     // const createBack = document.querySelector('.create-back');
     // createBack.addEventListener('click', function(event){
@@ -13,6 +13,19 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
         window.location.replace('/internal/dashboard');
     });
+
+    async function neww () {
+        try {
+            const response = await fetch('/api/session-user');
+            const data = await response.json();
+
+            if (data.fullName) {
+                document.getElementById("pagename").textContent = data.fullName;
+            } 
+        } catch (err) {
+            console.error('Error fetching session user:', err);
+        }
+    }
 
     // prevButtons.forEach(button => {
     //     button.addEventListener('click', function(event) {
@@ -65,9 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
-    applyListener();
+    // applyListener();
+    await neww();
     
-    
+});
 
 
     // const viewList = document.getElementById('overBiewButton');
@@ -111,6 +125,3 @@ document.addEventListener("DOMContentLoaded", function () {
     //     event.preventDefault();
     //     replacePage("security");
     // });
-
-
-});

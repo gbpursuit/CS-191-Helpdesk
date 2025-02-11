@@ -62,19 +62,22 @@ img {
 
 .big-container {
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     background-color: var(--bg-color);
     align-items: center;
     justify-content: center;
     padding: 10px;
+    /* background-color: green; */
 }
 
 .p-container {
     display: flex;
     flex-direction: column;
-    background: linear-gradient(to bottom, var(--v1-gray) 20%, var(--whitesmoke)); 
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* background: linear-gradient(to bottom, var(--v1-gray) 20%, var(--whitesmoke)); 
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); */
+    /* background-color: blue; */
     border-radius: 10px;
     padding: 20px;
     text-align: center;
@@ -82,20 +85,24 @@ img {
     padding: 10px;
     width: 100%;
     max-width: 700px;
-    gap: 10px;
+    /* gap: 5px; */
 }
 
 .header-container {
-    position: fixed;
     display: flex;
-    flex-grow: 1;
-    top:0;
-    left: 10px;
     margin-top: 10px;
     width: 100%;
-
+    /* background-color: red; */
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
+.profile-page {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+}
+/* 
 .create-back {
     font-size: 1rem;
     color: var(--white);
@@ -115,17 +122,43 @@ img {
 
 .create-back:active {
     transform: scale(0.95);
-}
+} */
 
-.image-container {
+.start-info {
     width: 100%;
-    height: 50%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
     /* background-color: green; */
 }
 
+.image-container {
+    display: flex;
+    width: 50%; 
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-color);
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.new-image {
+    width: 100%;  
+    height: 100%;   
+    object-fit: cover; /* Or "cover" depending on your desired effect */
+}
+
+/* .information {
+    background-color: yellow;
+} */
+
 .content-container {
     width: 100%;
-    height: 50%;
+    height: 10%;
 }
 
 .bottom-side {
@@ -141,11 +174,12 @@ img {
 }
 
 .first-list li {
-    width: 50px; 
-    height: 50px;
+    width: 75px; 
+    height: 75px;
     transition: all 0.25s ease-out;
+    /* transition: width 1.2s ease, height 1.2s ease; */
     overflow: hidden;
-    border-radius: 30px;
+    border-radius: 45px;
     background-color: transparent;
     display: flex;
     align-items: center;
@@ -162,7 +196,7 @@ img {
     white-space: nowrap;
     color: var(--text-color);
     padding: 10px;
-    font-size: 18px;
+    font-size: 21px;
 }
 
 .first-list li i {
@@ -181,25 +215,25 @@ img {
 }
 
 .first-list li.t-home:hover {
-    width: 100px; 
+    width: 120px; 
     background: #E26750;
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .first-list li.t-acc:hover {
-    width: 120px;
+    width: 144px;
     background: #B7163C; 
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .first-list li.t-sec:hover {
-    width: 120px;
+    width: 144px;
     background: #6ECCD1; 
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .first-list li.t-task:hover {
-    width: 140px;
+    width: 168px;
     background: #2A7BAB; 
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
@@ -299,6 +333,48 @@ img {
         gap: 20px;
     }
 
+}
+
+@media (max-width: 850px) {
+    .p-container {
+        gap: 20px;
+    }
+
+    .first-list li {
+        /* transition: width 1.2s ease, height 1.2s ease; */
+        width: 50px; 
+        height: 50px;
+        border-radius: 30px;
+    }
+    
+    .first-list li a {
+        font-size: 18px;
+    }
+
+    .first-list li.t-home:hover {
+        width: 90px; 
+        background: #E26750;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
+    .first-list li.t-acc:hover {
+        width: 110px;
+        background: #B7163C; 
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
+    .first-list li.t-sec:hover {
+        width: 110px;
+        background: #6ECCD1; 
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
+    .first-list li.t-task:hover {
+        width: 130px;
+        background: #2A7BAB; 
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
 }
 
 /* ======================== Security Page ========================== */  
