@@ -9,12 +9,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     // const prevButtons = document.querySelectorAll('.prev');
     const homeButton = document.querySelector('.t-home');
 
-    homeButton.addEventListener('click', function(event){
+    homeButton.addEventListener('click', function(event) {
         event.preventDefault();
-        window.location.replace('/internal/dashboard');
+        
+        setTimeout(() => {
+            window.location.replace('/internal/dashboard');
+        }, 250); 
     });
 
-    async function neww () {
+    async function get_user_profile() {
         try {
             const response = await fetch('/api/session-user');
             const data = await response.json();
@@ -34,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     //     });
     // });
 
-
     const boxes = {
         profile: 'firstCol',
         accountPrimary: 'acctBox',
@@ -52,8 +54,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         pending: document.getElementById('pendingPage')
     };
     
-    function applyListener() {
-        // Initially hide all previous buttons
+    function apply_listener() {
         prevButtons.forEach(button => button.style.display = "none");
 
         Object.entries(boxes).forEach(([key, id]) => {
@@ -78,50 +79,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
     
-    // applyListener();
-    await neww();
-    
+    // apply_listener();
+    await get_user_profile();
 });
-
-
-    // const viewList = document.getElementById('overBiewButton');
-    // const profList = document.getElementById("profileButton");
-    // const acctList = document.getElementById("accountButton");
-    // const secList = document.getElementById("securityButton");
-
-    // const pages = {
-    //     summarized: document.getElementById('summarizedContent'),
-    //     profile: document.getElementById("personalPage"),
-    //     account: document.getElementById("accountPage"),
-    //     security: document.getElementById("securityPage"),
-    // };
-
-    // function replacePage(targetPage) {
-    //     Object.values(pages).forEach(page => page.style.display = "none");
-        
-    //     if (targetPage === 'summarized') {
-    //         pages[targetPage].style.display = "flex";
-    //         return;
-    //     }
-    //     pages[targetPage].style.display = "block";
-    // }
-
-    // viewList.addEventListener("click", function (event) {
-    //     event.preventDefault();
-    //     replacePage("summarized");
-    // });
-
-    // profList.addEventListener("click", function (event) {
-    //     event.preventDefault();
-    //     replacePage("profile");
-    // });
-
-    // acctList.addEventListener("click", function (event) {
-    //     event.preventDefault();
-    //     replacePage("account");
-    // });
-
-    // secList.addEventListener("click", function (event) {
-    //     event.preventDefault();
-    //     replacePage("security");
-    // });

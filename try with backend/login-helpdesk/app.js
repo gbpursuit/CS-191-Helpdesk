@@ -40,10 +40,10 @@ app.get('/api/:type', async (req, res) => {
     try {
         switch(type) {
             case 'session-user':
-                await task.sessionUser(db, req, res);
+                await task.session_user(db, req, res);
                 break;
             case 'tasks':
-                await task.getTask(db, req, res);
+                await task.get_task(db, req, res);
                 break;
             default:
                 res.status(400).json({ error: 'Invalid task type' });
@@ -51,14 +51,6 @@ app.get('/api/:type', async (req, res) => {
     } catch (err) {
         console.error('Error in task API:', err);
         res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-app.get('/check-session', (req, res) => {
-    if (req.session && req.session.username) {
-        res.json({ loggedIn: true });
-    } else {
-        res.json({ loggedIn: false });
     }
 });
 
@@ -70,19 +62,19 @@ const validViews = ['sign-in'];
 app.get('/internal/:page/:view?', (req, res) => {
     const { page, view } = req.params;
 
-    server.getValidPages(easyPath, (err, { public: publicPages, protected: protectedPages }) => {
+    server.get_valid_pages(easyPath, (err, { public: publicPages, protected: protectedPages }) => {
         if (err) return res.status(500).send('Error reading files');
 
         if (publicPages.includes(page)) {
             if (page === 'login' && (!view || validViews.includes(page))) {
-                return server.isAuthenticated(req, res, () => servePage(res, path.join(easyPath, 'public', `${page}.html`)));
+                return server.is_authenticated(req, res, () => serve_page(res, path.join(easyPath, 'public', `${page}.html`)));
             }
-            return server.servePage(res, path.join(easyPath, 'public', `${page}.html`));
+            return server.serve_page(res, path.join(easyPath, 'public', `${page}.html`));
         }
 
         if (protectedPages.includes(page)) {
-            return server.isAuthenticated(req, res, () => {
-                server.servePage(res, path.join(easyPath, 'protected', `${page}.html`));
+            return server.is_authenticated(req, res, () => {
+                server.serve_page(res, path.join(easyPath, 'protected', `${page}.html`));
             });
         }
 
@@ -91,7 +83,7 @@ app.get('/internal/:page/:view?', (req, res) => {
 });
 
 // API to submit / filter a task
-app.post('/api/tasks/:type', async (req, res) => {
+app.post('/api/tasks/:type', limiter.task_limit, async (req, res) => {
     const { type } = req.params;
     const db = app.locals.db;
 
@@ -99,12 +91,6 @@ app.post('/api/tasks/:type', async (req, res) => {
         switch(type) {
             case 'add':
                 await task.addTask(db, req, res);
-                break;
-            case 'search-input':
-                await task.searchTask(db, req, res);
-                break;
-            case 'filterBy':
-                await task.filterBy(db, req, res);
                 break;
             default:
                 res.status(400).json({ error: 'Invalid task type' });
@@ -116,12 +102,12 @@ app.post('/api/tasks/:type', async (req, res) => {
 });
 
 // Login route
-app.post('/api/auth/:action', async (req, res) => {
+app.post('/api/auth/:action', limiter.login_limit, async (req, res) => {
     const { action } = req.params;
 
     if (action === 'sign-in') {
         const { username, password } = req.body;
-        return account.signIn(app, req, res, username, password);
+        return account.sign_in(app, req, res, username, password);
     } 
     
     if (action === 'create-account') {
@@ -144,7 +130,7 @@ app.post('/logout', (req, res) => {
 });
 
 // Delete Tasks
-app.delete('/api/tasks/:taskId', async (req, res) => {
+app.delete('/api/tasks/:taskId', limiter.delete_limit, async (req, res) => {
     try {
         const db = app.locals.db;
         const { taskId } = req.params;
@@ -181,12 +167,6 @@ app.put('/api/tasks/:taskId', async (req, res) => {
         const db = app.locals.db;
         const taskId = req.params.taskId;
 
-        // const {
-        //     taskDate, taskStatus, severity, taskType, taskDescription,
-        //     itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
-        //     dateReq, dateRec, dateStart, dateFin
-        // } = req.body;
-
         // Convert empty values to NULL
         const convertToNull = (value) => (value === '' ? null : value);
         const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
@@ -196,14 +176,6 @@ app.put('/api/tasks/:taskId', async (req, res) => {
                 key, key.toLowerCase().includes('date') ? isValidDate(value) : convertToNull(value)
             ])
         );
-
-        // const updatedFields = [
-        //     isValidDate(taskDate), convertToNull(taskStatus), convertToNull(severity), convertToNull(taskType),
-        //     convertToNull(taskDescription), convertToNull(itInCharge), convertToNull(department), convertToNull(departmentNo),
-        //     convertToNull(requestedBy), convertToNull(approvedBy), convertToNull(itemName), convertToNull(deviceName),
-        //     convertToNull(applicationName), isValidDate(dateReq), isValidDate(dateRec), isValidDate(dateStart),
-        //     isValidDate(dateFin), taskId
-        // ];
 
         const updatedFields = [...Object.values(validatedFields), taskId];
 
@@ -233,4 +205,4 @@ app.use((req, res) => {
 });
 
 // Start the server
-server.launchServer(app);
+server.launch_server(app);

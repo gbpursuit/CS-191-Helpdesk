@@ -1,7 +1,57 @@
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 
-export async function setupDatabase() {
+export async function dump_to_sql() {
+    return new Promise((resolve, reject) => {
+        const dumpFilePath = path.join(__dirname, 'users_dump.sql');
+        process.env.MYSQL_PWD = 'password';  // Replace 'password' with your MySQL root password
+        
+        const command = `mysqldump -u root simple_helpdesk users > "${dumpFilePath}"`;
+
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error executing mysqldump: ${error}`);
+            } else if (stderr) {
+                reject(`stderr: ${stderr}`);
+            } else {
+                resolve(dumpFilePath); // Return the path to the SQL file
+            }
+        });
+    });
+}
+
+async function read_sql(filePath) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                reject(`Error reading SQL file: ${err}`);
+            } else {
+                const userInsertPattern = /INSERT INTO `users` VALUES\s*\((.*?)\);/g;
+                const userMatches = [];
+                let match;
+
+                while ((match = userInsertPattern.exec(data)) !== null) {
+                    const userValues = match[1]; // This contains all the user data in a single string
+                    const userRecords = userValues.split("),(").map(record => record.replace(/[()]/g, '').split(',')); // Split the string into separate user records (based on `),(` pattern)
+                    
+                    userRecords.forEach(record => {
+                        // Clean each record and push to userMatches
+                        userMatches.push({
+                            username: record[0].replace(/'/g, ''),
+                            first_name: record[1] ? record[1].replace(/'/g, '') : null,
+                            last_name: record[2] ? record[2].replace(/'/g, '') : null,
+                            password: record[3].replace(/'/g, '')
+                        });
+                    });
+                }
+
+                resolve(userMatches); // Return array of all user data found
+            }
+        });
+    });
+}
+
+export async function setup_database() {
     try {
         // Create a connection without specifying a database
         const connection = await mysql.createConnection({
@@ -80,56 +130,3 @@ export async function setupDatabase() {
         throw err; 
     }
 }
-
-
-
-        // await pool.query(`
-        //     CREATE TABLE IF NOT EXISTS tasks (
-        //         id INT AUTO_INCREMENT PRIMARY KEY,
-        //         taskId VARCHAR(10) UNIQUE NOT NULL,
-        //         taskStatus VARCHAR(50),
-        //         taskDate DATE DEFAULT NULL,
-        //         itInCharge VARCHAR(100),
-        //         taskType VARCHAR(100),
-        //         taskDescription TEXT,
-        //         severity VARCHAR(50),
-        //         requestedBy VARCHAR(100),
-        //         approvedBy VARCHAR(100),
-        //         dateReq DATE DEFAULT NULL,
-        //         dateRec DATE DEFAULT NULL,
-        //         dateStart DATE DEFAULT NULL,
-        //         dateFin DATE DEFAULT NULL
-        //     )
-        // `);
-
-        // const existingTable = await pool.query('SELECT * FROM table');
-
-        // // Dump the users data to a SQL file
-        // const dumpFilePath = await dumpToSql();
-
-        // // // Read the SQL file and extract users
-        // const existingUsers = await readSql(dumpFilePath);
-        // const existingUsers = [
-        //     ['lmcastrillon', 'Lorraine', 'Castrillon', 'password123'],
-        //     ['wengcastrillon', 'Weng', 'Castrillon', 'password456'],
-        //     ['gbpursuit', 'Gavril', 'Coronel', 'password789'],
-        //     ['marcuspilapil', 'Marcus', 'Pilapil', 'password000'],
-        //     ['newDummy', 'Dummy', 'Account', 'dummypassword'],
-        //     ['g', 'gg', null, 'ggg'],
-        // ];
-
-                // Hash the passwords for users if not already hashed
-        // for (const user of existingUsers) {
-        //     if (user.password && user.password.startsWith('$2')) { // Common start of hashed values
-        //         continue; // Password is already hashed, skip it
-        //     }
-
-        //     if (user.password) {
-        //         const hashedPassword = await bcrypt.hash(user.password, 10);
-
-        //         await pool.query(
-        //             'UPDATE users SET password = ? WHERE username = ?',
-        //             [hashedPassword, user.username]
-        //         );
-        //     }
-        // }

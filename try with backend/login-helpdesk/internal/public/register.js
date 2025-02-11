@@ -2,7 +2,7 @@ import { UI } from '../protected/common.js';
 
 document.addEventListener("DOMContentLoaded", async function() {
 
-    function toggleView() {
+    function toggle_viedw() {
         const path = window.location.pathname.split('/').pop();
 
         const createAccountPage = document.getElementById('createAccountPage');
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         } 
     }
 
-    function handleNewAccount() {
+    function handle_new_account() {
         const newAccForm = document.getElementById('newAccForm');
         const usernameInput = document.getElementById('new-user');
         const nameInput = document.getElementById('new-name');
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         const usernameError = document.getElementById('newError');
         const createBack = document.getElementById('createBack');
 
-        function checkPassword(password) {
+        function check_password(password) {
             return /^[a-zA-Z0-9]+$/.test(password);
         }
 
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             const enteredName = nameInput.value.trim();
             const enteredPassword = passwordInput.value.trim();
 
-            if (!checkPassword(enteredPassword)) {
+            if (!check_password(enteredPassword)) {
                 showError(usernameInput, usernameError, "Password must contain only alphanumeric characters!");
                 return;
             }
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         })
     }
 
-    toggleView();
-    handleNewAccount();
+    toggle_viedw();
+    handle_new_account();
     UI.handle_darkmode('.d-mode-again');
 })

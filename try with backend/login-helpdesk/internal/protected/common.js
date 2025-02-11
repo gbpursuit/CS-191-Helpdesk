@@ -1,7 +1,6 @@
 export const UI = {
 
-    // Functions
-    handleSidebarState: function() {
+    handle_sidebar: function() {
         const sidebarCheckbox = document.getElementById("check");
     
         if (!sidebarCheckbox) return; 
@@ -32,7 +31,6 @@ export const UI = {
             }
         });
     },
-    
 
     handle_darkmode: function(toggleSelector) {
         let darkmode = localStorage.getItem('dark-mode');
@@ -58,20 +56,8 @@ export const UI = {
         })
     
     },
-    
-    page_navigation: function(buttonId) {
-        const button = document.getElementById(buttonId);    
-        let url = "/internal/";
 
-        if (button) {
-            button.addEventListener('click', function (event) {
-                event.preventDefault();
-                window.location.replace(url + buttonId);
-            });
-        }
-    },
-
-    closeModal: function(modalId, check) {
+    close_modal: function(modalId, check) {
         const modal = document.getElementById(modalId);
         const form = document.getElementById('newTaskForm'); // Assuming form is the same for task modal
         console.log("Modal:", modal);
@@ -84,19 +70,18 @@ export const UI = {
         }
     },
 
-    closeOutsideModal: function(event, content, close) {
+    close_outside_modal: function(event, content, close) {
         const targetContent = document.getElementById(content);
         if (event) {
-            // console.log("Event target:", event.target);
     
             if (event.target != targetContent) {
                 console.log(event.target, targetContent, close);
-                UI.closeModal(close, close === 'taskModal');
+                UI.close_modal(close, close === 'taskModal');
             }
         }
     },
 
-    logoutFunction: function(bool=false) {
+    logout_function: function(bool=false) {
         fetch('/logout', {
             method: 'POST',
             headers: {
@@ -121,19 +106,19 @@ export const UI = {
         });
     },
 
-    dropdownToggle: function() {
+    dropdown_toggle: function() {
         const logoutButton = document.querySelector(".logout-btn");
         const profile = document.querySelector(".user-profile");
         const dropdownMenu = document.getElementById("dropdownMenu");
         const logoutText = document.getElementById('logoutText');
 
-        function toggleDropdown(event) {
+        function toggle_dropdown(event) {
             event.stopPropagation();
             dropdownMenu.classList.toggle("show");
         }
 
-        logoutButton.addEventListener("click", toggleDropdown);
-        profile.addEventListener("click", toggleDropdown);
+        logoutButton.addEventListener("click", toggle_dropdown);
+        profile.addEventListener("click", toggle_dropdown);
 
         document.addEventListener("click", function(event) {
             if (!dropdownMenu.contains(event.target) && !logoutButton.contains(event.target)) {
@@ -143,12 +128,12 @@ export const UI = {
 
         logoutText.addEventListener("click", function(event) {
             event.preventDefault();
-            UI.logoutFunction();
+            UI.logout_function();
         });
 
     },
 
-    reflectUsername: async function() {
+    reflect_username: async function() {
         try {
             const response = await fetch('/api/session-user');
             const data = await response.json();
@@ -167,7 +152,7 @@ export const UI = {
     },
 
     // make async soon if may backend na
-    showProfile: function () {
+    show_profile: function () {
         const profile = document.getElementById('profileText');
         profile.addEventListener('click', (event) => {
             event.preventDefault();

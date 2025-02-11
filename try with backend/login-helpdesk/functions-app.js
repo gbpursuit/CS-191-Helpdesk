@@ -4,7 +4,7 @@ import portfinder from 'portfinder';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { setupDatabase } from './dbSetup.js';
+import { setup_database } from './dbSetup.js';
 import rateLimit from 'express-rate-limit'; // npm install express-rate-limit
 import validator from 'validator'; // npm install validator
 
@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const watchPath = path.join(__dirname, 'internal');
 
 export const server = {
-    startLiveReload: async function() {
+    start_live_reload: async function() {
         try {
             portfinder.basePort = 35729;
             const availablePort = await portfinder.getPortPromise();
@@ -31,7 +31,7 @@ export const server = {
         }
     },
 
-    startServer: async function(app) {
+    start_server: async function(app) {
         try {
             portfinder.basePort = 3000; // Starting point for finding the port
             const availablePort = await portfinder.getPortPromise();
@@ -45,21 +45,21 @@ export const server = {
         }
     },
 
-    launchServer: async function(app) {
+    launch_server: async function(app) {
         try {
-            const db = await setupDatabase();
+            const db = await setup_database();
             app.locals.db = db;
     
             // Start livereload and the server
-            await server.startLiveReload();
-            await server.startServer(app);
+            await server.start_live_reload();
+            await server.start_server(app);
         } catch (err) {
             console.error('Failed to set up the database:', err);
             process.exit(1); // Exit on critical failure
         } 
     },
 
-    isAuthenticated: function(req, res, next) {
+    is_authenticated: function(req, res, next) {
         if (req.session && req.session.username) {
             return next();  // Proceed if authenticated
         }
@@ -70,11 +70,11 @@ export const server = {
         }, 1000);  // Adjust the delay time as needed (in milliseconds)
     },
 
-    servePage: function(res, filePath) {
+    serve_page: function(res, filePath) {
         return res.sendFile(filePath);
     },
 
-    getValidPages: function(easyPath, callback) {
+    get_valid_pages: function(easyPath, callback) {
         const publicPath = path.join(easyPath, 'public');
         const protectedPath = path.join(easyPath, 'protected');
 
@@ -102,7 +102,7 @@ export const server = {
 }
 
 export const account = {
-    signIn: async function(app, req, res, username, password) {
+    sign_in: async function(app, req, res, username, password) {
         if (!username || !password) {
             return res.status(400).json({ error: 'Username and password are required' });
         }
@@ -141,7 +141,7 @@ export const account = {
         }
     },
 
-    createAccount: async function(app, req, res, username, name, password) {
+    create_account: async function(app, req, res, username, name, password) {
 
         // Prevent SQL Injection or security vulnerabilities
         username = username?.trim();
@@ -207,7 +207,7 @@ export const account = {
 
 export const task = { 
 
-    fetchingTasks: async function (db, bool = false, query = null, type = null, order = 'DESC', filterBy = null, value = null) {
+    fetching_tasks: async function (db, bool = false, query = null, type = null, order = 'DESC', filterBy = null, value = null) {
         let baseQuery = `SELECT * FROM tasks`;
         const params = [];
         const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
@@ -248,7 +248,7 @@ export const task = {
         }));
     },
 
-    addTask: async function (db, req, res) {
+    add_task: async function (db, req, res) {
         try {
             const {
                 taskId, taskDate, taskStatus, severity, taskType, taskDescription,
@@ -278,7 +278,7 @@ export const task = {
         }
     },
 
-    sessionUser: async function(db, req, res) {
+    session_user: async function(db, req, res) {
         try {
             if (req.session && req.session.username) {
                 const [rows] = await db.query(
@@ -308,7 +308,7 @@ export const task = {
         }
     },
 
-    getTask: async function (db, req, res) {
+    get_task: async function (db, req, res) {
         const { search, filterBy, value } = req.query; // Get search and filter values from the URL
     
         try {
@@ -317,23 +317,23 @@ export const task = {
             if (search && filterBy && value) {
                 // Apply both search for taskType and filter for another field
                 if (filterBy == 'taskDate' || filterBy == 'department') {
-                    tasks = await task.fetchingTasks(db, true, search, 'taskType', value, filterBy, value);
+                    tasks = await task.fetching_tasks(db, true, search, 'taskType', value, filterBy, value);
                 } else {
-                    tasks = await task.fetchingTasks(db, true, search, 'taskType', 'DESC', filterBy, value);
+                    tasks = await task.fetching_tasks(db, true, search, 'taskType', 'DESC', filterBy, value);
                 }
             } else if (search) {
                 // Apply only search for taskType
-                tasks = await task.fetchingTasks(db, true, search, 'taskType', 'DESC');
+                tasks = await task.fetching_tasks(db, true, search, 'taskType', 'DESC');
             } else if (filterBy && value) {
                 // Apply only filter
                 if (filterBy == 'taskDate' || filterBy == 'department') {
-                    tasks = await task.fetchingTasks(db, false, null, filterBy, value);
+                    tasks = await task.fetching_tasks(db, false, null, filterBy, value);
                 } else {
-                    tasks = await task.fetchingTasks(db, true, value, filterBy, 'DESC');
+                    tasks = await task.fetching_tasks(db, true, value, filterBy, 'DESC');
                 }
             } else {
                 // Fetch all tasks if no search or filter is provided
-                tasks = await task.fetchingTasks(db, false, null, 'id');
+                tasks = await task.fetching_tasks(db, false, null, 'id');
             }
     
             res.status(200).json(tasks);
@@ -346,19 +346,19 @@ export const task = {
 }
 
 export const limiter = {
-    loginLimit: rateLimit({
+    login_limit: rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 10, // Max 10 task submissions per 10 minutes
+        max: 10, // Max 10 task submissions per 15 minutes
         message: { error: 'Too many requests, please try again later.' }
     }),
 
-    taskLimit: rateLimit({
+    task_limit: rateLimit({
         windowMs: 10 * 60 * 1000, 
         max: 50, 
         message: { error: 'Task submission limit exceeded, try again later.' }
     }),
 
-    deleteLimit: rateLimit({
+    delete_limit: rateLimit({
         windowMs: 10 * 60 * 1000,
         max: 10,
         message: { error: 'Too many delete requests, try again later.'}

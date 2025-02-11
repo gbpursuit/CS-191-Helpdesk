@@ -101,6 +101,7 @@ img {
     font-family: 'Montserrat', sans-serif;
     font-weight: 800;
     font-size: 30px;
+    color: var(--dark-green);
 }
 /* 
 .create-back {
@@ -176,7 +177,7 @@ img {
 .first-list li {
     width: 75px; 
     height: 75px;
-    transition: all 0.25s ease-out;
+    transition: all 0.3s ease-out;
     /* transition: width 1.2s ease, height 1.2s ease; */
     overflow: hidden;
     border-radius: 45px;
@@ -242,16 +243,16 @@ img {
     z-index: 2;
     transform: scale(0);
     margin: 0;
-    transition: margin 0s ;
+    transition: margin 0s ease ;
 }
 
 .first-list li:hover a span {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1); /* Pops up */
+    transform: translate(-50%, -50%) scale(1); 
 }
 
 .first-list li:not(:hover) a span {
-    transition: opacity 0s ease-in-out; /* Instantly disappear */
+    transition: opacity 0s ease-in-out; 
     opacity: 0;
 }
 
@@ -264,7 +265,7 @@ img {
 
 @media (max-width: 1330px), (max-height: 850px) {
     .profile-account, .right-side{
-        max-width: 100%; /* Full width on smaller screens */
+        max-width: 100%; 
     }
 
     .right-side {
