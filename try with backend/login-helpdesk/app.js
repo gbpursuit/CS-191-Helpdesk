@@ -2,12 +2,32 @@ import express from 'express';
 import path from 'path';
 import connectLivereload from 'connect-livereload';
 import session from 'express-session';
+import multer from 'multer'; //npm install multer
 import { fileURLToPath } from 'url';
 import { server, account, task, limiter } from './functions-app.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const easyPath = path.join(__dirname, 'internal')
+
+const uploadDir = path.join(__dirname, "uploads");
+// Ensure the uploads directory exists
+import fs from "fs";
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+
+// Set up Multer storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/"); // Save files in the "uploads" directory
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}_${file.originalname}`); // Unique filename
+    }
+});
+
+const upload = multer({ storage });
 
 const app = express();
 app.use(connectLivereload());
@@ -90,7 +110,7 @@ app.post('/api/tasks/:type', limiter.task_limit, async (req, res) => {
     try {
         switch(type) {
             case 'add':
-                await task.addTask(db, req, res);
+                await task.add_task(db, req, res);
                 break;
             default:
                 res.status(400).json({ error: 'Invalid task type' });
@@ -98,6 +118,29 @@ app.post('/api/tasks/:type', limiter.task_limit, async (req, res) => {
     } catch (err) {
         console.error('Error in task API:', err);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(uploadDir));
+
+// API to handle profile image upload
+app.post("/api/upload-profile-image", upload.single("profileImage"), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const db = req.app.locals.db; // Get the database connection
+    const username = req.session.username; // Get user ID from session
+    const imagePath = `/uploads/${req.file.filename}`; // Path to store in DB
+
+    try {
+        // Update the user's profile image in the database
+        await db.query("UPDATE users SET profile_image = ? WHERE username = ?", [imagePath, username]);
+        res.json({ imageUrl: imagePath, message: "Profile image updated successfully!" });
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ error: "Database update failed" });
     }
 });
 

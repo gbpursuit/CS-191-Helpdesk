@@ -79,8 +79,12 @@ export async function setup_database() {
                 password VARCHAR(255)
             )
         `);
+
+        // await pool.query(`
+        //     ALTER TABLE if not exist users ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL;
+        // `);
         
-        // await pool.query(`DROP TABLE IF EXISTS tasks`);
+        //await pool.query(`DROP TABLE IF EXISTS tasks`);
 
         await pool.query(`
             CREATE TABLE IF NOT EXISTS tasks (
@@ -105,6 +109,12 @@ export async function setup_database() {
                 dateFin DATE DEFAULT NULL
             )
         `);
+
+        const [columns] = await pool.query("SHOW COLUMNS FROM users LIKE 'profile_image'");
+        if (columns.length === 0) {
+            await pool.query("ALTER TABLE users ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL;");
+        }
+        
 
         // Insert default users if they don’t exist
         const [existingUsers] = await pool.query('SELECT * FROM users');

@@ -1,6 +1,6 @@
 USE simple_helpdesk;
 
-SELECT username, first_name, last_name, `password`
+SELECT *
 FROM users
 ORDER BY username;
 

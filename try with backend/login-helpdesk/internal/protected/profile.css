@@ -135,7 +135,15 @@ img {
     /* background-color: green; */
 }
 
-.image-container {
+
+.image-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* .image-container {
     display: flex;
     width: 50%; 
     aspect-ratio: 1 / 1;
@@ -145,6 +153,28 @@ img {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+} */
+
+/* ========== Image Upload Section ========== */
+
+.image-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.image-container {
+    display: flex;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-color);
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: 3px solid var(--dark-green);
 }
 
 .new-image {
@@ -153,10 +183,62 @@ img {
     object-fit: cover; /* Or "cover" depending on your desired effect */
 }
 
-/* .information {
-    background-color: yellow;
-} */
 
+/* File Input Styling */
+.image-upload {
+    display: none;
+}
+
+.upload-btn {
+    background-color: var(--dark-green);
+    color: var(--white);
+    font-weight: 600;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.upload-btn:hover {
+    background-color: var(--dark-green2);
+    transform: scale(1.05);
+}
+
+.upload-btn:active {
+    transform: scale(0.95);
+}
+
+.upload-label {
+    font-size: 12px; 
+    color: var(--dark-green); 
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+    display: inline-block;
+}
+
+.upload-label:hover {
+    color: var(--dark-green2);
+    text-decoration: underline; /* Subtle hover effect */
+}
+
+
+
+/* ========== User Information ========== */
+
+.information {
+    background-color: var(--hint-green);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+/* ========== Sidebar Menu ========== */
 .content-container {
     width: 100%;
     height: 10%;
@@ -491,6 +573,8 @@ img {
         width: 90%;
     }
 }
+
+
 
 
 

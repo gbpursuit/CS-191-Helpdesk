@@ -20,9 +20,27 @@
         </div>
         <div id="profileContainer" class="p-container">
             <div id="startInformation" class="start-info">
-                <div id="imageC" class="image-container">
+                
+                <!-- <div id="imageC" class="image-container">
                     <img src="/internal/protected/dogpic.jpg" alt="Your paking face" class="new-image">
+                </div> -->
+
+                <!-- New Upload Image Section -->
+                <div id="imageUploadContainer" class="image-upload-container">
+                    <div id="imageC" class="image-container">
+                        <img id="profileImage" src="/internal/protected/dogpic.jpg" alt="Your profile picture" class="new-image">
+                    </div>
+                    
+                    <!-- Hidden file input -->
+                    <input type="file" id="imageUpload" class="image-upload" accept="image/*">
+                    
+                    <!-- Label styled as a button -->
+                    <label for="imageUpload" class="upload-label">Choose Image</label>
+                    
+                    <button id="uploadBtn" class="upload-btn">Save Changes</button>
                 </div>
+                
+
                 <div class="information">
                     <span class="page-name" id="pagename">Username</span>
                     <span class="page-name" id="uhm">-</span>
@@ -64,7 +82,7 @@
             </div>
         </div>
     </div>
-
+    <script src="/internal/protected/profile.js" type="module"></script>
     
 </body>
 </html>

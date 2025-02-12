@@ -448,16 +448,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         window.addTask = async (event) => {
             event.preventDefault();
 
-            const response = await fetch('/check-session');
-            const data = await response.json();
+            // const response = await fetch('/check-session');
+            // const data = await response.json();
             
-            console.log(data);
+            // console.log(data);
 
-            if (!data.loggedIn) {
-                alert("Session expired. Please log in again.");
-                window.location.replace('/internal/login/sign-in');
-                return;
-            }
+            // if (!data.loggedIn) {
+            //     alert("Session expired. Please log in again.");
+            //     window.location.replace('/internal/login/sign-in');
+            //     return;
+            // }
             
             const taskData = {
                 taskId: document.getElementById('taskId').value,

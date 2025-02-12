@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // const prevButtons = document.querySelectorAll('.prev');
     const homeButton = document.querySelector('.t-home');
+    const profileImage = document.getElementById('profileImage');
+    const imageUpload = document.getElementById('imageUpload');
+    const uploadBtn = document.getElementById('uploadBtn');
 
     homeButton.addEventListener('click', function(event) {
         event.preventDefault();
@@ -36,6 +39,62 @@ document.addEventListener("DOMContentLoaded", async function () {
     //         window.location.replace('/internal/profile');
     //     });
     // });
+
+    async function loadProfileImage() {
+        try {
+            const response = await fetch("/api/session-user");
+            const user = await response.json();
+    
+            if (user.profile_image) {
+                document.getElementById("profileImage").src = user.profile_image;
+            }
+        } catch (error) {
+            console.error("Failed to load profile image:", error);
+        }
+    }
+    
+
+    // Upload Image Preview
+    imageUpload.addEventListener("change", function () {
+        const file = imageUpload.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                profileImage.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    uploadBtn.addEventListener("click", async function () {
+        const file = imageUpload.files[0];
+        if (!file) {
+            alert("Please select an image first.");
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append("profileImage", file);
+    
+        try {
+            const response = await fetch("/api/upload-profile-image", {
+                method: "POST",
+                body: formData
+            });
+    
+            const result = await response.json(); // Try parsing response
+            if (!response.ok) throw new Error(result.message || "Upload failed");
+
+            profileImage.src = result.imageUrl;
+    
+            alert("Profile image updated successfully!");
+            console.log("Server Response:", result); // Log response
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            alert("Failed to upload image.");
+        }
+    });
+    
 
     const boxes = {
         profile: 'firstCol',
@@ -81,4 +140,5 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     // apply_listener();
     await get_user_profile();
+    await loadProfileImage();
 });
