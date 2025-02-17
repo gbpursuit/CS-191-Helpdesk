@@ -1,4 +1,4 @@
-import { UI } from './common.js';
+import { UI } from '../common.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
 
@@ -504,91 +504,92 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function search_filter() {
         let timeout;
-        const searchInput = document.querySelector('.search-input');
+        const searchInput = document.querySelector(".search-input");
 
-        const saveSearch = localStorage.getItem('searchQuery');
-        if(saveSearch) {
-            searchInput.value = saveSearch;
-        }
-    
-        searchInput.addEventListener('input', function () {
+        // Restore search input value from localStorage
+        const savedSearch = localStorage.getItem("searchQuery");
+        if (savedSearch) searchInput.value = savedSearch;
+
+        searchInput.addEventListener("input", function () {
             clearTimeout(timeout);
-    
             timeout = setTimeout(async () => {
                 const queryValue = searchInput.value.trim();
-                localStorage.setItem('searchQuery', queryValue);
+                localStorage.setItem("searchQuery", queryValue);
+                
                 const newUrl = new URL(window.location.href);
-    
-                if (queryValue) {
-                    newUrl.searchParams.set('search', queryValue);
-                } else {
-                    newUrl.searchParams.delete('search');
-                }
-    
-                window.history.pushState({}, '', newUrl);
+                queryValue ? newUrl.searchParams.set("search", queryValue) : newUrl.searchParams.delete("search");
+
+                window.history.pushState({}, "", newUrl);
                 await load_tasks(null, true); // Reload tasks with the new search query
             }, 500);
         });
     }
 
     function filter_dropdown() {
-        const filterSelect = document.querySelector('.filter-select');
-    
-        const newDropdown = {
-            taskStatus: document.querySelector('.status-options'),
-            taskDate: document.querySelector('.date-options'),
-            severity: document.querySelector('.severity-options'),
-            department: document.querySelector('.dept-options')
+        const filterSelect = document.querySelector(".filter-select");
+
+        const dropdowns = {
+            taskStatus: document.querySelector(".status-options"),
+            taskDate: document.querySelector(".date-options"),
+            severity: document.querySelector(".severity-options"),
+            department: document.querySelector(".dept-options")
         };
-    
-        Object.values(newDropdown).forEach(dropdown => { dropdown.style.display = 'none'; });
 
-        const saveFilterBy = localStorage.getItem('filterBy');
-        const saveValue = localStorage.getItem('filterValue');
-        if(saveFilterBy && newDropdown[saveFilterBy]){
-            filterSelect.value = saveFilterBy;
-            newDropdown[saveFilterBy].style.display = 'block';
-            newDropdown[saveFilterBy].value = saveValue;
+        // Hide all dropdowns initially
+        Object.values(dropdowns).forEach(dropdown => dropdown.style.display = "none");
+
+        // Restore previous filter state
+        const savedFilterBy = localStorage.getItem("filterBy");
+        const savedValue = localStorage.getItem("filterValue");
+
+        if (savedFilterBy && dropdowns[savedFilterBy]) {
+            filterSelect.value = savedFilterBy;
+            dropdowns[savedFilterBy].style.display = "block";
+            dropdowns[savedFilterBy].value = savedValue;
         }
-    
-        filterSelect.addEventListener('change', function () {
+
+        // Handle filter selection change
+        filterSelect.addEventListener("change", function () {
             const selectedFilter = this.value;
-    
-            Object.values(newDropdown).forEach(dropdown => {
-                dropdown.style.display = 'none';
-                dropdown.value = 'filter';
+
+            // Hide all dropdowns and reset values
+            Object.values(dropdowns).forEach(dropdown => {
+                dropdown.style.display = "none";
+                dropdown.value = "filter";
             });
-    
-            if (newDropdown[selectedFilter]) {
-                newDropdown[selectedFilter].style.display = 'block';
-    
-                newDropdown[selectedFilter].addEventListener('change', async function () {
-                    const newValue = this.value;
-    
-                    const newUrl = new URL(window.location.href);
-    
-                    if (newValue !== 'stop') {
-                        localStorage.setItem('filterBy', selectedFilter);
-                        localStorage.setItem('filterValue', newValue);
 
-                        newUrl.searchParams.set('filterBy', selectedFilter);
-                        newUrl.searchParams.set('value', newValue);
-                    } else {
-                        localStorage.removeItem('filterBy');
-                        localStorage.removeItem('filterValue');
-
-                        Object.values(newDropdown).forEach(dropdown => { dropdown.style.display = 'none'; });
-                        filterSelect.value = 'filter';
-                        newDropdown[selectedFilter].value = 'none';
-
-                        newUrl.searchParams.delete('filterBy');
-                        newUrl.searchParams.delete('value');
-                    }
-    
-                    window.history.pushState({}, '', newUrl);
-                    await load_tasks(null, true); // Reload tasks with the new filter applied
-                });
+            if (dropdowns[selectedFilter]) {
+                dropdowns[selectedFilter].style.display = "block";
             }
+        });
+
+        document.addEventListener("change", async function (event) {
+            const selectedDropdown = Object.values(dropdowns).find(dropdown => dropdown === event.target);
+            if (!selectedDropdown) return;
+
+            const selectedFilter = filterSelect.value;
+            const newValue = selectedDropdown.value;
+            const newUrl = new URL(window.location.href);
+
+            if (newValue !== "stop") {
+                localStorage.setItem("filterBy", selectedFilter);
+                localStorage.setItem("filterValue", newValue);
+                newUrl.searchParams.set("filterBy", selectedFilter);
+                newUrl.searchParams.set("value", newValue);
+            } else {
+                localStorage.removeItem("filterBy");
+                localStorage.removeItem("filterValue");
+
+                Object.values(dropdowns).forEach(dropdown => dropdown.style.display = "none");
+                filterSelect.value = "filter";
+                selectedDropdown.value = "none";
+
+                newUrl.searchParams.delete("filterBy");
+                newUrl.searchParams.delete("value");
+            }
+
+            window.history.pushState({}, "", newUrl);
+            await load_tasks(null, true); 
         });
     }
 

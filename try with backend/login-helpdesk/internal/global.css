@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    scroll-padding-top: 2rem;
+    scroll-behavior: smooth;
+}
+
+:root {
+    --white: white;
+    --dark-green: #05503a;
+    --dark-green2: #098560;
+    --hover-button: #204330;
+    --light-green: #90EE90;
+    --v1-gray: #E3E9E8;
+    --v2-gray: #ccc;
+    --v3-gray: #b3b0b0;
+    --hot-pink: #ff3223;
+    --bg-color: #f0f2f5;
+    --text-color: black;
+    --whitesmoke: whitesmoke;
+    --hint-green: #e8f5e9;
+    --new-border: #E3E9E8;
+    --btn: whitesmoke;
+    --disable-input: #e0e0e0;
+    --disable-text: #535353;
+    --new-white: white;
+    --table-b-shadow: rgba(0, 0, 0, 0.1);
+
+    --tsm-left: left 0.3s ease;
+    --tsm-width: width 0.3s ease;
+    --tsm-l-w: var(--tsm-left), var(--tsm-width);
+    --tsm-pad: padding-left 0.3s ease;
+}
+
+body.dark-mode {
+    --white: #131313;
+    --dark-green: #15e4a6;
+    --hover-button: #0effb7;
+    --light-green: #2f4d33;
+    --v1-gray: #333;
+    --v2-gray: #979797;
+    --hot-pink: #ff7070;
+    --bg-color: #1e1e1e;
+    --text-color: #ffffff;
+    --sidebar-bg-color: #1e1e1e;
+    --sidebar-text-color: #ffffff;
+    --sidebar-header-color: var(--dark-green);
+    --whitesmoke: #292929;
+    --hint-green: #929292;
+    --new-border: #868685;
+    --btn: #363636;
+    --disable-input: #505050;
+    --disable-text: #c7c7c7;
+    --new-white: var(--v1-gray);
+    --table-b-shadow: rgba(255, 255, 255, 0.1);
+}

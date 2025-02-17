@@ -1,3 +1,5 @@
+import 'dotenv/config'; //npm install dotenv
+import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
 import connectLivereload from 'connect-livereload';
@@ -6,11 +8,14 @@ import multer from 'multer'; //npm install multer
 import { fileURLToPath } from 'url';
 import { server, account, task, limiter } from './functions-app.js';
 
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const easyPath = path.join(__dirname, 'internal')
 
 const uploadDir = path.join(__dirname, "uploads");
+
 // Ensure the uploads directory exists
 import fs from "fs";
 if (!fs.existsSync(uploadDir)) {
@@ -37,11 +42,24 @@ app.use(express.urlencoded({ extended: true }));
 // Session configuration
 app.use(
     session({
-        secret: 'your-secret-key',
+        secret: process.env.SESSION_SECRET, // Store secret in .env
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
+        cookie: {
+            secure: process.env.COOKIE_SECURE === 'true', // Only secure in production
+            httpOnly: true, // Prevents JavaScript access
+            sameSite: 'strict', // CSRF protection
+        },
     })
 );
+
+// app.use(
+//     session({
+//         secret: 'your-secret-key',
+//         resave: false,
+//         saveUninitialized: true,
+//     })
+// );
 
 // Prevent storing history
 app.use((req, res, next) => {
@@ -53,26 +71,30 @@ app.use((req, res, next) => {
 app.use('/internal', express.static(easyPath));
 
 // API endpoint to get session user
-app.get('/api/:type', async (req, res) => {
+app.get('/api/:type', async (req, res, next) => {
     const { type } = req.params;
     const db = app.locals.db;
 
     try {
-        switch(type) {
-            case 'session-user':
-                await task.session_user(db, req, res);
-                break;
-            case 'tasks':
+        if (type === 'tasks') {
+            return server.is_authenticated(req, res, async () => {
                 await task.get_task(db, req, res);
-                break;
-            default:
-                res.status(400).json({ error: 'Invalid task type' });
+            });
+        } 
+        
+        if (type === 'session-user') {
+            await task.session_user(db, req, res);
+            return;
         }
+
+        res.status(400).json({ error: 'Invalid task type' });
+
     } catch (err) {
         console.error('Error in task API:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 app.use('/internal/public', express.static(path.join(easyPath, 'public')));
 app.use('/internal/protected', express.static(path.join(easyPath, 'protected')));
@@ -103,7 +125,7 @@ app.get('/internal/:page/:view?', (req, res) => {
 });
 
 // API to submit / filter a task
-app.post('/api/tasks/:type', limiter.task_limit, async (req, res) => {
+app.post('/api/tasks/:type', server.is_authenticated, limiter.task_limit, async (req, res) => {
     const { type } = req.params;
     const db = app.locals.db;
 
@@ -125,7 +147,7 @@ app.post('/api/tasks/:type', limiter.task_limit, async (req, res) => {
 app.use("/uploads", express.static(uploadDir));
 
 // API to handle profile image upload
-app.post("/api/upload-profile-image", upload.single("profileImage"), async (req, res) => {
+app.post("/api/upload-profile-image", server.is_authenticated, upload.single("profileImage"), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
     }
@@ -162,7 +184,7 @@ app.post('/api/auth/:action', limiter.login_limit, async (req, res) => {
 })
 
 // Logout route
-app.post('/logout', (req, res) => {
+app.post('/logout', server.is_authenticated, (req, res) => {
 
     req.session.destroy((err) => {
         if (err) return res.status(500).json({ error: 'Failed to log out' });
@@ -173,7 +195,7 @@ app.post('/logout', (req, res) => {
 });
 
 // Delete Tasks
-app.delete('/api/tasks/:taskId', limiter.delete_limit, async (req, res) => {
+app.delete('/api/tasks/:taskId', server.is_authenticated, limiter.delete_limit, async (req, res) => {
     try {
         const db = app.locals.db;
         const { taskId } = req.params;
@@ -205,7 +227,7 @@ app.delete('/api/tasks/:taskId', limiter.delete_limit, async (req, res) => {
 });
 
 // Edit Tasks
-app.put('/api/tasks/:taskId', async (req, res) => {
+app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
     try {
         const db = app.locals.db;
         const taskId = req.params.taskId;

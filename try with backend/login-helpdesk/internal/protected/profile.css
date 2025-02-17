@@ -1,47 +1,3 @@
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-
-/* Global Reset */
-* {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    list-style: none;
-    text-decoration: none;
-    scroll-padding-top: 2rem;
-    scroll-behavior: smooth;
-}
-
-:root {
-    --white: white;
-    --dark-green: #05503a;
-    --dark-green2: #098560;
-    --hover-button: #204330;
-    --light-green: #90EE90;
-    --v1-gray: #E3E9E8;
-    --v2-gray: #ccc;
-    --v3-gray: #b3b0b0;
-    --hot-pink: #d44a41;
-    --bg-color: #f0f2f5;
-    --text-color: black;
-    --whitesmoke: whitesmoke;
-    --hint-green: #e8f5e9;
-    --new-border: #E3E9E8;
-    --btn: whitesmoke;
-    --disable-input: #e0e0e0;
-    --disable-text: #535353;
-    --table-b-shadow: rgba(0, 0, 0, 0.1);
-
-    --tsm-left: left 0.3s ease;
-    --tsm-width: width 0.3s ease;
-    --tsm-l-w: var(--tsm-left), var(--tsm-width);
-    --tsm-pad: padding-left 0.3s ease;
-}
-
 html {
     height: 100%;
 }
@@ -58,7 +14,7 @@ img {
     width: 100%;
 }
 
-/* ======================== Profile Page ========================== */  
+/* ======================== Content Page ========================== */  
 
 .big-container {
     display: flex;
@@ -69,7 +25,6 @@ img {
     align-items: center;
     justify-content: center;
     padding: 10px;
-    /* background-color: green; */
 }
 
 .p-container {
@@ -85,16 +40,13 @@ img {
     padding: 10px;
     width: 100%;
     max-width: 700px;
-    /* gap: 5px; */
 }
 
 .header-container {
     display: flex;
     margin-top: 10px;
     width: 100%;
-    /* background-color: red; */
     justify-content: center;
-    margin-bottom: 20px;
 }
 
 .profile-page {
@@ -103,27 +55,6 @@ img {
     font-size: 30px;
     color: var(--dark-green);
 }
-/* 
-.create-back {
-    font-size: 1rem;
-    color: var(--white);
-    background-color: var(--dark-green);
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border: none; 
-}
-
-.create-back:hover {
-    background-color: var(--hover-button);
-    transform: scale(1.1);
-}
-
-.create-back:active {
-    transform: scale(0.95);
-} */
 
 .start-info {
     width: 100%;
@@ -131,8 +62,7 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
-    /* background-color: green; */
+    /* background-color: red; */
 }
 
 
@@ -142,18 +72,6 @@ img {
     align-items: center;
     gap: 10px;
 }
-
-/* .image-container {
-    display: flex;
-    width: 50%; 
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-    background-color: var(--bg-color);
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-} */
 
 /* ========== Image Upload Section ========== */
 
@@ -165,9 +83,11 @@ img {
 }
 
 .image-container {
+    position: relative;
     display: flex;
-    width: 200px;
-    height: 200px;
+    width: 50%;
+    height: auto;
+    aspect-ratio: 1/1;
     border-radius: 50%;
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
     background-color: var(--bg-color);
@@ -182,7 +102,6 @@ img {
     height: 100%;   
     object-fit: cover; /* Or "cover" depending on your desired effect */
 }
-
 
 /* File Input Styling */
 .image-upload {
@@ -223,16 +142,17 @@ img {
     text-decoration: underline; /* Subtle hover effect */
 }
 
-
-
 /* ========== User Information ========== */
 
 .information {
+    display: inline-flex;
+    justify-content: center;
+    white-space: nowrap;
+
     background-color: var(--hint-green);
+    margin-top: 10px;
     padding: 10px;
     border-radius: 8px;
-    display: flex;
-    justify-content: center;
     gap: 8px;
     font-weight: 600;
     color: var(--dark-green);
@@ -260,7 +180,6 @@ img {
     width: 75px; 
     height: 75px;
     transition: all 0.3s ease-out;
-    /* transition: width 1.2s ease, height 1.2s ease; */
     overflow: hidden;
     border-radius: 45px;
     background-color: transparent;
@@ -304,20 +223,14 @@ img {
 }
 
 .first-list li.t-acc:hover {
-    width: 144px;
+    width: 250px;
     background: #B7163C; 
-    border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-.first-list li.t-sec:hover {
-    width: 144px;
-    background: #6ECCD1; 
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .first-list li.t-task:hover {
     width: 168px;
-    background: #2A7BAB; 
+    background: #6ECCD1; 
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
@@ -423,8 +336,14 @@ img {
         gap: 20px;
     }
 
+    .image-container {
+        width: 40%;
+        height: auto;
+        aspect-ratio: 1/1;
+    }
+    
+
     .first-list li {
-        /* transition: width 1.2s ease, height 1.2s ease; */
         width: 50px; 
         height: 50px;
         border-radius: 30px;
@@ -436,29 +355,246 @@ img {
 
     .first-list li.t-home:hover {
         width: 90px; 
-        background: #E26750;
         border: 1px solid rgba(255, 255, 255, 0.6);
     }
     
     .first-list li.t-acc:hover {
-        width: 110px;
-        background: #B7163C; 
-        border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    
-    .first-list li.t-sec:hover {
-        width: 110px;
-        background: #6ECCD1; 
+        width: 220px;
         border: 1px solid rgba(255, 255, 255, 0.6);
     }
     
     .first-list li.t-task:hover {
         width: 130px;
-        background: #2A7BAB; 
         border: 1px solid rgba(255, 255, 255, 0.6);
     }
     
 }
+
+/* ======================== Account Page ========================== */  
+
+
+.account-page {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+}
+
+.same-color {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, rgba(5, 80, 58, 0.9) 30%, rgba(9, 133, 96, 0.6)); 
+    gap: 10px;
+    padding: 2%;
+    align-items: center;
+    flex-grow: 1;
+}
+
+
+.acc-header {
+    position: relative;
+    display: flex;
+    align-items: center; 
+    width: 100%;
+    padding-left: 15px;
+}
+
+.acc-text {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(18px, 3vw, 30px);
+    color: var(--v1-gray);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.create-back {
+    font-size: 1rem;
+    color: var(--white);
+    background-color: var(--v1-gray);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; 
+}
+
+.create-back i {
+    color: var(--dark-green);
+    font-weight: 800;
+}
+
+.create-back:hover {
+    background-color: var(--white);
+    transform: scale(1.1);
+}
+
+.create-back:active {
+    transform: scale(0.95);
+}
+
+.acc-container {
+    display: flex;
+    background-color: var(--v1-gray);
+    flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.5s ease, background 0.5s ease, box-shadow 0.5s ease;
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+}
+
+.field-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds spacing between elements */
+    margin-bottom: 10px;
+}
+
+.field-container label {
+    width: 120px; /* Set a fixed width for labels */
+    text-align: right; /* Align text to the right */
+    color: var(--dark-green);
+    display: block;
+    font-weight: 400;
+}
+
+.field-container input {
+    /* flex: 1;  */
+    min-width: 200px; /* Ensures a minimum width */
+    box-sizing: border-box;
+    border: 1px solid var(--v2-gray);
+    border-radius: 8px;
+    padding: 0.1rem;
+    font-size: 1rem;
+    background-color: var(--new-white);
+    color: var(--text-color);
+}
+
+.field-container input:focus{
+    border-color: var(--dark-green);
+    outline: none;
+    box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+.field-container button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.profile-display {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding-left: 5%;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap; /* Ensures wrapping on smaller screens */
+    margin-bottom: 10px;
+}
+
+.small-container {
+    position: relative;
+    display: inline-block;
+    width: 15%;
+    max-width: 240px; /* Prevents excessive scaling on larger screens */
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-color);
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: 3px solid var(--v1-gray);
+    margin-right: 3%;
+}
+
+.upload-overlay {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease-in-out;
+    background: rgba(0, 0, 0, 0.4); 
+    cursor: pointer;
+    gap: 10px;
+}
+
+.upload-overlay i {
+    font-size: 24px;
+}
+
+.image-container:hover .upload-overlay {
+    opacity: 1; /* Show on hover */
+}
+
+/* .update-photo {
+    display: none;
+} */
+
+.name-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+}
+
+.username {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 50px;
+}
+
+.role {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+
+.text {
+    color: var(--v1-gray);
+}
+
+.inform-container {
+    display: flex;
+    /* background-color: red; */
+    flex-direction: column;
+    padding: 10px;
+    width: 100%;
+    height: 65%;
+}
+
+@media (max-width: 850px) {
+    .profile-display {
+        padding-left: 30px;
+    }
+
+    .small-container {
+        width: 200px;
+    }
+    
+}
+
+
+
 
 /* ======================== Security Page ========================== */  
 /* Security Page */
@@ -575,6 +711,7 @@ img {
 }
 
 
+/* ======================== Task Page ========================== */  
 
 
 

@@ -114,7 +114,6 @@ export async function setup_database() {
         if (columns.length === 0) {
             await pool.query("ALTER TABLE users ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL;");
         }
-        
 
         // Insert default users if they don’t exist
         const [existingUsers] = await pool.query('SELECT * FROM users');

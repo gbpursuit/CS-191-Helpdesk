@@ -129,6 +129,7 @@ export const UI = {
         logoutText.addEventListener("click", function(event) {
             event.preventDefault();
             UI.logout_function();
+            ["searchQuery", "filterBy", "filterValue"].forEach(item => localStorage.removeItem(item));
         });
 
     },

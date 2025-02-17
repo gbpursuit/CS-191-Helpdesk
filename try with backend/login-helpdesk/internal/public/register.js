@@ -1,4 +1,4 @@
-import { UI } from '../protected/common.js';
+import { UI } from '../common.js';
 
 document.addEventListener("DOMContentLoaded", async function() {
 
