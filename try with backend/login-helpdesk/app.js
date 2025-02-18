@@ -49,17 +49,10 @@ app.use(
             secure: process.env.COOKIE_SECURE === 'true', // Only secure in production
             httpOnly: true, // Prevents JavaScript access
             sameSite: 'strict', // CSRF protection
+            maxAge: 60 * 60 * 1000, // you can refresh the timed session
         },
     })
 );
-
-// app.use(
-//     session({
-//         secret: 'your-secret-key',
-//         resave: false,
-//         saveUninitialized: true,
-//     })
-// );
 
 // Prevent storing history
 app.use((req, res, next) => {
@@ -99,8 +92,6 @@ app.get('/api/:type', async (req, res, next) => {
 app.use('/internal/public', express.static(path.join(easyPath, 'public')));
 app.use('/internal/protected', express.static(path.join(easyPath, 'protected')));
 
-const validViews = ['sign-in'];
-
 app.get('/internal/:page/:view?', (req, res) => {
     const { page, view } = req.params;
 
@@ -108,16 +99,14 @@ app.get('/internal/:page/:view?', (req, res) => {
         if (err) return res.status(500).send('Error reading files');
 
         if (publicPages.includes(page)) {
-            if (page === 'login' && (!view || validViews.includes(page))) {
-                return server.is_authenticated(req, res, () => serve_page(res, path.join(easyPath, 'public', `${page}.html`)));
+            if (page === 'login' && (!view || view === 'logged-in')) {
+                return server.is_authenticated(req, res, () => server.serve_page(res, path.join(easyPath, 'public', `${page}.html`)));
             }
             return server.serve_page(res, path.join(easyPath, 'public', `${page}.html`));
         }
 
         if (protectedPages.includes(page)) {
-            return server.is_authenticated(req, res, () => {
-                server.serve_page(res, path.join(easyPath, 'protected', `${page}.html`));
-            });
+            return server.is_authenticated(req, res, () => server.serve_page(res, path.join(easyPath, 'protected', `${page}.html`)));
         }
 
         return res.status(404).send('Page not found');
@@ -177,7 +166,7 @@ app.post('/api/auth/:action', limiter.login_limit, async (req, res) => {
     
     if (action === 'create-account') {
         const { username, name, password } = req.body;
-        return account.createAccount(app, req, res, username, name, password);
+        return account.create_account(app, req, res, username, name, password);
     }
 
     return res.status(400).json({ error: 'Invalid authentication action' })

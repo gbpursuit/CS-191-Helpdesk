@@ -93,12 +93,6 @@ export const server = {
         });
     }
 
-    // checkSession: function(req, res, next) {
-    //     if (!req.session || !req.session.user) {
-    //         return res.status(401).json({ loggedIn: false });
-    //     }
-    //     next();
-    // }
 }
 
 export const account = {
