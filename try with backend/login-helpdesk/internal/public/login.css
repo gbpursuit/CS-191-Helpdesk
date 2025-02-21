@@ -110,6 +110,7 @@ img {
     margin-bottom: 0.5rem;
 }
 
+.dropdown_user,
 .login-form input[type="text"],
 .login-form input[type="password"] {
     box-sizing: border-box;
@@ -123,6 +124,7 @@ img {
     color: var(--text-color);
 }
 
+.dropdown_user:focus,
 .login-form input[type="text"]:focus,
 .login-form input[type="password"]:focus {
     border-color: var(--dark-green);

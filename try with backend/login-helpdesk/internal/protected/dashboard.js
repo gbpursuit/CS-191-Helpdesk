@@ -163,8 +163,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     let currentPage = 1;
-    let tasksPerPage = task_per_page();
+    let tasksPerPage = 1; // initial value
     let totalTasks = 0;
+
+    setTimeout(() => {
+        tasksPerPage = task_per_page();
+        load_tasks();
+    }, 50); 
 
     function task_per_page() {
         const tableContainer = document.getElementById('containerTable'); 
@@ -655,7 +660,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             updateInterval = setInterval( async () => {
                 if(!document.hidden && await check_user()) {
                     await load_tasks();
-                    console.log('hello');
                 }
             }, 30000)
         }
@@ -670,11 +674,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 periodic_updates();
             }
         });
-        console.log('')
         periodic_updates();
     }
     
-
     // UI Actions
     UI.handle_darkmode(".toggle-switch");
     UI.dropdown_toggle();

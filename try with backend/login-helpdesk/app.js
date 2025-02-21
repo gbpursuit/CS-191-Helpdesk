@@ -5,7 +5,6 @@ import path from 'path';
 import connectLivereload from 'connect-livereload';
 import session from 'express-session';
 import multer from 'multer'; //npm install multer
-import { exec } from "child_process"
 import { fileURLToPath } from 'url';
 import { server, account, task, limiter } from './functions-app.js';
 
@@ -64,7 +63,7 @@ app.use((req, res, next) => {
 // Serve static files from the "internal" folder
 app.use('/internal', express.static(easyPath));
 
-// API endpoint to get session user
+// API endpoint to get session user / tasks
 app.get('/api/:type', async (req, res, next) => {
     const { type } = req.params;
     const db = app.locals.db;
@@ -75,10 +74,13 @@ app.get('/api/:type', async (req, res, next) => {
                 await task.get_task(db, req, res);
             });
         } 
+
+        if (type === 'users') {
+            return await task.get_user(db, req, res);
+        }
         
         if (type === 'session-user') {
-            await task.session_user(db, req, res);
-            return;
+            return await task.session_user(db, req, res);
         }
 
         res.status(400).json({ error: 'Invalid task type' });

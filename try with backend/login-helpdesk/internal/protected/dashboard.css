@@ -604,9 +604,9 @@ label[for="check"]{
 
 .task-table td {
     border: 1px solid var(--v2-gray);
-    padding: 10px 15px;
+    padding: 12px 15px;
     text-align: left;
-    font-size: 0.85rem;
+    font-size: 0.86rem;
 }
 
 .task-table th, .task-table td {

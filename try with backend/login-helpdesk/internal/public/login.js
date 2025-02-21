@@ -4,6 +4,7 @@ import { UI } from '../common.js';
 document.addEventListener("DOMContentLoaded", async function() {
     toggle_view();
     handle_login();
+    username_datalist();
     UI.handle_darkmode('.d-mode');
     await check_if_logged();
 });
@@ -118,4 +119,20 @@ async function check_if_logged() {
         window.location.replace('/internal/login/sign-in');
     });
 
+}
+
+async function username_datalist(){
+    const response = await fetch('/api/users');
+    const data = await response.json();
+
+    const select = document.getElementById('username');
+    select.innerHTML = `<option selected disabled></option>`; // Clear old options
+
+    data.forEach(user => {
+        const option = document.createElement("option");
+        const fullName = user.first_name + (user.last_name ? ` ${user.last_name}` : ""); // Handle null last_name
+        option.value = user.username;
+        option.textContent = fullName;
+        select.appendChild(option);
+    });
 }

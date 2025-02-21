@@ -35,13 +35,17 @@
         <div id="loginContainer" class="login-container">
             <form id="loginForm" class="login-form">
                 <label for="username">Username<span class="required"> *</span></label>
-                <input type="text" id="username" name="username" list="usernames" class="username" required>
+                <select id="username" name="username" class="dropdown_user" required>
+                    <option selected disabled></option>
+                    
+                </select>               
+                <!-- <input type="text" id="username" name="username" list="usernames" class="username" required autocomplete="off">
                 <datalist id="usernames">
                     <option value="Lorraine Castrillon"></option>
                     <option value="Weng Castrillon"></option>
                     <option value="Gavril Coronel"></option>
                     <option value="Marcus Pilapil"></option>
-                </datalist>
+                </datalist> -->
                 <div class="password-container">
                     <label for="password">Password<span class="required"> *</span></label>
                     <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a>

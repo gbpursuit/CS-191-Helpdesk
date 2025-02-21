@@ -320,6 +320,22 @@ export const task = {
             console.error('Error fetching tasks:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
+    },
+
+    get_user: async function (db, req, res) {
+        try {
+            const [rows] = await db.query(`SELECT username, first_name, last_name FROM users ORDER BY username`);
+
+            if (rows.length < 0) {
+                res.status(404).json({ error: 'No username found.' });
+            } else {
+                res.status(200).json(rows);
+            }
+
+        } catch(err) {
+            console.error('Error fetching uers:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
     
 }
