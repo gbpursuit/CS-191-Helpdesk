@@ -637,15 +637,41 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let updateInterval; 
 
+    async function check_user() {
+        try {
+            const response = await fetch('/api/session-user');
+            if(!response.ok) return false;
+
+            const data = await response.json();
+            return !!data.username;
+        } catch (err) {
+            console.error("Error checking login status:", err);
+            return false;
+        }
+    }
+
     function periodic_updates() {
         if (!updateInterval) {
-            updateInterval = setInterval(() => {
-                if(!document.hidden) {
-                    clearInterval(updateInterval);
-                    updateInterval = null;
+            updateInterval = setInterval( async () => {
+                if(!document.hidden && await check_user()) {
+                    await load_tasks();
+                    console.log('hello');
                 }
-            }, 3)
+            }, 30000)
         }
+    }
+    
+    function setup_updates() {
+        document.addEventListener("visibilitychange", async () => {
+            if (document.hidden) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            } else if (await check_user()){
+                periodic_updates();
+            }
+        });
+        console.log('')
+        periodic_updates();
     }
     
 
@@ -664,5 +690,5 @@ document.addEventListener("DOMContentLoaded", async function () {
     list_navigation();
     notification_popup();
     await load_tasks();
-
+    setup_updates();
 }); 
