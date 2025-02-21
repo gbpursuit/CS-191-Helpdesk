@@ -4,7 +4,7 @@ import portfinder from 'portfinder';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { setup_database } from './dbSetup.js';
+import { sql_dump, setup_database } from './dbSetup.js';
 import rateLimit from 'express-rate-limit'; // npm install express-rate-limit
 import validator from 'validator'; // npm install validator
 
@@ -63,11 +63,20 @@ export const server = {
         if (req.session && req.session.username) {
             return next();  // Proceed if authenticated
         }
+        return res.redirect('/internal/welcome');
     
-        // res.send('<h1>Redirecting...</h1><p>You are not logged in. Redirecting to the welcome page...</p>');
-        setTimeout(() => {
-            return res.redirect('/internal/welcome');
-        }, 1000);  // Adjust the delay time as needed (in milliseconds)
+        // setTimeout(() => {
+        //     return res.redirect('/internal/welcome');
+        // }, 1000);  // Adjust the delay time as needed (in milliseconds)
+    },
+
+    update_dump: function() {
+        let time = 5 * 60 * 1000; // 5 * 60 * 1000 5 minutes
+        setInterval(() => {
+            sql_dump()
+                .then((filePath) => console.log(`Database dump updated at: ${filePath}`))
+                .catch((error) => console.error(`Dump failed: ${error}`));
+        }, time); // 5 minutes
     },
 
     serve_page: function(res, filePath) {
@@ -78,19 +87,16 @@ export const server = {
         const publicPath = path.join(easyPath, 'public');
         const protectedPath = path.join(easyPath, 'protected');
 
-        fs.readdir(publicPath, (err, publicFiles) => { // Read "public/" directory
-            if (err) return callback(err, null);
-
-            fs.readdir(protectedPath, (err, protectedFiles) => { // Read "protected/" directory
-                if (err) return callback(err, null);
-
-                // Call the callback function, passing the collected public and protected page names
-                callback(null, {
-                    public: publicFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html')),
-                    protected: protectedFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html'))
-                });
-            });
-        });
+        Promise.all([
+            fs.promises.readdir(publicPath),
+            fs.promises.readdir(protectedPath)
+        ])
+        .then(([publicFiles, protectedFiles]) => {
+            callback(null, {
+                public: publicFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html')),
+                protected: protectedFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html'))
+            })
+        })
     }
 
 }
@@ -103,26 +109,14 @@ export const account = {
 
         try {
             const [rows] = await app.locals.db.query(
-                `SELECT * FROM users WHERE username = ? LIMIT 1`,
+                `SELECT username, password FROM users WHERE username = ? LIMIT 1`,
                 [username]
             );
-            // const [rows] = await app.locals.db.query(
-            //     SELECT * FROM users WHERE CONCAT(first_name, IFNULL(CONCAT(' ', last_name), '')) = ? OR username = ? LIMIT 1,
-            //     [username, username]
-            // );
-
-            // if (rows.length === 0) {
-            //     return res.status(401).json({ error: 'Invalid username or password' });
-            // }
 
             if (!rows.length) throw new Error('User not found');
 
             const user = rows[0];
             const match = await bcrypt.compare(password, user.password);
-            
-            // if (!match) {
-            //     return res.status(401).json({ error: 'Invalid username or password' });
-            // }
 
             if (!match) throw new Error('Invalid password');
 
@@ -137,7 +131,6 @@ export const account = {
 
     create_account: async function(app, req, res, username, name, password) {
 
-        // Prevent SQL Injection or security vulnerabilities
         username = username?.trim();
         name = name?.trim();
         password = password?.trim();
@@ -162,17 +155,13 @@ export const account = {
         // }
 
         // Clean / Sanitize Inputs
-        username = validator.escape(username);
-        name = validator.escape(name);
-        password = validator.escape(password);
+        username = username.trim();
+        name = name.trim();
+        password = password.trim();
 
         try {
             const [first_name, ...lastParts] = name.split(' ');
             const last_name = lastParts.length ? lastParts.join(' ') : null;
-
-            // if (!first_name) {
-            //     return res.status(400).json({ error: 'Invalid name. Please provide a valid first name.' });
-            // }
     
             const [rows] = await app.locals.db.query(
                 `SELECT * FROM users WHERE username = ? LIMIT 1`,
@@ -202,32 +191,28 @@ export const account = {
 export const task = { 
 
     fetching_tasks: async function (db, bool = false, query = null, type = null, order = 'DESC', filterBy = null, value = null) {
-        let baseQuery = `SELECT * FROM tasks`;
-        const params = [];
-        const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
-
-        // console.log(bool, query, type, order, filterBy, value);
-    
+        let conditions = [];
+        let params = [];
+        
         if (bool && type && query) {
-            baseQuery += ` WHERE ?? LIKE ?`; 
+            conditions.push(`?? LIKE ?`);
             params.push(type, `%${query}%`);
         }
         
-        if (filterBy && value && filterBy !== 'taskDate' && filterBy !== 'department') {
+        if (filterBy && value && !['taskDate', 'department'].includes(filterBy)) {
             if (params.length > 0) {
-                baseQuery += ` AND ?? = ?`;
+                conditions.push(`?? = ?`);
             } else {
-                baseQuery += ` WHERE ?? = ?`;
+                conditions.push(`?? = ?`);
             }
             params.push(filterBy, value);
         }
         
-        let sortField = 'id'; 
-        if (filterBy === 'taskDate' || filterBy === 'department' || type === 'taskDate' || type === 'department') {
-            sortField = filterBy || type;
-        }
+        let whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+        let sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC'
+        let sortField = ['taskDate', 'department'].includes(filterBy) ? filterBy : 'id';
+        let baseQuery = `SELECT * FROM tasks ${whereClause} ORDER BY ?? ${sortOrder}`;
         
-        baseQuery += ` ORDER BY ?? ${sortOrder}`;
         params.push(sortField);
 
         const [tasks] = await db.query(baseQuery, params);

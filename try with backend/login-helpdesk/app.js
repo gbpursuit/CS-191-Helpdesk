@@ -5,6 +5,7 @@ import path from 'path';
 import connectLivereload from 'connect-livereload';
 import session from 'express-session';
 import multer from 'multer'; //npm install multer
+import { exec } from "child_process"
 import { fileURLToPath } from 'url';
 import { server, account, task, limiter } from './functions-app.js';
 
@@ -46,7 +47,7 @@ app.use(
         resave: false,
         saveUninitialized: false,
         cookie: {
-            secure: process.env.COOKIE_SECURE === 'true', // Only secure in production
+            secure: process.env.COOKIE_SECURE === 'true', // Only secure in production - HTTP
             httpOnly: true, // Prevents JavaScript access
             sameSite: 'strict', // CSRF protection
             maxAge: 60 * 60 * 1000, // you can refresh the timed session
@@ -259,4 +260,5 @@ app.use((req, res) => {
 });
 
 // Start the server
+server.update_dump();
 server.launch_server(app);

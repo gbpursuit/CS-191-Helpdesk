@@ -435,6 +435,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         function get_field_value(id) {
             const field = document.getElementById(id);
             if (!field) return "--";
+
+            
         
             return field.value.trim() || "--";  // Always return the value, which is now the full name
         }        
@@ -448,17 +450,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         window.addTask = async (event) => {
             event.preventDefault();
 
-            // const response = await fetch('/check-session');
-            // const data = await response.json();
-            
-            // console.log(data);
-
-            // if (!data.loggedIn) {
-            //     alert("Session expired. Please log in again.");
-            //     window.location.replace('/internal/login/sign-in');
-            //     return;
-            // }
-            
             const taskData = {
                 taskId: document.getElementById('taskId').value,
                 taskDate: currentDate,
@@ -490,7 +481,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         };
 
-        taskInfoModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'submittedContent', 'taskInfoModal'));
+        // taskInfoModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'submittedContent', 'taskInfoModal'));
         taskModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'modalContent', 'taskModal'));
         pop.addEventListener('click', (event) => UI.close_outside_modal(event, 'popupContent', 'notificationPopup'));
 
@@ -643,6 +634,20 @@ document.addEventListener("DOMContentLoaded", async function () {
             window.location.reload();
         }
     })
+
+    let updateInterval; 
+
+    function periodic_updates() {
+        if (!updateInterval) {
+            updateInterval = setInterval(() => {
+                if(!document.hidden) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }
+            }, 3)
+        }
+    }
+    
 
     // UI Actions
     UI.handle_darkmode(".toggle-switch");

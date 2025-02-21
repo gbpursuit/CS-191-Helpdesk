@@ -77,10 +77,10 @@ img {
 
 .side-bar ul li.transition:hover a {
     background: var(--v1-gray);
-    padding-left: 50px; 
+    /* padding-left: 50px; */
     transition: 0.3s;
     color: var(--dark-green);
-    /* transform: scale(1.1); */
+    transform: scale(1.05);
 }
 
 .side-bar ul li.transition:active a{
