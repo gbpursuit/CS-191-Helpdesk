@@ -223,40 +223,17 @@ async function cleanup_old_dumps(){
     }
 }
 
-// function cleanup_old_dumps() {
-//     fs.readdir(BACKUP_DIR, async (err, files) => {
-//         if (err) {
-//             console.error('Error reading backup directory:', err);
-//             return;
-//         }
+async function get_dump_file() {
+    const files = await fs.promises.readdir(BACKUP_DIR);
+    const dumpFiles = files.filter(file => file.startsWith('simple_helpdesk_dump_') && file.endsWith('.sql'));
 
-//         try {
-//             const dumpFiles = await Promise.all(
-//                 files
-//                     .filter(file => file.startsWith('simple_helpdesk_dump_') && file.endsWith('.sql'))
-//                     .map(async file => ({
-//                         file,
-//                         time: (await fs.promises.stat(path.join(BACKUP_DIR, file))).mtime
-//                     }))
-//             );
+    if (dumpFiles.length === 0) {
+        throw new Error('No backup dump files found.');
+    }
 
-//             // Sort by modification time (oldest first)
-//             dumpFiles.sort((a, b) => a.time - b.time);
-
-//             // Delete excess backups if needed
-//             if (dumpFiles.length > MAX_BACKUPS) {
-//                 const filesToDelete = dumpFiles.slice(0, dumpFiles.length - MAX_BACKUPS);
-//                 await Promise.all(filesToDelete.map(({ file }) =>
-//                     fs.promises.unlink(path.join(BACKUP_DIR, file))
-//                         .then(() => console.log(`Deleted old dump: ${file}`))
-//                         .catch(err => console.error(`Failed to delete old dump ${file}:`, err))
-//                 ));
-//             }
-//         } catch (err) {
-//             console.error('Error processing dump files:', err);
-//         }
-//     });
-// }
+    dumpFiles.sort((a, b) => fs.statSync(path.join(BACKUP_DIR, b)).mtime - fs.statSync(path.join(BACKUP_DIR, a)).mtime);
+    return path.join(BACKUP_DIR, dumpFiles[0]);
+}
 
 // Updated read_sql
 async function read_sql(filePath) {
@@ -316,7 +293,7 @@ export async function setup_database() {
 
         if (databases.length === 0) {
             console.log('Database does not exist. Restoring from dump...');
-            const dumpFilePath = await sql_dump();
+            const dumpFilePath = await get_dump_file();
 
             await new Promise((resolve, reject) => {
                 const restoreProcess = spawn('mysql', ['--defaults-extra-file=' + process.env.MYSQL_CNF, 'simple_helpdesk'], {
@@ -344,7 +321,7 @@ export async function setup_database() {
         });
 
         if (databases.length !== 0) {
-            const dumpFilePath = await sql_dump();
+            const dumpFilePath = await get_dump_file();
             const sqlData = await read_sql(dumpFilePath);
 
             sqlData.forEach(tableData => {

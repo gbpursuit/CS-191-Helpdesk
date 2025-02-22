@@ -676,6 +676,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
         periodic_updates();
     }
+
+    const container = document.querySelector('.table');
+
+    container.addEventListener('wheel', (event) => {
+        event.preventDefault(); // Prevents default vertical scrolling
+        container.scrollLeft += event.deltaY; // Adjust the multiplier for speed
+    });
     
     // UI Actions
     UI.handle_darkmode(".toggle-switch");

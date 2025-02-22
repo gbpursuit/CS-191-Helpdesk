@@ -126,11 +126,11 @@ async function username_datalist(){
     const data = await response.json();
 
     const select = document.getElementById('username');
-    select.innerHTML = `<option selected disabled></option>`; // Clear old options
+    // select.innerHTML = `<option selected disabled></option>`; 
 
     data.forEach(user => {
         const option = document.createElement("option");
-        const fullName = user.first_name + (user.last_name ? ` ${user.last_name}` : ""); // Handle null last_name
+        const fullName = user.first_name + (user.last_name ? ` ${user.last_name}` : ""); 
         option.value = user.username;
         option.textContent = fullName;
         select.appendChild(option);

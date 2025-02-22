@@ -84,8 +84,7 @@ img {
 }
 
 .side-bar ul li.transition:active a{
-    /* border-color: red; */
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: scale(1);
     transition: background-color 0.3s ease-in-out;
 }
 
