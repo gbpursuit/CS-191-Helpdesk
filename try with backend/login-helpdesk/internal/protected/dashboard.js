@@ -497,7 +497,89 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
         }
     }
+    async function fetchSummaryData() {
+        try {
+            const response = await fetch('/api/tasks'); 
+            if (!response.ok) throw new Error('Failed to fetch summary data');
+    
+            const data = await response.json();
+            return data; // Return fetched data
+        } catch (error) {
+            console.error('Error fetching summary data:', error);
+            return [];
+        }
+    }
+    
+    async function generatePDF() {
+        if (!window.jspdf) {
+            console.error("jsPDF is not loaded!");
+            return null; // Return null if jsPDF is not loaded
+        }
 
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: [420, 594] }); // Large A2 format
+
+        // Add title
+        const title = document.getElementById("summaryTitle").textContent || "Summary Report";
+        doc.setFontSize(14);
+        doc.text(title, 20, 20);
+
+        // Fetch summary data from API
+        const tasks = await fetchSummaryData();
+
+        // Define table headers
+        const tableHeaders = [
+            "Task ID", "Task Type", "Task Description", "Requested By", "Approved By", "Department",
+            "Department No", "IT In Charge", "Device Name", "Item Name", "Application Name", "Status",
+            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished"
+        ];
+
+        // Convert API data into table format
+        const tableData = tasks.map(task => [
+            task.taskId, task.taskType, task.taskDescription, task.requestedBy, task.approvedBy,
+            task.department, task.departmentNo, task.itInCharge, task.deviceName, task.itemName,
+            task.applicationName, task.status, task.severity, task.transactionDate, task.dateRequested,
+            task.dateReceived, task.dateStarted, task.dateFinished
+        ]);
+
+        // Generate table in PDF
+        if (doc.autoTable) {
+            doc.autoTable({
+                head: [tableHeaders],
+                body: tableData,
+                startY: 30,
+                theme: "grid", // Grid style for better readability
+                styles: { fontSize: 10, cellPadding: 4 },
+                headStyles: { fillColor: [22, 160, 133], textColor: 255, fontStyle: "bold" },
+                columnStyles: { 
+                    2: { cellWidth: 80 }, // Task Description (wider)
+                    5: { cellWidth: 50 }, // Department
+                    6: { cellWidth: 50 }, // IT In Charge
+                    8: { cellWidth: 50 }, // Item Name
+                    11: { cellWidth: 30 } // Status
+                }
+            });
+
+            // Convert PDF to Blob and show in iframe
+            const pdfBlob = doc.output("blob");
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            document.getElementById("pdfPreview").src = pdfUrl;
+
+            return doc; // ✅ Return the PDF document for saving/printing
+        } else {
+            console.error("jsPDF autoTable plugin is not loaded!");
+            return null;
+        }
+    }
+
+    // Event listener for Print Button
+    document.getElementById("printButton").addEventListener("click", async function () {
+        const pdfDoc = await generatePDF();
+        if (pdfDoc) {
+            pdfDoc.save("summary_report.pdf"); // ✅ Fix: Now .save() will work!
+        }
+    });
+    
     function search_filter() {
         let timeout;
         const searchInput = document.querySelector(".search-input");
@@ -700,4 +782,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     notification_popup();
     await load_tasks();
     setup_updates();
+    // print_summary();
+    generatePDF();
 }); 

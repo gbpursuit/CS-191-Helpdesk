@@ -159,13 +159,16 @@ export async function sql_dump() {
 
         console.log('Creating a new dump file:', filename);
 
-        if(!process.env.MYSQL_CNF) {
-            return reject (new Error('MYSQL_CNF environment variable is not set. '));
+        if (!process.env.MYSQL_HOST || !process.env.MYSQL_USER || !process.env.MYSQL_PWD) {
+            return reject(new Error('Database credentials are missing.'));
         }
-
-        const dumpProcess = spawn('mysqldump', ['--defaults-extra-file=' + process.env.MYSQL_CNF, 'simple_helpdesk'], {
-            stdio: ['ignore', 'pipe', 'pipe']
-        });
+        
+        const dumpProcess = spawn('mysqldump', [
+            '-h', process.env.MYSQL_HOST,
+            '-u', process.env.MYSQL_USER,
+            `--password=${process.env.MYSQL_PWD}`,
+            'simple_helpdesk'
+        ], { stdio: ['ignore', 'pipe', 'pipe'] });
 
         const fileStream = fs.createWriteStream(dumpFilePath);
 
@@ -296,9 +299,12 @@ export async function setup_database() {
             const dumpFilePath = await get_dump_file();
 
             await new Promise((resolve, reject) => {
-                const restoreProcess = spawn('mysql', ['--defaults-extra-file=' + process.env.MYSQL_CNF, 'simple_helpdesk'], {
-                    stdio: ['pipe', 'inherit', 'inherit']
-                });
+                const restoreProcess = spawn('mysql', [
+                    '-h', process.env.MYSQL_HOST,
+                    '-u', process.env.MYSQL_USER,
+                    `--password=${process.env.MYSQL_PWD}`, // Use --password= format
+                    'simple_helpdesk'
+                ], { stdio: ['pipe', 'inherit', 'inherit'] });
 
                 fs.createReadStream(dumpFilePath).pipe(restoreProcess.stdin);
 
