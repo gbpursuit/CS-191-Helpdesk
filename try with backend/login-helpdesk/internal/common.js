@@ -95,7 +95,7 @@ export const UI = {
                 let text = "/internal/"
                 text += (bool) ? 'login/sign-in' : 'welcome';
 
-                window.location.replace(text);
+                window.location.replace('/internal/welcome');
     
             } else {
                 console.error('Logout failed');

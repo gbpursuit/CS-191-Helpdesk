@@ -202,7 +202,7 @@
                             <div class = "column-one">
                                 <div class="form-group">
                                     <label for="taskType">Task Type<span class="required"> *</span></label>
-                                    <input type="text" id="taskType" placeholder="Enter Task Type">
+                                    <input type="text" id="taskType" placeholder="Enter Task Type" required>
                                 </div>
     
                                 <div class="form-group">
@@ -212,7 +212,7 @@
 
                                 <div class="form-group">
                                     <label for="requestedBy">Requested by<span class="required"> *</span></label>
-                                    <input type="text" id="requestedBy" placeholder="Enter Requestor Name">
+                                    <input type="text" id="requestedBy" placeholder="Enter Requestor Name" required>
                                 </div>
     
                                 <div class="form-group">
@@ -483,8 +483,11 @@
             </div>
 
             <div id = "summaryElements" class = "sum-elements">
-                <button id="printButton" class="print-button">Print Summary PDF</button>
-                <iframe id="pdfPreview" width="100%" height="600px"></iframe>
+                <iframe id="pdfPreview" class = "pdf-preview"></iframe>
+                <div class="footer">
+                    <button id="openButton" class="open-button foot-btn">Ano pa ba?</button>
+                    <button id="printButton" class="print-button foot-btn">Print Summary PDF</button>
+                </div>
             </div>
             
             <div id="summary-notificationPopup" class="notification-popup">

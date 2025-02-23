@@ -34,6 +34,10 @@
     --disable-text: #535353;
     --new-white: white;
     --table-b-shadow: rgba(0, 0, 0, 0.1);
+    --overlay-dark: rgba(84, 96, 100, 0.4);
+    --overlay-light: rgba(84, 96, 100, 0);
+    --txt-shadow: rgba(255, 255, 255, 0.5);
+    --shadow: rgba(0, 0, 0, 0.4);
 
     --tsm-left: left 0.3s ease;
     --tsm-width: width 0.3s ease;
@@ -62,4 +66,8 @@ body.dark-mode {
     --disable-text: #c7c7c7;
     --new-white: var(--v1-gray);
     --table-b-shadow: rgba(255, 255, 255, 0.1);
+    --overlay-dark: rgba(106, 118, 123, 0.4);
+    --overlay-light: rgba(84, 96, 100, 0);
+    --txt-shadow: rgba(116, 116, 116, 0.5);
+    /* --shadow: rgb(255, 255, 255, 0.3); */
 }

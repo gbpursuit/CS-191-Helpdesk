@@ -115,8 +115,8 @@ async function check_if_logged() {
 
     changeAcc.addEventListener('click', (event) => {
         event.preventDefault();
+        console.log("click no");
         UI.logout_function(true);
-        window.location.replace('/internal/login/sign-in');
     });
 
 }

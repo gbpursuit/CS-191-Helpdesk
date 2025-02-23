@@ -2,7 +2,7 @@ import { UI } from '../common.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
 
-    function dashboard_open() {
+    async function dashboard_open() {
         const dashElements = {
             dashTitle: document.getElementById('dashTitle'),
             dashContainer: document.getElementById('dashboardContainer'),
@@ -14,8 +14,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         dashElements.dashContainer.style.display = 'block';
         dashElements.taskTable.style.display = 'table';
         dashElements.searchAndTask.style.display = 'block';
+
+        generatedPDF = null
+        await update_tasks_per_page()
+        
     }
 
+    async function summary_open() {
+        const sumElements = {
+            sumTitle: document.getElementById('summaryTitle'),
+            sumContainer: document.getElementById('summaryContainer')
+        };
+
+        sumElements.sumTitle.innerText = "IT Management - Summary";
+        sumElements.sumContainer.style.display = 'block';
+
+        await generate_pdf();
+    }
 
     function format_date(date) {
         return date && date !== "null" ? date : "--";
@@ -166,10 +181,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     let tasksPerPage = 1; // initial value
     let totalTasks = 0;
 
-    setTimeout(() => {
-        tasksPerPage = task_per_page();
-        load_tasks();
-    }, 50); 
+    async function update_tasks_per_page() {
+        const newTasksPerPage = task_per_page();
+        if (newTasksPerPage !== tasksPerPage) {
+            tasksPerPage = newTasksPerPage;
+            await load_tasks();
+        }
+    }
+
+    setTimeout(update_tasks_per_page, 50);
 
     function task_per_page() {
         const tableContainer = document.getElementById('containerTable'); 
@@ -497,7 +517,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
         }
     }
-    async function fetchSummaryData() {
+
+    let generatedPDF = null;
+
+    async function fetch_summary_data() {
         try {
             const response = await fetch('/api/tasks'); 
             if (!response.ok) throw new Error('Failed to fetch summary data');
@@ -510,7 +533,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
     
-    async function generatePDF() {
+    async function generate_pdf() {
+        if (generatedPDF) {
+            console.log("Using generated PDF.");
+            return generatedPDF;
+        }
+
         if (!window.jspdf) {
             console.error("jsPDF is not loaded!");
             return null; // Return null if jsPDF is not loaded
@@ -525,7 +553,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         doc.text(title, 20, 20);
 
         // Fetch summary data from API
-        const tasks = await fetchSummaryData();
+        const tasks = await fetch_summary_data();
 
         // Define table headers
         const tableHeaders = [
@@ -565,6 +593,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             const pdfUrl = URL.createObjectURL(pdfBlob);
             document.getElementById("pdfPreview").src = pdfUrl;
 
+            generatedPDF = doc;
+
             return doc; // ✅ Return the PDF document for saving/printing
         } else {
             console.error("jsPDF autoTable plugin is not loaded!");
@@ -574,9 +604,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener for Print Button
     document.getElementById("printButton").addEventListener("click", async function () {
-        const pdfDoc = await generatePDF();
-        if (pdfDoc) {
-            pdfDoc.save("summary_report.pdf"); // ✅ Fix: Now .save() will work!
+        if (!generatedPDF) {
+            console.log("Generating new PDF...");
+            generatedPDF = await generate_pdf();
+        }
+        if (generatedPDF) {
+            generatedPDF.save("summary_report.pdf");
         }
     });
     
@@ -677,15 +710,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         const summary = document.getElementById('summary');
         const summaryContainer = document.getElementById('summaryContainer');
 
-        summary.addEventListener('click', function(event){
+        summary.addEventListener('click', async function(event){
             event.preventDefault();
+
             dashboardContainer.style.display = 'none';
-            summaryContainer.style.display = 'block';
+            await summary_open();
         });
         
-        dashboard.addEventListener('click', function(event){
+        dashboard.addEventListener('click', async function(event){
             event.preventDefault();
-            dashboardContainer.style.display = 'block';
+
+            await dashboard_open();
             summaryContainer.style.display = 'none';
         });
     }
@@ -762,8 +797,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const container = document.querySelector('.table');
 
     container.addEventListener('wheel', (event) => {
-        event.preventDefault(); // Prevents default vertical scrolling
-        container.scrollLeft += event.deltaY; // Adjust the multiplier for speed
+        event.preventDefault();
+        container.scrollLeft += event.deltaY; 
     });
     
     // UI Actions
@@ -782,6 +817,4 @@ document.addEventListener("DOMContentLoaded", async function () {
     notification_popup();
     await load_tasks();
     setup_updates();
-    // print_summary();
-    generatePDF();
 }); 

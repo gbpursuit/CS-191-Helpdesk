@@ -170,6 +170,14 @@ export async function sql_dump() {
             'simple_helpdesk'
         ], { stdio: ['ignore', 'pipe', 'pipe'] });
 
+        // if(!process.env.MYSQL_CNF) {
+        //     return reject (new Error('MYSQL_CNF environment variable is not set. '));
+        // }
+
+        // const dumpProcess = spawn('mysqldump', ['--defaults-extra-file=' + process.env.MYSQL_CNF, 'simple_helpdesk'], {
+        //     stdio: ['ignore', 'pipe', 'pipe']
+        // });
+
         const fileStream = fs.createWriteStream(dumpFilePath);
 
         dumpProcess.stdout.pipe(fileStream);
@@ -295,8 +303,10 @@ export async function setup_database() {
         );
 
         if (databases.length === 0) {
-            console.log('Database does not exist. Restoring from dump...');
-            const dumpFilePath = await get_dump_file();
+            console.log('Database does not exist. Creating and restoring from dump...');
+
+            await connection.query(`CREATE DATABASE simple_helpdesk`);
+            console.log('Database simple_helpdesk created.');
 
             await new Promise((resolve, reject) => {
                 const restoreProcess = spawn('mysql', [
@@ -305,6 +315,10 @@ export async function setup_database() {
                     `--password=${process.env.MYSQL_PWD}`, // Use --password= format
                     'simple_helpdesk'
                 ], { stdio: ['pipe', 'inherit', 'inherit'] });
+
+                // const restoreProcess = spawn('mysql', ['--defaults-extra-file=' + process.env.MYSQL_CNF, 'simple_helpdesk'], {
+                //     stdio: ['pipe', 'inherit', 'inherit']
+                // });
 
                 fs.createReadStream(dumpFilePath).pipe(restoreProcess.stdin);
 
