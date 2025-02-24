@@ -608,6 +608,19 @@ label[for="check"]{
     font-size: 0.86rem;
 }
 
+.task-table td.status::before {
+    content: "●"; 
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+.status-new::before { color: var(--status-new); } 
+.status-pending::before { color: var(--status-pend); } 
+.status-in-progress::before { color: var(--status-progress); }
+.status-on-hold::before { color: var(--status-hold); }
+.status-completed::before { color: var(--status-comp); } 
+.status-cancelled::before { color: var(--status-cancel); }
+
 .task-table th, .task-table td {
     white-space: nowrap; /* Prevents text from wrapping (clean look) */
     overflow: hidden;
@@ -617,7 +630,7 @@ label[for="check"]{
 
 .task-content::-webkit-scrollbar,
 .table::-webkit-scrollbar {
-    width: 4px;  /* Vertical scrollbar width */
+    width: 4x;  /* Vertical scrollbar width */
     height: 4px; /* Horizontal scrollbar height */
 }
 
@@ -644,7 +657,38 @@ label[for="check"]{
     align-items: center;
 }
 
+.legend-status {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 80%;
+    font-size: 14px;
+    /* background-color: red; */
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.status-box {
+    width: 10px;
+    height: 10px;
+    border-radius: 4px;
+}
+
+/* Status Colors */
+.new { background: var(--status-new); }
+.pending { background: var(--status-pend); }
+.in-progress { background: var(--status-progress); }
+.on-hold { background: var(--status-hold); }
+.completed { background: var(--status-comp); }
+.cancelled { background: var(--status-cancel); }
+
 .pagination {
+    /* width: 30%; */
     margin-left: auto; /* Pushes the pagination buttons to the right */
     display: flex;
     align-items: center;
@@ -788,6 +832,10 @@ label[for="check"]{
     font-size: 0.765rem;
     color: var(--text-color); 
     background-color: var(--white); 
+}
+
+input[type="date"] {
+    color-scheme: light;
 }
 
 .form-group input::placeholder {
@@ -1264,6 +1312,9 @@ body.dark-mode .form-group input {
     border: 1px solid var(--v1-gray);
 }
 
+body.dark-mode input[type="date"] {
+    color-scheme: dark;
+}
 
 /* Responsive */
 @media (max-width: 850px) {

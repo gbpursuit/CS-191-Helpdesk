@@ -351,7 +351,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 newRow.innerHTML = `
                     <td>${task.taskId}</td>
                     <td>${format_date(task.taskDate)}</td>
-                    <td>${task.taskStatus}</td>
+                    <td class="status status-${task.taskStatus.toLowerCase().replace(/\s+/g, '-')}">
+                        ${task.taskStatus}
+                    </td>
                     <td>${task.severity}</td>
                     <td>${task.taskType}</td>
                     <td>${task.taskDescription}</td>

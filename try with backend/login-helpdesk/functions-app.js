@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { sql_dump, setup_database } from './dbSetup.js';
 import rateLimit from 'express-rate-limit'; // npm install express-rate-limit
 import validator from 'validator'; // npm install validator
+import cron from 'node-cron';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,12 +72,28 @@ export const server = {
     },
 
     update_dump: function() {
-        let time = 5 * 60 * 1000; // 5 * 60 * 1000 5 minutes
-        setInterval(() => {
-            sql_dump()
-                .then((filePath) => console.log(`Database dump updated at: ${filePath}`))
-                .catch((error) => console.error(`Dump failed: ${error}`));
-        }, time); // 5 minutes
+        console.log("Server started. Scheduling database dump...");
+        cron.schedule("0 18 * * *", async () => {
+            console.log("Executing schedule database dump..."); // Runs kapag 6pm na
+            try {
+                const filePath = await sql_dump();
+                console.log(`Database dump updated at: ${filePath}`);
+            } catch (error) {
+                console.error(`Dump failed: ${error}`);
+            }
+        }, {
+            scheduled: true,
+            timezone: "Asia/Manila"
+        });
+
+        console.log("Updating database dump is scheduled to run at 6 PM daily.");
+
+        // let time = 5 * 60 * 1000; // 5 * 60 * 1000 5 minutes
+        // setInterval(() => {
+        //     sql_dump()
+        //         .then((filePath) => console.log(`Database dump updated at: ${filePath}`))
+        //         .catch((error) => console.error(`Dump failed: ${error}`));
+        // }, time); // 5 minutes
     },
 
     serve_page: function(res, filePath) {

@@ -171,15 +171,37 @@
                     </table>
                 </div>
                  <!-- Pagination  -->
-                <div class = "fixed-bottom">
-                    <div class="pagination">
-                        <button id = "prevPage" class="pagination-button" type = "button">Previous</button>
-                        <div class = "pages">
-                            <span id="currentPage">1</span> <!-- Current page indicator -->
+                 <div class="fixed-bottom">
+                    <div class="legend-status">
+                        <div class="legend-item">
+                            <span class="status-box new"></span> New
                         </div>
-                        <button id = "nextPage" class="pagination-button" type = "button" >Next</button>
+                        <div class="legend-item">
+                            <span class="status-box pending"></span> Pending
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box in-progress"></span> In Progress
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box on-hold"></span> On Hold
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box completed"></span> Completed
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box cancelled"></span> Cancelled
+                        </div>
+                    </div>
+                
+                    <div class="pagination">
+                        <button id="prevPage" class="pagination-button" type="button">Previous</button>
+                        <div class="pages">
+                            <span id="currentPage">1</span>
+                        </div>
+                        <button id="nextPage" class="pagination-button" type="button">Next</button>
                     </div>
                 </div>
+                
             </div>
 
             <!-- Notification Pop-up -->

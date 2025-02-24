@@ -39,6 +39,14 @@
     --txt-shadow: rgba(255, 255, 255, 0.5);
     --shadow: rgba(0, 0, 0, 0.4);
 
+    --status-new: #1463e2;
+    --status-pend: #d709e1;
+    --status-progress: #efef0c;
+    --status-hold: #f3780c;
+    --status-comp: #0aed3b;
+    --status-cancel: #f00909;
+
+
     --tsm-left: left 0.3s ease;
     --tsm-width: width 0.3s ease;
     --tsm-l-w: var(--tsm-left), var(--tsm-width);
