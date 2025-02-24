@@ -193,10 +193,19 @@ export const task = {
     fetching_tasks: async function (db, bool = false, query = null, type = null, order = 'DESC', filterBy = null, value = null) {
         let conditions = [];
         let params = [];
-        
-        if (bool && type && query) {
+
+        if(bool && type && query) {
+            if (Array.isArray(type)) {
+                let typeConditions = type.map(() => `?? LIKE ?`).join(' OR ');
+                conditions.push(`(${typeConditions})`);
+                type.forEach(t => {
+                    params.push(t, `%${query}%`);
+                });
+            }
+            else {
             conditions.push(`?? LIKE ?`);
             params.push(type, `%${query}%`);
+            }
         }
         
         if (filterBy && value && !['taskDate', 'department'].includes(filterBy)) {
@@ -290,19 +299,21 @@ export const task = {
     get_task: async function (db, req, res) {
         const { search, filterBy, value } = req.query; // Get search and filter values from the URL
     
+        let type = ['taskType', 'taskDescription'];
+
         try {
             let tasks;
             
             if (search && filterBy && value) {
                 // Apply both search for taskType and filter for another field
                 if (filterBy == 'taskDate' || filterBy == 'department') {
-                    tasks = await task.fetching_tasks(db, true, search, 'taskType', value, filterBy, value);
+                    tasks = await task.fetching_tasks(db, true, search, type, value, filterBy, value);
                 } else {
-                    tasks = await task.fetching_tasks(db, true, search, 'taskType', 'DESC', filterBy, value);
+                    tasks = await task.fetching_tasks(db, true, search, type, 'DESC', filterBy, value);
                 }
             } else if (search) {
                 // Apply only search for taskType
-                tasks = await task.fetching_tasks(db, true, search, 'taskType', 'DESC');
+                tasks = await task.fetching_tasks(db, true, search, type, 'DESC');
             } else if (filterBy && value) {
                 // Apply only filter
                 if (filterBy == 'taskDate' || filterBy == 'department') {

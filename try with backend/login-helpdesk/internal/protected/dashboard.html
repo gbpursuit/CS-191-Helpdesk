@@ -128,7 +128,7 @@
 
                         </div>
                         <div class = "right-section">
-                            <button type = "button" class="new-task-button" onclick="openModal()">+ New Task</button>
+                            <button type = "button" id = "new-task" class="new-task-button" onclick="openModal()">+ New Task</button>
                         </div>
                     </div>
                 </div>
@@ -277,18 +277,18 @@
                                 <div class="form-group">
                                     <label for="taskStatus">Status<span class="required"> *</span></label>
                                     <select id="taskStatus" class = "dropdown" required>
-                                        <option value="" class="option-values" disabled selected>Select Status</option>
-                                        <option value="Open">Open</option>
+                                        <option value="New"  selected>New</option>
+                                        <option value="Pending">Pending</option>
                                         <option value="In Progress">In Progress</option>
-                                        <option value="Closed">Closed</option>
                                         <option value="On Hold">On Hold</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Cancelled">Cancelled</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="severity">Severity<span class="required"> *</span></label>
                                     <select id="severity" class = "dropdown" required>
-                                        <option value="" class="option-values" disabled selected>Select Severity</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -430,18 +430,18 @@
                                 <div class="edit-form-group">
                                     <label for="editTaskStatus">Status<span class="required"> *</span></label>
                                     <select id="editTaskStatus" class="edit-dropdown">
-                                        <option value="" class="option-values" disabled selected>Select Status</option>
-                                        <option value="Open">Open</option>
+                                        <option value="New">New</option>
+                                        <option value="Pending">Pending</option>
                                         <option value="In Progress">In Progress</option>
-                                        <option value="Closed">Closed</option>
                                         <option value="On Hold">On Hold</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Cancelled">Cancelled</option>
                                     </select>
                                 </div>
             
                                 <div class="edit-form-group">
                                     <label for="editSeverity">Severity<span class="required"> *</span></label>
                                     <select id="editSeverity" class="edit-dropdown">
-                                        <option value="" class="option-values" disabled selected>Select Severity</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -475,7 +475,7 @@
                     </form>
                 </div>
             </div>            
-        </div>
+        </div> 
 
         <div id = "summaryContainer" class = "sum-container">
             <div class = "homepage">
@@ -485,7 +485,6 @@
             <div id = "summaryElements" class = "sum-elements">
                 <iframe id="pdfPreview" class = "pdf-preview"></iframe>
                 <div class="footer">
-                    <button id="openButton" class="open-button foot-btn">Ano pa ba?</button>
                     <button id="printButton" class="print-button foot-btn">Print Summary PDF</button>
                 </div>
             </div>

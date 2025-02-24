@@ -78,8 +78,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     async function open_edit_modal(taskData) {
         const editModal = document.getElementById('taskEditModal');
         const editTaskForm = document.getElementById('editTaskForm');
-
-       
+    
+        // Map form fields to task properties
         const taskFields = {
             taskId: "editTaskId",
             taskStatus: "editTaskStatus",
@@ -100,26 +100,57 @@ document.addEventListener("DOMContentLoaded", async function () {
             dateStart: "editDateStart",
             dateFin: "editDateFin"
         };
-        
+    
+        // Populate form fields with existing task data
         Object.entries(taskFields).forEach(([key, id]) => {
             const field = document.getElementById(id);
             if (field) {
                 if (field.tagName === "SELECT") {
-                    // Set the correct selected option
+                    // Set correct selected option
                     for (let i = 0; i < field.options.length; i++) {
                         if (field.options[i].value === taskData[key]) {
                             field.selectedIndex = i;
-                            // console.log(field.options[i].value, taskData[key], field.selectedIndex);
                             break;
                         }
+                    }
+                    // Automatically change "New" to "Pending" when opening modal
+                    if (key === "taskStatus" && taskData.taskStatus === "New") {
+                        field.selectedIndex = [...field.options].findIndex(opt => opt.value === "Pending");
                     }
                 } else {
                     field.value = taskData[key] || "";
                 }
             }
         });
-
-        // Submission of Editted Task
+    
+        const statusField = document.getElementById("editTaskStatus");
+        const dateFinField = document.getElementById("editDateFin");
+        const dateStartField = document.getElementById("editDateStart");
+        
+        const selectedStatus = taskData.taskStatus === "New" ? "Pending" : taskData.taskStatus;
+        
+        Array.from(statusField.options).forEach(option => option.disabled = false);
+        const selectedOption = statusField.querySelector(`option[value="${selectedStatus}"]`);
+        if (selectedOption) {
+            selectedOption.disabled = true;
+        }
+    
+        // Listen for status changes to auto-fill Date Finished
+        statusField.addEventListener("change", function () {
+            const currentDate = new Date().toISOString().split('T')[0];
+        
+            if (statusField.value === "Completed") {
+                if (!dateFinField.value) { // Only update if it's empty
+                    dateFinField.value = currentDate;
+                }
+            } else if (statusField.value === "In Progress") {
+                if (!dateStartField.value) { // Only update if it's empty
+                    dateStartField.value = currentDate;
+                }
+            }
+        });
+    
+        // Submission of Edited Task
         editTaskForm.onsubmit = async function (event) {
             event.preventDefault();
     
@@ -144,12 +175,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 dateFin: document.getElementById("editDateFin").value
             };
     
+            // Ensure "New" changes to "Pending" before submitting
+            if (taskData.taskStatus === "New" && formData.taskStatus === "New") {
+                formData.taskStatus = "Pending";
+            }
+    
             await update_task(taskId, formData);
         };
     
         // Show the modal
         editModal.style.display = "flex";
     }
+    
     
     // Handle submitting edited task
     async function update_task(taskId, formData) {
@@ -461,8 +498,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             const field = document.getElementById(id);
             if (!field) return "--";
 
-            
-        
             return field.value.trim() || "--";  // Always return the value, which is now the full name
         }        
         
@@ -471,6 +506,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById('taskDate').value = currentDate;
             document.getElementById('taskId').value = generate_unique_id();
         };
+
+        const statusField = document.getElementById("new-task");
+        const dateReqField = document.getElementById("dateReq");
+    
+        // Listen for status changes to auto-fill Date Finished
+        statusField.addEventListener("click", function () {
+            const currentDate = new Date().toISOString().split('T')[0]; 
+            dateReqField.value = currentDate;
+            console.log("hello");
+        });
 
         window.addTask = async (event) => {
             event.preventDefault();
