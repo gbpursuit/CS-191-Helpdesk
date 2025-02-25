@@ -75,6 +75,68 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
+    function addTaskToTable(task) {
+        let tableBody = document.getElementById("taskTableBody");
+    
+        // Create row
+        let row = document.createElement("tr");
+    
+        // Assign a class based on task status
+        let statusClass = getStatusClass(task.taskStatus); // Ensure correct property
+        if (statusClass) row.classList.add(statusClass);
+    
+        // Populate row with task data
+        row.innerHTML = `
+            <td>${task.taskId}</td>
+            <td>${format_date(task.taskDate)}</td>
+            <td class="status status-${task.taskStatus.toLowerCase().replace(/\s+/g, '-')}">
+                ${task.taskStatus}
+            </td>
+            <td>${task.severity}</td>
+            <td>${task.taskType}</td>
+            <td>${task.taskDescription}</td>
+            <td>${task.itInCharge}</td>
+            <td>${task.department}</td>
+            <td>${task.departmentNo}</td>
+            <td>${task.requestedBy}</td>
+            <td>${task.approvedBy}</td>
+            <td>${task.itemName}</td>
+            <td>${task.deviceName}</td>
+            <td>${task.applicationName}</td>
+            <td>${format_date(task.dateReq)}</td>
+            <td>${format_date(task.dateRec)}</td>
+            <td>${format_date(task.dateStart)}</td>
+            <td>${format_date(task.dateFin)}</td>
+        `;
+    
+        // Add event listener for row click
+        row.addEventListener('click', async function(event) {
+            event.preventDefault();
+            await open_task_modal(task);
+        });
+    
+        // Append row to the table body
+        tableBody.appendChild(row);
+    }
+    
+    // Function to map status text to a CSS class
+    function getStatusClass(status) {
+        if (!status) return "";
+        switch (status.toLowerCase()) {
+            case "new": return "status-new";
+            case "pending": return "status-pending";
+            case "in progress": return "status-in-progress";
+            case "on hold": return "status-on-hold";
+            case "completed": return "status-completed";
+            case "cancelled": return "status-cancelled";
+            case "open": return "status-open"; 
+            case "closed": return "status-closed"; 
+            default: return "";
+        }
+    }
+    
+    
+
     async function open_edit_modal(taskData) {
         const editModal = document.getElementById('taskEditModal');
         const editTaskForm = document.getElementById('editTaskForm');
@@ -347,37 +409,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const paginatedTasks = tasks.slice(startIndex, endIndex);
     
             paginatedTasks.forEach(task => {
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = `
-                    <td>${task.taskId}</td>
-                    <td>${format_date(task.taskDate)}</td>
-                    <td class="status status-${task.taskStatus.toLowerCase().replace(/\s+/g, '-')}">
-                        ${task.taskStatus}
-                    </td>
-                    <td>${task.severity}</td>
-                    <td>${task.taskType}</td>
-                    <td>${task.taskDescription}</td>
-                    <td>${task.itInCharge}</td>
-                    <td>${task.department}</td>
-                    <td>${task.departmentNo}</td>
-                    <td>${task.requestedBy}</td>
-                    <td>${task.approvedBy}</td>
-                    <td>${task.itemName}</td>
-                    <td>${task.deviceName}</td>
-                    <td>${task.applicationName}</td>
-                    <td>${format_date(task.dateReq)}</td>
-                    <td>${format_date(task.dateRec)}</td>
-                    <td>${format_date(task.dateStart)}</td>
-                    <td>${format_date(task.dateFin)}</td>
-                `;
-    
-                newRow.addEventListener('click', async function(event) {
-                    event.preventDefault();
-                    // openUpdateModal(task);
-                    await open_task_modal(task); 
-                });
-    
-                tableBody.appendChild(newRow);
+                addTaskToTable(task);
             });
     
             update_pagination(totalPages);
@@ -492,8 +524,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         const pop = document.querySelector('.notification-popup');
         const currentDate = new Date().toISOString().split('T')[0];
 
+        // function generate_unique_id() {
+        //     return Array.from({ length: 4 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('');
+        // }
         function generate_unique_id() {
-            return Array.from({ length: 4 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('');
+            return Array.from({ length: 4 }, () => '0123456789'[Math.floor(Math.random() * 10)]).join('');
         }
 
         function get_field_value(id) {

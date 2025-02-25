@@ -587,19 +587,14 @@ label[for="check"]{
     border-right: none;
 }
 
-/* Table Input */
-.task-table tbody tr:nth-child(odd) {
-    background-color: var(--white);
-}
-
-.task-table tbody tr:nth-child(even) {
-    background-color: rgba(214, 218, 211, 0.247);
-
+.task-table tbody tr {
+    transition: background-color 0.2s ease-in-out; /* Smooth transition */
 }
 
 .task-table tbody tr:hover {
-    background-color: var(--hint-green);
+    filter: brightness(110%); /* Lightens the existing background color */
 }
+
 
 .task-table td {
     border: 1px solid var(--v2-gray);
@@ -614,12 +609,25 @@ label[for="check"]{
     margin-right: 5px;
 }
 
-.status-new::before { color: var(--status-new); } 
-.status-pending::before { color: var(--status-pend); } 
+/* Status Row Colors */
+.status-new { background-color: var(--status-new-light); }
+.status-pending { background-color: var(--status-pend-light); }
+.status-in-progress { background-color: var(--status-progress-light); }
+.status-on-hold { background-color: var(--status-hold-light); }
+.status-completed { background-color: var(--status-comp-light); }
+.status-cancelled { background-color: var(--status-cancel-light); }
+.status-open { background-color: var(--status-open-light); }
+.status-closed { background-color: var(--status-closed-light); }
+
+/* Status Badge Colors (for small indicators) */
+.status-new::before { color: var(--status-new); }
+.status-pending::before { color: var(--status-pend); }
 .status-in-progress::before { color: var(--status-progress); }
 .status-on-hold::before { color: var(--status-hold); }
-.status-completed::before { color: var(--status-comp); } 
+.status-completed::before { color: var(--status-comp); }
 .status-cancelled::before { color: var(--status-cancel); }
+.status-open::before { color: var(--status-open); }
+.status-closed::before { color: var(--status-closed); }
 
 .task-table th, .task-table td {
     white-space: nowrap; /* Prevents text from wrapping (clean look) */
@@ -686,6 +694,8 @@ label[for="check"]{
 .on-hold { background: var(--status-hold); }
 .completed { background: var(--status-comp); }
 .cancelled { background: var(--status-cancel); }
+.open{ background: var(--status-open); }
+.closed{ background: var(--status-closed); }
 
 .pagination {
     /* width: 30%; */
@@ -1314,6 +1324,35 @@ body.dark-mode .form-group input {
 
 body.dark-mode input[type="date"] {
     color-scheme: dark;
+}
+
+body.dark-mode .task-table {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+body.dark-mode .task-table th {
+    background-color: var(--whitesmoke);
+    color: var(--text-color);
+}
+
+/* Maintain Status Row Colors */
+body.dark-mode .status-new { background-color: #1d3f7a; }
+body.dark-mode .status-pending { background-color: #700b73; }
+body.dark-mode .status-in-progress { background-color: #8a8a04; }
+body.dark-mode .status-on-hold { background-color: #94480a; }
+body.dark-mode .status-completed { background-color: #0a7d2d; }
+body.dark-mode .status-cancelled { background-color: #860808; }
+body.dark-mode .status-open { background-color: #0f5f8f; }
+body.dark-mode .status-closed { background-color: #4e5256; }
+
+/* Hover Effect (Lightens Status Row Colors) */
+body.dark-mode .task-table tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+
+body.dark-mode .task-table tbody tr:hover {
+    filter: brightness(120%);
 }
 
 /* Responsive */

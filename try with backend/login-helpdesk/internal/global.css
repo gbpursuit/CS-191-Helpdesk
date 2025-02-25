@@ -39,12 +39,24 @@
     --txt-shadow: rgba(255, 255, 255, 0.5);
     --shadow: rgba(0, 0, 0, 0.4);
 
-    --status-new: #1463e2;
-    --status-pend: #d709e1;
+    --status-new: #1463e2;        
+    --status-pend: #d709e1;      
     --status-progress: #efef0c;
-    --status-hold: #f3780c;
-    --status-comp: #0aed3b;
-    --status-cancel: #f00909;
+    --status-hold: #f3780c;       
+    --status-comp: #0aed3b;       
+    --status-cancel: #f00909;    
+    --status-open: #1d9bf0;      
+    --status-closed: #6c757d;   
+
+    /* Light Versions for Row Backgrounds */
+    --status-new-light: #d3e3fc;   
+    --status-pend-light: #f3d1f7;     
+    --status-progress-light: #fcfbb6;  
+    --status-hold-light: #fcd6b2;    
+    --status-comp-light: #b9f5c0;    
+    --status-cancel-light: #fbb3b3;     
+    --status-open-light: #cde9fd;   
+    --status-closed-light: #d6d8db;  
 
 
     --tsm-left: left 0.3s ease;
