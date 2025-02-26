@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    setTimeout(update_tasks_per_page, 50);
+    setTimeout(update_tasks_per_page, 150);
 
     function task_per_page() {
         const tableContainer = document.getElementById('containerTable'); 
@@ -391,7 +391,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const prevButton = document.getElementById("prevPage");
     const nextButton = document.getElementById("nextPage");
-    const legendStatus = document.getElementById("legendStatus");
     
     function update_page_buttons() {    
         if (window.innerWidth <= 800) {
@@ -475,19 +474,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     
             tableBody.innerHTML = ""; 
 
-            const table = document.getElementById('containerTable');
+            const table = document.querySelector('.task-table');
             const noData = document.getElementById('noData');
-
-            if(totalTasks === 0) {
+            
+            if (totalTasks === 0) {
                 table.style.display = 'none';
-                noData.style.display = 'flex';
+                noData.style.display = 'flex';  
             } else {
-                table.style.display = 'flex';
-                noData.style.display = 'none';
-                const newTasksPerPage = task_per_page();
-                if (newTasksPerPage !== tasksPerPage) {
-                    tasksPerPage = newTasksPerPage;
-                }
+                table.style.display = 'table';
+                noData.style.display = 'none';  
             }
     
             const startIndex = (currentPage - 1) * tasksPerPage;
