@@ -340,42 +340,44 @@ export async function setup_database() {
             database: process.env.MYSQL_DTB,
         });
 
-        if (databases.length !== 0) {
-            const dumpFilePath = await get_dump_file();
-            const sqlData = await read_sql(dumpFilePath);
+        console.log('Database connected successfully');
 
-            sqlData.forEach(tableData => {
-                if (tableData.table === 'tasks') {
-                    tableData.data = tableData.data.map(row => row.slice(1));
-                }
-            });
+        // if (databases.length !== 0) {
+        //     const dumpFilePath = await get_dump_file();
+        //     const sqlData = await read_sql(dumpFilePath);
 
-            await Promise.all(sqlData.map(async (tableData) => {
-                const { table, data } = tableData;
+        //     sqlData.forEach(tableData => {
+        //         if (tableData.table === 'tasks') {
+        //             tableData.data = tableData.data.map(row => row.slice(1));
+        //         }
+        //     });
 
-                const [tableExists] = await pool.query(`SHOW TABLES LIKE ?`, [table]);
+        //     await Promise.all(sqlData.map(async (tableData) => {
+        //         const { table, data } = tableData;
 
-                if (tableExists.length === 0) {
-                    console.warn(`Table ${table} does not exist!`);
-                    return;
-                }
+        //         const [tableExists] = await pool.query(`SHOW TABLES LIKE ?`, [table]);
 
-                const [columns] = await pool.query(`DESCRIBE ${table}`);
-                const columnNames = columns.map(col => col.Field).filter(field => field !== 'id');
-                const placeholders = columnNames.map(() => '?').join(',');
-                const updateClause = columnNames.map(col => `${col} = VALUES(${col})`).join(',');
+        //         if (tableExists.length === 0) {
+        //             console.warn(`Table ${table} does not exist!`);
+        //             return;
+        //         }
 
-                const insertQuery = `
-                    INSERT INTO ${table} (${columnNames.join(',')})
-                    VALUES (${placeholders})
-                    ON DUPLICATE KEY UPDATE ${updateClause}
-                `;
+        //         const [columns] = await pool.query(`DESCRIBE ${table}`);
+        //         const columnNames = columns.map(col => col.Field).filter(field => field !== 'id');
+        //         const placeholders = columnNames.map(() => '?').join(',');
+        //         const updateClause = columnNames.map(col => `${col} = VALUES(${col})`).join(',');
 
-                await Promise.all(data.map(rowData => pool.query(insertQuery, rowData)));
+        //         const insertQuery = `
+        //             INSERT INTO ${table} (${columnNames.join(',')})
+        //             VALUES (${placeholders})
+        //             ON DUPLICATE KEY UPDATE ${updateClause}
+        //         `;
 
-                console.log(`Data for table ${table} inserted successfully.`);
-            }));
-        }
+        //         await Promise.all(data.map(rowData => pool.query(insertQuery, rowData)));
+
+        //         console.log(`Data for table ${table} inserted successfully.`);
+        //     }));
+        // }
 
         return pool;
     } catch (err) {

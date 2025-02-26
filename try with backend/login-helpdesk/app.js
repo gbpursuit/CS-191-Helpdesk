@@ -186,37 +186,54 @@ app.post('/logout', server.is_authenticated, (req, res) => {
     });
 });
 
-// Delete Tasks
-app.delete('/api/tasks/:taskId', server.is_authenticated, limiter.delete_limit, async (req, res) => {
+// Check if Task is cancelled already 
+app.get('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
     try {
         const db = app.locals.db;
         const { taskId } = req.params;
 
-        console.log(`Attempting to delete task with ID: ${taskId}`);
+        // Fetch the task
+        const [task] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
 
-        // Check if task exists before deleting
-        const [taskExists] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
-        if (taskExists.length === 0) {
-            console.warn(`Task ID ${taskId} not found in database.`);
+        if (task.length === 0) {
             return res.status(404).json({ error: 'Task not found' });
         }
 
-        // Execute DELETE query
-        const [result] = await db.query('DELETE FROM tasks WHERE taskId = ?', [taskId]);
-
-        if (result.affectedRows > 0) {
-            console.log(`Task ID ${taskId} successfully deleted.`);
-            res.json({ success: true, message: 'Task deleted successfully' });
-        } else {
-            console.error(`Task ID ${taskId} not deleted. Check database constraints.`);
-            res.status(500).json({ error: 'Failed to delete task' });
-        }
-
+        res.json(task[0]);
     } catch (err) {
-        console.error('Error deleting task:', err);
+        console.error('Error fetching task:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Cancel Task (User Role)
+app.put('/api/tasks/:taskId/cancel', server.is_authenticated, async (req, res) => {
+    try {
+        const db = app.locals.db;
+        const { taskId } = req.params;
+
+        const [taskExists] = await db.query('SELECT * FROM tasks where taskId = ?', [taskId]);
+        if (taskExists.length === 0) {
+            console.warn(`ask ID ${taskId} not found in database.`);
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const [result] = await db.query(
+            `UPDATE tasks SET taskStatus = ? WHERE taskId = ?`,
+            ['Cancelled', taskId]
+        );
+
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: `Task ${taskId} cancalled successfully` });
+        } else {
+            res.status(404).json({ error: 'Task not found' });
+        }
+        
+    } catch (err) {
+        console.error('Error canceling task:', err);
+        res.status(500).json({ error: err.sqlMessage || 'Internal server error' });
+    }
+})
 
 // Edit Tasks
 app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
@@ -227,12 +244,39 @@ app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
         // Convert empty values to NULL
         const convertToNull = (value) => (value === '' ? null : value);
         const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
+        const formatDate = (date) => (date === null ? "--" : date); 
 
+        // Normalize values in req.body
         const validatedFields = Object.fromEntries(
             Object.entries(req.body).map(([key, value]) => [
-                key, key.toLowerCase().includes('date') ? isValidDate(value) : convertToNull(value)
+                key, key.toLowerCase().includes('date') 
+                ? isValidDate(value) : convertToNull(value)
             ])
         );
+
+        const [existingTasks] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
+
+        if (existingTasks.length === 0) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const existingTask = existingTasks[0];
+        const newTasks = Object.fromEntries(
+            Object.entries(existingTask).map(([key, value]) => [
+                key, key.toLowerCase().includes('date')
+                    ? (value ? value.toLocaleDateString('en-CA') : null)
+                    : convertToNull(value)
+            ])
+        );
+
+        const hasChanged = Object.entries(validatedFields).some(([key, newValue]) => {
+            return newTasks[key] !== newValue;
+        });
+
+
+        if (!hasChanged) {
+            return res.json({ success: false, message: 'No changes detected, task not updated.' });
+        }
 
         const updatedFields = [...Object.values(validatedFields), taskId];
 
@@ -256,6 +300,7 @@ app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
     }
 });
 
+
 // Fallback route for unmatched paths
 app.use((req, res) => {
     res.status(404).send('Page not found');
@@ -264,3 +309,35 @@ app.use((req, res) => {
 // Start the server
 server.update_dump();
 server.launch_server(app);
+
+// Delete Tasks -- for admin only (future implement)
+// app.delete('/api/tasks/:taskId', server.is_authenticated, limiter.delete_limit, async (req, res) => {
+//     try {
+//         const db = app.locals.db;
+//         const { taskId } = req.params;
+
+//         console.log(`Attempting to delete task with ID: ${taskId}`);
+
+//         // Check if task exists before deleting
+//         const [taskExists] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
+//         if (taskExists.length === 0) {
+//             console.warn(`Task ID ${taskId} not found in database.`);
+//             return res.status(404).json({ error: 'Task not found' });
+//         }
+
+//         // Execute DELETE query
+//         const [result] = await db.query('DELETE FROM tasks WHERE taskId = ?', [taskId]);
+
+//         if (result.affectedRows > 0) {
+//             console.log(`Task ID ${taskId} successfully deleted.`);
+//             res.json({ success: true, message: 'Task deleted successfully' });
+//         } else {
+//             console.error(`Task ID ${taskId} not deleted. Check database constraints.`);
+//             res.status(500).json({ error: 'Failed to delete task' });
+//         }
+
+//     } catch (err) {
+//         console.error('Error deleting task:', err);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });

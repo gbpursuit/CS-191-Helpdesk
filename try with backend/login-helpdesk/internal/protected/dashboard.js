@@ -52,28 +52,81 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    async function delete_task(taskId) {
-        if (!confirm("Are you sure you want to delete this task?")) return;
-    
+    async function check_if_cancelled(taskId) {
         try {
-            const response = await fetch(`/api/tasks/${taskId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            if (response.ok) {
-                console.log("Task deleted successfully.");
-                UI.close_modal('taskInfoModal', true); // Close the modal
-                await load_tasks(); // Refresh the task list
-            } else {
-                console.error("Failed to delete task.");
+            const response = await fetch(`/api/tasks/${taskId}`);
+            
+            if (!response.ok) {
+                throw new Error("Failed to fetch task details");
             }
+    
+            const taskData = await response.json();
+            
+            return taskData.taskStatus === "Cancelled"; 
         } catch (err) {
-            console.error("Error deleting task:", err);
+            console.error("Error checking task status:", err);
+            return false; 
         }
     }
+    
+    async function cancel_task(taskId) {
+        const taskInfoModal = document.getElementById('taskInfoModal');
+        try {
+            const isCancelled = await check_if_cancelled(taskId);
+            if (isCancelled) {
+                alert(`Task ${taskId} is already cancelled.`);
+                return;
+            }
+    
+            const response = await fetch(`/api/tasks/${taskId}/cancel`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ taskStatus: "Cancelled" })
+            });
+    
+            const data = await response.json();
+            
+            if (response.ok) {
+                console.log("Task cancelled successfully:", data);
+                alert(`Task ${taskId} cancelled successfully!`); 
+                await load_tasks();
+                taskInfoModal.style.display = "none";
+            } else {
+                console.error("Error cancelling task:", data.error);
+                alert("Error cancelling task: " + data.error);
+            }
+        } catch (error) {
+            console.error("Network or server error:", error);
+            alert("Network error. Please try again.");
+        }
+    }
+    
+
+    // Admin role
+    // async function delete_task(taskId) {
+    //     if (!confirm("Are you sure you want to delete this task?")) return;
+    
+    //     try {
+    //         const response = await fetch(`/api/tasks/${taskId}`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+    
+    //         if (response.ok) {
+    //             console.log("Task deleted successfully.");
+    //             UI.close_modal('taskInfoModal', true); // Close the modal
+    //             await load_tasks(); // Refresh the task list
+    //         } else {
+    //             console.error("Failed to delete task.");
+    //         }
+    //     } catch (err) {
+    //         console.error("Error deleting task:", err);
+    //     }
+    // }
 
     function addTaskToTable(task) {
         let tableBody = document.getElementById("taskTableBody");
@@ -250,6 +303,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     // Handle submitting edited task
     async function update_task(taskId, formData) {
+        const editModal = document.getElementById('taskEditModal');
         try {
             const response = await fetch(`/api/tasks/${taskId}`, {
                 method: "PUT",
@@ -260,17 +314,30 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
     
             const data = await response.json();
-            if (response.ok) {
-                console.log("Task updated successfully:", data);
-                alert("Task updated successfully!"); // Feedback to user
-                location.reload(); // Reload to reflect changes
-            } else {
-                console.error("Error updating task:", data.error);
-                alert("Error updating task: " + data.error);
+    
+            if (!response.ok) {  
+                throw new Error(data.error || "Failed to update task");
             }
+    
+            alert(data.message);
+    
+            if (!data.success) return;
+            console.log(data.message, data);
+
+            const newTasksPerPage = task_per_page();
+            if (newTasksPerPage !== tasksPerPage) {
+                tasksPerPage = newTasksPerPage;
+            }
+    
+            await load_tasks(null, true);
+            editModal.style.display = "none";
+
         } catch (error) {
-            console.error("Network or server error:", error);
-            alert("Network error. Please try again.");
+            console.error("Error:", error);
+            alert(error.message.includes("Failed to fetch") 
+                ? "Network error. Please check your connection and try again." 
+                : error.message
+            );
         }
     }
 
@@ -322,16 +389,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         }, 100);
     });
 
-
-
     const prevButton = document.getElementById("prevPage");
     const nextButton = document.getElementById("nextPage");
     const legendStatus = document.getElementById("legendStatus");
     
-    function update_page_buttons() {
-
-        console.log(window.innerWidth);
-    
+    function update_page_buttons() {    
         if (window.innerWidth <= 800) {
             prevButton.textContent = "«";
             prevButton.style.fontSize = "18px";
@@ -422,6 +484,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             } else {
                 table.style.display = 'flex';
                 noData.style.display = 'none';
+                const newTasksPerPage = task_per_page();
+                if (newTasksPerPage !== tasksPerPage) {
+                    tasksPerPage = newTasksPerPage;
+                }
             }
     
             const startIndex = (currentPage - 1) * tasksPerPage;
@@ -520,10 +586,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     
         taskInfoModal.style.display = "flex";       
 
-        // Set up delete button event listener
-        const deletetask = document.getElementById('deleteTaskButton');
-        deletetask.onclick = async () => {
-            await delete_task(taskData.taskId);
+        // Set up cancel button event listener
+        const cancelTask = document.getElementById('cancelTaskButton');
+        cancelTask.onclick = async () => {
+            await cancel_task(taskData.taskId);
         };
 
         const editTaskButton = document.getElementById('editTaskButton');
@@ -571,7 +637,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         statusField.addEventListener("click", function () {
             const currentDate = new Date().toISOString().split('T')[0]; 
             dateReqField.value = currentDate;
-            console.log("hello");
         });
 
         window.addTask = async (event) => {

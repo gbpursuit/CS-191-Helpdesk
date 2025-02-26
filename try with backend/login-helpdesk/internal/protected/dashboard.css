@@ -1063,7 +1063,7 @@ form button:hover {
     cursor: pointer;
 }
 
-.delete-btn {
+.cancel-btn {
     padding: 5px 12px;
     background-color: var(--hot-pink);
     color: white;
@@ -1074,7 +1074,7 @@ form button:hover {
     float: right;
 }
 
-.delete-btn:hover {
+.cancel-btn:hover {
     background-color: #881111;
     color: white;
 }
