@@ -82,7 +82,7 @@
                 <div class = "fixed-head">
                     <div class="search-filter">
                         <div class="left-section">
-                            <input type="text" placeholder="Search for task type" class="search-input">
+                            <input type="text" placeholder="Search" class="search-input">
                             <select class="filter-select dropdown-filter" aria-label="Filter options">
                                 <option value="filter" disabled selected>Filter by</option>
                                 <option value="taskStatus">Status</option>
@@ -94,10 +94,14 @@
                             <select class="status-options dropdown-filter" aria-label="Status Options">
                                 <option value="filter" disabled selected>Choose</option>
                                 <option value="stop">Stop Filter</option>
+                                <option value="new">New</option>
                                 <option value="open">Open</option>
+                                <option value="pending">Pending</option>
                                 <option value="in progress">In Progress</option>
-                                <option value="closed">Closed</option>
                                 <option value="on hold">On Hold</option>
+                                <option value="completed">Completed</option>
+                                <option value="closed">Closed</option>
+                                <option value="cancelled">Cancelled</option>
                             </select>
                             
                             <select class="date-options dropdown-filter" aria-label="Date Options">
@@ -172,7 +176,7 @@
                 </div>
                  <!-- Pagination  -->
                  <div class="fixed-bottom">
-                    <div class="legend-status">
+                    <div id = "legendStatus" class="legend-status">
                         <div class="legend-item">
                             <span class="status-box new"></span> New
                         </div>
@@ -513,7 +517,9 @@
             <div id = "summaryElements" class = "sum-elements">
                 <iframe id="pdfPreview" class = "pdf-preview"></iframe>
                 <div class="footer">
-                    <button id="printButton" class="print-button foot-btn">Print Summary PDF</button>
+                    <button id="printButton" class="print-button foot-btn">
+                        <span >Print Summary PDF</span>
+                    </button>
                 </div>
             </div>
             

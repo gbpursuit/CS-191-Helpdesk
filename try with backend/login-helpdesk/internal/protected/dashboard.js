@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         let row = document.createElement("tr");
     
         // Assign a class based on task status
-        let statusClass = getStatusClass(task.taskStatus); // Ensure correct property
+        let statusClass = get_status_class(task.taskStatus); // Ensure correct property
         if (statusClass) row.classList.add(statusClass);
     
         // Populate row with task data
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     
     // Function to map status text to a CSS class
-    function getStatusClass(status) {
+    function get_status_class(status) {
         if (!status) return "";
         switch (status.toLowerCase()) {
             case "new": return "status-new";
@@ -134,8 +134,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             default: return "";
         }
     }
-    
-    
 
     async function open_edit_modal(taskData) {
         const editModal = document.getElementById('taskEditModal');
@@ -320,13 +318,35 @@ document.addEventListener("DOMContentLoaded", async function () {
     
                 await load_tasks(null, false);
             }
+            update_page_buttons();
         }, 100);
     });
 
+
+
     const prevButton = document.getElementById("prevPage");
     const nextButton = document.getElementById("nextPage");
+    const legendStatus = document.getElementById("legendStatus");
     
+    function update_page_buttons() {
+
+        console.log(window.innerWidth);
     
+        if (window.innerWidth <= 800) {
+            prevButton.textContent = "«";
+            prevButton.style.fontSize = "18px";
+            nextButton.textContent = "»";
+            nextButton.style.fontSize = "18px";
+        } else {
+            prevButton.textContent = "Previous";
+            nextButton.textContent = "Next";
+            prevButton.style.fontSize = "";
+            nextButton.style.fontSize = "";
+        }
+    }
+
+    window.addEventListener('load', update_page_buttons);
+
     function update_pagination(totalPages) {
         const currentPageSpan = document.getElementById("currentPage");    
         currentPageSpan.textContent = `${currentPage}`;
@@ -876,12 +896,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         periodic_updates();
     }
 
-    const container = document.querySelector('.table');
-
-    container.addEventListener('wheel', (event) => {
+    function scroll_change(event) {
         event.preventDefault();
-        container.scrollLeft += event.deltaY; 
-    });
+        this.scrollLeft += event.deltaY; 
+    }
+    
+    document.getElementById('containerTable').addEventListener('wheel', scroll_change);
+    
+
     
     // UI Actions
     UI.handle_darkmode(".toggle-switch");

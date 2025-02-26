@@ -409,12 +409,20 @@ label[for="check"]{
     --child-width: 100%; 
 }
 
+.s-title,
 .d-title {
     position: relative;
+    display: flex;
+    flex-wrap: nowrap;
     top: 3px;
     text-align: left;
     color: var(--dark-green);
+    font-size: clamp(16px, 3vw, 24px); /* Scales between 16px and 24px */
+    white-space: nowrap; /* Prevents line breaks */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds "..." if it overflows */
 }
+
 
 .dash-elements {
     display: flex;
@@ -605,7 +613,7 @@ label[for="check"]{
 
 .task-table td.status::before {
     content: "●"; 
-    font-size: 16px;
+    font-size: 13px;
     margin-right: 5px;
 }
 
@@ -665,17 +673,16 @@ label[for="check"]{
     align-items: center;
 }
 
-.legend-status {
+/* .legend-status {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     width: 80%;
-    font-size: 14px;
-    /* background-color: red; */
 }
 
 .legend-item {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
     font-size: 14px;
@@ -685,7 +692,47 @@ label[for="check"]{
     width: 10px;
     height: 10px;
     border-radius: 4px;
+} */
+.legend-status {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    width: 80%;
+    gap:clamp(1px, 2vw, 3px);
 }
+
+.legend-status::-webkit-scrollbar {
+    width: 4x;  
+    height: 4px;
+}
+
+.legend-status::-webkit-scrollbar-thumb{
+    border-radius: 5px; 
+}
+
+.legend-status:hover::-webkit-scrollbar {
+    width: 4px; 
+    height: 4px; 
+}
+
+.legend-status:hover::-webkit-scrollbar-thumb {
+    background-color: var(--v2-gray);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: clamp(2px, 2vw, 10px); /* Scales spacing dynamically */
+    font-size: clamp(10px, 1.5vw, 14px); /* Adjusts font size responsively */
+}
+
+.status-box {
+    width: clamp(4px, 1.5vw, 10px); /* Adjusts width dynamically */
+    height: clamp(4px, 1.5vw, 10px); /* Adjusts height dynamically */
+    border-radius: 3px; /* Keeps rounded corners minimal */
+}
+
+
 
 /* Status Colors */
 .new { background: var(--status-new); }
@@ -712,6 +759,7 @@ label[for="check"]{
     background: none;
     color: var(--v3-gray);
     cursor: pointer;
+    font-size: 14px;
 }
 
 .pagination-button:hover {
@@ -1205,12 +1253,7 @@ form button:hover {
     --child-width: 100%; 
 }
 
-.s-title {
-    position: relative;
-    top: 3px;
-    text-align: left;
-    color: var(--dark-green);
-}
+
 
 .sum-elements {
     display: flex;
@@ -1255,7 +1298,7 @@ form button:hover {
 
 .foot-btn {
     width: 40%;
-    max-width: 250px; 
+    max-width: 250px;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -1268,7 +1311,17 @@ form button:hover {
     padding: 10px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s ease-in-out;
+
 }
+
+.foot-btn span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+}
+
 
 .foot-btn:hover {
     background-color: var(--hover-button);
@@ -1381,12 +1434,6 @@ body.dark-mode .task-table tbody tr:hover {
         padding: 5px;
     }
 
-    /* .filter-select{
-        flex: 0.7; 
-        min-width: 50px;
-        padding: 5px;
-    } */
-
     #check:checked ~ .sum-container,
     #check:checked ~ .dashboard-container {
         left: 200px;
@@ -1401,5 +1448,19 @@ body.dark-mode .task-table tbody tr:hover {
     #check:checked ~ .side-bar {
         width: 220px;
         transition: var(--tsm-l-w);
+    }
+}
+
+@media (max-width: 700px) {
+    .legend-item::after {
+        content: ''; 
+        
+    }
+    .legend-item {
+        font-size: 0;
+    }
+
+    .legend-status {
+        overflow: hidden;
     }
 }
