@@ -1,14 +1,53 @@
 import { UI } from '../common.js';
 
+// May bug parin ako sa paking tasks per page na yan ughhhhh pero wooo naayos and naseparate ko na :>
+// if may bug pasabi nalang huehue
+
 document.addEventListener("DOMContentLoaded", async function() {
+    document.getElementById('containerTable').addEventListener('wheel', (event) => {
+        event.preventDefault();
+        event.currentTarget.scrollLeft += event.deltaY; 
+    });
 
+    document.getElementById("printButton").addEventListener("click", async function () {
+        if (!generatedPDF) {
+            console.log("Generating new PDF...");
+            generatedPDF = await pdf.generate_pdf();
+        }
+        if (generatedPDF) {
+            generatedPDF.save("summary_report.pdf");
+        }
+    });
 
+    // Layout Functions
+    layout.list_navigation();
+    layout.notification_popup();
 
+    // Add Functions
+    add.modal_handling();
+
+    // Load Functions
+    await load.load_tasks();
+
+    // Filter Functions
+    search.search_filter();
+    search.filter_dropdown();
+
+    // Period Functions
+    period.setup_updates();
+
+    // Util Functions
+    util.window_listeners();
+
+    // UI Functions
     UI.handle_darkmode(".toggle-switch");
+    UI.dropdown_toggle();
+    UI.handle_sidebar();
+    UI.show_profile();
+    await UI.reflect_username();
 })
 
-let generatedPDF;
-
+// Layout Page Logic
 const layout = {
     dashboard_open: async function() {
        layout.setup_elem(1);
@@ -18,7 +57,7 @@ const layout = {
 
     summary_open: async function() {
         layout.setup_elem(2);
-        await generate_pdf();
+        await pdf.generate_pdf();
     },
 
     setup_elem: function(int) {
@@ -50,8 +89,239 @@ const layout = {
             };
         }
     },
+
+    list_navigation: function() {
+        const dashboard = document.getElementById('dashboard');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const summary = document.getElementById('summary');
+        const summaryContainer = document.getElementById('summaryContainer');
+
+        if (summaryContainer.style.display === 'block') {
+            layout.summary_open(); 
+        } else {
+            layout.dashboard_open(); 
+        }
+
+        summary.addEventListener('click', async function(event){
+            event.preventDefault();
+
+            dashboardContainer.style.display = 'none';
+            await layout.summary_open();
+        });
+        
+        dashboard.addEventListener('click', async function(event){
+            event.preventDefault();
+
+            await layout.dashboard_open();
+            summaryContainer.style.display = 'none';
+        });
+    },
+
+    notification_popup: function() {
+        const dashboardPopup = document.getElementById('dashboard-notificationPopup');
+        const summaryPopup = document.getElementById('summary-notificationPopup');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const pop = document.querySelector('.notification-popup');
+    
+        function is_dashboard_active() {
+            return dashboardContainer.style.display === 'block';
+        }
+
+        pop.addEventListener('click', (event) => {
+            let notif = is_dashboard_active() ? dashboardPopup.id : summaryPopup.id;
+            UI.close_outside_modal(event, 'popupContent', notif);
+        })
+    
+        window.openNotificationPopup = function() {
+            dashboardPopup.style.display = is_dashboard_active() ? 'block' : 'none';
+            summaryPopup.style.display = is_dashboard_active() ? 'none' : 'block';
+        };
+    
+        window.closeNotificationPopup = function() {
+            (is_dashboard_active() ? dashboardPopup : summaryPopup).style.display = 'none';
+        };
+    }
 }
 
+// PDF Generation
+let generatedPDF;
+
+const pdf = {
+    fetch_summary_data: async function() {
+        try {
+            const response = await fetch('/api/tasks'); 
+            if (!response.ok) throw new Error('Failed to fetch summary data');
+    
+            const data = await response.json();
+            return data; // Return fetched data
+        } catch (error) {
+            console.error('Error fetching summary data:', error);
+            return [];
+        }
+    },
+
+    generate_pdf: async function() {
+        if (generatedPDF) {
+            console.log("Using generated PDF.");
+            return generatedPDF;
+        }
+
+        if (!window.jspdf) {
+            console.error("jsPDF is not loaded!");
+            return null; // Return null if jsPDF is not loaded
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: [420, 594] }); // Large A2 format
+
+        // Add title
+        const title = document.getElementById("summaryTitle").textContent || "Summary Report";
+        doc.setFontSize(14);
+        doc.text(title, 20, 20);
+
+        // Fetch summary data from API
+        const tasks = await pdf.fetch_summary_data();
+
+        // Define table headers
+        const tableHeaders = [
+            "Task ID", "Task Type", "Task Description", "Requested By", "Approved By", "Department",
+            "Department No", "IT In Charge", "Device Name", "Item Name", "Application Name", "Status",
+            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished"
+        ];
+
+        // Convert API data into table format
+        const tableData = tasks.map(task => [
+            task.taskId, task.taskType, task.taskDescription, task.requestedBy, task.approvedBy,
+            task.department, task.departmentNo, task.itInCharge, task.deviceName, task.itemName,
+            task.applicationName, task.status, task.severity, task.transactionDate, task.dateRequested,
+            task.dateReceived, task.dateStarted, task.dateFinished
+        ]);
+
+        if (doc.autoTable) {
+            doc.autoTable({
+                head: [tableHeaders],
+                body: tableData,
+                startY: 30,
+                theme: "grid", 
+                styles: { fontSize: 10, cellPadding: 4 },
+                headStyles: { fillColor: [22, 160, 133], textColor: 255, fontStyle: "bold" },
+                columnStyles: { 
+                    2: { cellWidth: 80 }, // Task Description (wider)
+                    5: { cellWidth: 50 }, // Department
+                    6: { cellWidth: 50 }, // IT In Charge
+                    8: { cellWidth: 50 }, // Item Name
+                    11: { cellWidth: 30 } // Status
+                }
+            });
+
+            const pdfBlob = doc.output("blob");
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            document.getElementById("pdfPreview").src = pdfUrl;
+
+            generatedPDF = doc;
+
+            return doc; 
+        } else {
+            console.error("jsPDF autoTable plugin is not loaded!");
+            return null;
+        }
+    }
+}
+
+const search = {
+    search_filter: function() {
+        let timeout;
+        const searchInput = document.querySelector(".search-input");
+
+        // Restore search input value from localStorage
+        const savedSearch = localStorage.getItem("searchQuery");
+        if (savedSearch) searchInput.value = savedSearch;
+
+        searchInput.addEventListener("input", function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(async () => {
+                const queryValue = searchInput.value.trim();
+                localStorage.setItem("searchQuery", queryValue);
+                
+                const newUrl = new URL(window.location.href);
+                queryValue ? newUrl.searchParams.set("search", queryValue) : newUrl.searchParams.delete("search");
+
+                window.history.pushState({}, "", newUrl);
+                await load.load_tasks(null, true); // Reload tasks with the new search query
+            }, 500);
+        });
+    },
+
+    filter_dropdown: function() {
+        const filterSelect = document.querySelector(".filter-select");
+
+        const dropdowns = {
+            taskStatus: document.querySelector(".status-options"),
+            taskDate: document.querySelector(".date-options"),
+            severity: document.querySelector(".severity-options"),
+            department: document.querySelector(".dept-options")
+        };
+
+        // Hide all dropdowns initially
+        Object.values(dropdowns).forEach(dropdown => dropdown.style.display = "none");
+
+        // Restore previous filter state
+        const savedFilterBy = localStorage.getItem("filterBy");
+        const savedValue = localStorage.getItem("filterValue");
+
+        if (savedFilterBy && dropdowns[savedFilterBy]) {
+            filterSelect.value = savedFilterBy;
+            dropdowns[savedFilterBy].style.display = "block";
+            dropdowns[savedFilterBy].value = savedValue;
+        }
+
+        // Handle filter selection change
+        filterSelect.addEventListener("change", function () {
+            const selectedFilter = this.value;
+
+            // Hide all dropdowns and reset values
+            Object.values(dropdowns).forEach(dropdown => {
+                dropdown.style.display = "none";
+                dropdown.value = "filter";
+            });
+
+            if (dropdowns[selectedFilter]) {
+                dropdowns[selectedFilter].style.display = "block";
+            }
+        });
+
+        document.addEventListener("change", async function (event) {
+            const selectedDropdown = Object.values(dropdowns).find(dropdown => dropdown === event.target);
+            if (!selectedDropdown) return;
+
+            const selectedFilter = filterSelect.value;
+            const newValue = selectedDropdown.value;
+            const newUrl = new URL(window.location.href);
+
+            if (newValue !== "stop") {
+                localStorage.setItem("filterBy", selectedFilter);
+                localStorage.setItem("filterValue", newValue);
+                newUrl.searchParams.set("filterBy", selectedFilter);
+                newUrl.searchParams.set("value", newValue);
+            } else {
+                localStorage.removeItem("filterBy");
+                localStorage.removeItem("filterValue");
+
+                Object.values(dropdowns).forEach(dropdown => dropdown.style.display = "none");
+                filterSelect.value = "filter";
+                selectedDropdown.value = "none";
+
+                newUrl.searchParams.delete("filterBy");
+                newUrl.searchParams.delete("value");
+            }
+
+            window.history.pushState({}, "", newUrl);
+            await load.load_tasks(null, true); 
+        });
+    }
+}
+
+// Database Logic -- Adding
 const add = {
     add_to_database: async function(taskData){
         try {
@@ -106,15 +376,164 @@ const add = {
         // Add event listener for row click
         row.addEventListener('click', async function(event) {
             event.preventDefault();
-            await open_task_modal(task);
+            await add.open_task_modal(task);
         });
     
         // Append row to the table body
         tableBody.appendChild(row);
-    }
+    },
 
+    open_task_modal:  async function(taskData) {
+        const taskInfoModal = document.getElementById('taskInfoModal');
+        const taskInfoContent = document.getElementById('taskInfoContent');
+        
+        taskInfoContent.innerHTML = `
+        <table class="task-info-table">
+            <tr>
+                <td><strong>Task ID:</strong></td>
+                <td>${taskData.taskId}</td>
+                <td><strong>Status:</strong></td>
+                <td>${taskData.taskStatus}</td>
+            </tr>
+            <tr>
+                <td><strong>Transaction Date:</strong></td>
+                <td>${taskData.taskDate}</td>
+                <td><strong>IT in Charge:</strong></td>
+                <td>${taskData.itInCharge}</td>
+            </tr>
+            <tr>
+                <td><strong>Department:</strong></td>
+                <td>${taskData.department}</td>
+                <td><strong>Department No:</strong></td>
+                <td>${taskData.departmentNo}</td>
+            </tr>
+            <tr>
+                <td><strong>Task Type:</strong></td>
+                <td>${taskData.taskType}</td>
+                <td><strong>Task Description:</strong></td>
+                <td>${taskData.taskDescription}</td>
+            </tr>
+            <tr>
+                <td><strong>Severity:</strong></td>
+                <td>${taskData.severity}</td>
+                <td><strong>Requested By:</strong></td>
+                <td>${taskData.requestedBy}</td>
+            </tr>
+            <tr>
+                <td><strong>Approved By:</strong></td>
+                <td>${taskData.approvedBy}</td>
+                <td><strong>Item Name:</strong></td>
+                <td>${taskData.itemName}</td>
+            </tr>
+            <tr>
+                <td><strong>Device Name:</strong></td>
+                <td>${taskData.deviceName}</td>
+                <td><strong>Application Name:</strong></td>
+                <td>${taskData.applicationName}</td>
+            </tr>
+            <tr>
+                <td><strong>Date Requested:</strong></td>
+                <td>${util.format_date(taskData.dateReq)}</td>
+                <td><strong>Date Received:</strong></td>
+                <td>${util.format_date(taskData.dateRec)}</td>
+            </tr>
+            <tr>
+                <td><strong>Date Started:</strong></td>
+                <td>${util.format_date(taskData.dateStart)}</td>
+                <td><strong>Date Finished:</strong></td>
+                <td>${util.format_date(taskData.dateFin)}</td>
+            </tr>
+        </table>
+    `;
+    
+        taskInfoModal.style.display = "flex";       
+
+        // Set up cancel button event listener
+        const cancelTask = document.getElementById('cancelTaskButton');
+        cancelTask.onclick = async () => {
+            await cancel.cancel_task(taskData.taskId);
+        };
+
+        const editTaskButton = document.getElementById('editTaskButton');
+        editTaskButton.onclick = async () => {
+            taskInfoModal.style.display = 'none';
+            await update.open_edit_modal(taskData);
+        };
+        console.log("Editing Task Data:", taskData);
+    },
+
+    modal_handling: function() {
+        const taskModal = document.getElementById('taskModal');
+        const taskInfoModal = document.getElementById('taskInfoModal');
+        const closeTaskButton = document.querySelector('.close-task');
+        const closeButton = document.querySelector('.close');
+        const topbar = document.getElementById('topbar');
+        const pop = document.querySelector('.notification-popup');
+        const currentDate = new Date().toISOString().split('T')[0];
+
+      
+        window.openModal = function () {
+            taskModal.style.display = "flex";
+            document.getElementById('taskDate').value = currentDate;
+            document.getElementById('taskId').value = util.generate_unique_id();
+        };
+
+        const statusField = document.getElementById("new-task");
+        const dateReqField = document.getElementById("dateReq");
+    
+        // Listen for status changes to auto-fill Date Finished
+        statusField.addEventListener("click", function () {
+            dateReqField.value = currentDate;
+        });
+
+        window.addTask = async (event) => {
+            event.preventDefault();
+
+            const taskData = {
+                taskId: document.getElementById('taskId').value,
+                taskDate: currentDate,
+                taskStatus: util.get_field_value("taskStatus"),
+                severity: util.get_field_value("severity"),
+                taskType: util.get_field_value("taskType"),
+                taskDescription: util.get_field_value("taskDescription"),
+                itInCharge: util.get_field_value("itInCharge"),
+                department: util.get_field_value("department"),
+                departmentNo: util.get_field_value("departmentNo"),
+                requestedBy: util.get_field_value("requestedBy"),
+                approvedBy: util.get_field_value("approvedBy"),
+                itemName: util.get_field_value("itemName"),
+                deviceName: util.get_field_value("deviceName"),
+                applicationName: util.get_field_value("applicationName"),
+                dateReq: util.get_field_value("dateReq"),
+                dateRec: util.get_field_value("dateRec"),
+                dateStart: util.get_field_value("dateStart"),
+                dateFin: util.get_field_value("dateFin")
+            };
+
+            const newTask = await add.add_to_database(taskData);
+            if (newTask) {
+                console.log('Task saved:', newTask);
+                await load.load_tasks();
+                UI.close_modal('taskModal', true);
+            } else {
+                console.error('Failed to save task');
+            }
+        };
+
+        // taskInfoModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'submittedContent', 'taskInfoModal'));
+        taskModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'modalContent', 'taskModal'));
+        pop.addEventListener('click', (event) => UI.close_outside_modal(event, 'popupContent', 'notificationPopup'));
+
+        if (closeButton) closeButton.addEventListener('click', () => UI.close_modal('taskModal', true));
+        if (closeTaskButton) {
+            closeTaskButton.addEventListener('click', () => {
+                taskInfoModal.style.display = "none";
+            });
+        }
+    }
 }
 
+// Database Logic -- Cancel / Delete
 const cancel = {
     is_cancelled: async function(taskId) {
         try {
@@ -192,6 +611,8 @@ const cancel = {
     // }
 }
 
+
+// Database Logic -- Updating
 const update = {
     open_edit_modal: async function(taskData){
         const editModal = document.getElementById('taskEditModal');
@@ -245,23 +666,23 @@ const update = {
 
     submit_edited_task: async function(taskId) {
         const formData = {
-            taskDate: get_field_value("editTaskDate"),
-            taskStatus: get_field_value("editTaskStatus"),
-            severity: get_field_value("editSeverity"),
-            taskType: get_field_value("editTaskType"),
-            taskDescription: get_field_value("editTaskDescription"),
-            itInCharge: get_field_value("editItInCharge"),
-            department: get_field_value("editDepartment"),
-            departmentNo: get_field_value("editDepartmentNo"),
-            requestedBy: get_field_value("editRequestedBy"),
-            approvedBy: get_field_value("editApprovedBy"),
-            itemName: get_field_value("editItemName"),
-            deviceName: get_field_value("editDeviceName"),
-            applicationName: get_field_value("editApplicationName"),
-            dateReq: get_field_value("editDateReq"),
-            dateRec: get_field_value("editDateRec"),
-            dateStart: get_field_value("editDateStart"),
-            dateFin: get_field_value("editDateFin")
+            taskDate: util.get_field_value("editTaskDate"),
+            taskStatus: util.get_field_value("editTaskStatus"),
+            severity: util.get_field_value("editSeverity"),
+            taskType: util.get_field_value("editTaskType"),
+            taskDescription: util.get_field_value("editTaskDescription"),
+            itInCharge: util.get_field_value("editItInCharge"),
+            department: util.get_field_value("editDepartment"),
+            departmentNo: util.get_field_value("editDepartmentNo"),
+            requestedBy: util.get_field_value("editRequestedBy"),
+            approvedBy: util.get_field_value("editApprovedBy"),
+            itemName: util.get_field_value("editItemName"),
+            deviceName: util.get_field_value("editDeviceName"),
+            applicationName: util.get_field_value("editApplicationName"),
+            dateReq: util.get_field_value("editDateReq"),
+            dateRec: util.get_field_value("editDateRec"),
+            dateStart: util.get_field_value("editDateStart"),
+            dateFin: util.get_field_value("editDateFin")
         };
     
         // Ensure "New" changes to "Pending" before submitting
@@ -310,6 +731,7 @@ const update = {
     }
 }
 
+// Database Logic -- Loading
 const load = {
     load_tasks: async function(query = null, resetPage = false) {
         try {
@@ -392,14 +814,14 @@ const load = {
     }
 }
 
+
+// Database Logic -- Page
 const prevButton = document.getElementById("prevPage");
 const nextButton = document.getElementById("nextPage");
 let resizeTimeout;
 let currentPage = 1;
 let tasksPerPage = 1;
 let totalTasks = 0;
-
-setTimeout(page.update_tasks_per_page, 150);
 
 const page = {
     update_tasks_per_page: async function() {
@@ -445,6 +867,8 @@ const page = {
     },
 }
 
+setTimeout(page.update_tasks_per_page, 150);
+
 if (prevButton && nextButton) {
     prevButton.onclick = async () => {
         if (currentPage > 1) {
@@ -461,30 +885,47 @@ if (prevButton && nextButton) {
     };
 }
 
-(function () {
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(async () => {
-            const newTasksPerPage = page.task_per_page();
+// Periodic task update Functions --- baguhin pa using Websockets para mas efficient and mas mabilis
+let updateInterval; 
 
-            if (newTasksPerPage !== tasksPerPage) {
-                tasksPerPage = newTasksPerPage;
-                const totalPages = Math.max(1, Math.ceil(totalTasks / tasksPerPage));
+const period = {
+    check_user: async function() {
+        try {
+            const response = await fetch('/api/session-user');
+            if(!response.ok) return false;
 
-                if (currentPage > totalPages) {
-                    currentPage = totalPages;
-                    util.update_url();
+            const data = await response.json();
+            return !!data.username;
+        } catch (err) {
+            console.error("Error checking login status:", err);
+            return false;
+        } 
+    },
+
+    periodic_updates: function() {
+        if (!updateInterval) {
+            updateInterval = setInterval( async () => {
+                if(!document.hidden && await period.check_user()) {
+                    await load.load_tasks();
                 }
+            }, 30000)
+        } 
+    },
 
-                await load.load_tasks(null, false);
+    setup_updates: function() {
+        document.addEventListener("visibilitychange", async () => {
+            if (document.hidden) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            } else if (await period.check_user()){
+                period.periodic_updates();
             }
-            page.update_page_buttons();
-        }, 100);
-    });
+        });
+        period.periodic_updates();
+    }
+}
 
-    window.addEventListener('load', page.update_page_buttons);
-})();
-
+// Helper functions
 const util = {
     format_date: function(date) {
         return date && date !== "null" ? date : "--";
@@ -535,7 +976,49 @@ const util = {
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.set('page', currentPage);
         window.history.pushState({}, '', newUrl);
+    },
+
+    generate_unique_id: function() {
+        return Array.from({ length: 4 }, () => '0123456789'[Math.floor(Math.random() * 10)]).join('');
+    },
+
+    get_field_value: function(id) {
+        const field = document.getElementById(id);
+        if (!field) return "--";
+
+        return field.value.trim() || "--";  // Always return the value, which is now the full name
+    },
+
+    window_listeners: function() {
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(async () => {
+                const newTasksPerPage = page.task_per_page();
+    
+                if (newTasksPerPage !== tasksPerPage) {
+                    tasksPerPage = newTasksPerPage;
+                    const totalPages = Math.max(1, Math.ceil(totalTasks / tasksPerPage));
+    
+                    if (currentPage > totalPages) {
+                        currentPage = totalPages;
+                        util.update_url();
+                    }
+    
+                    await load.load_tasks(null, false);
+                }
+                page.update_page_buttons();
+            }, 100);
+        });
+    
+        window.addEventListener('load', page.update_page_buttons);
+        
+        // Fix back button issue (e.g., after login/logout)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
     }
 }
 
-// Hanggang load_tasks palang naayos
+

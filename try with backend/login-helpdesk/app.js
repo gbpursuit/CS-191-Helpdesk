@@ -260,6 +260,7 @@ app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
             return res.status(404).json({ error: 'Task not found' });
         }
 
+        // Check if the information being updated has new information
         const existingTask = existingTasks[0];
         const newTasks = Object.fromEntries(
             Object.entries(existingTask).map(([key, value]) => [
