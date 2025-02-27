@@ -982,3 +982,4 @@ document.addEventListener("DOMContentLoaded", async function () {
     await load_tasks();
     setup_updates();
 }); 
+
