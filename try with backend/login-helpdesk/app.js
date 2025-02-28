@@ -54,6 +54,15 @@ app.use(
     })
 );
 
+app.get('/session-info', server.is_authenticated, (req, res) => {
+    if (req.session) {
+        const expiresAt = req.session.cookie.expires;
+        res.json({ expiresAt });
+    } else {
+        res.json({ expiresAt: null });
+    }
+})
+
 // Prevent storing history
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');

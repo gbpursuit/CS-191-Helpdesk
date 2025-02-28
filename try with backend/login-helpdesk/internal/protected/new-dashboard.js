@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // Util Functions
     util.window_listeners();
+    await util.session_ends();
 
     // UI Functions
     UI.handle_darkmode(".toggle-switch");
@@ -1018,6 +1019,42 @@ const util = {
                 window.location.reload();
             }
         });
+    },
+
+    session_ends: async function() {
+        let sessionInterval;
+
+        fetch('/session-info') // make request
+        .then(response => response.json()) // converts to json
+        .then(data => { // process
+            if (data.expiresAt) {
+                const expiresAt = new Date(data.expiresAt).getTime();
+                // const warningTime = 5 * 60 * 1000; // 5 minutes before expiration
+    
+                const checkSession = () => {
+                    const now = Date.now();
+                    const timeLeft = expiresAt - now;
+
+                    console.log(timeLeft);
+    
+                    // if (timeLeft <= warningTime && timeLeft > 1) {
+                    //     if(!window.sessionWarningShown) {
+                    //         alert('Your session is about to expire! Please save your work.');
+                    //         window.sessionWarningShown = true; 
+                    //     }
+                    // } 
+                    if (timeLeft <= 1) {
+                        alert('Your session has expired. Please log in again.');
+                        clearInterval(sessionInterval);
+                        window.location.replace('/internal/welcome');
+                    }
+                };
+    
+                // Check session time every 10 seconds
+                sessionInterval = setInterval(checkSession, 10 * 1000);
+            }
+        })
+        .catch(error => console.error('Error fetching session info:', error)); // handle errors
     }
 }
 
