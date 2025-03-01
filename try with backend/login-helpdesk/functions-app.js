@@ -258,7 +258,7 @@ export const task = {
             const {
                 taskId, taskDate, taskStatus, severity, taskType, taskDescription,
                 itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
-                dateReq, dateRec, dateStart, dateFin
+                dateReq, dateRec, dateStart, dateFin, problemDetails, remarks
             } = req.body;
     
             // Ensure dates are valid and empty strings are converted to NULL
@@ -266,14 +266,14 @@ export const task = {
     
             await db.query(`
                 INSERT INTO tasks (taskId, taskDate, taskStatus, severity, taskType, taskDescription, itInCharge, department, departmentNo,
-                    requestedBy, approvedBy, itemName, deviceName, applicationName, dateReq, dateRec, dateStart, dateFin)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    requestedBy, approvedBy, itemName, deviceName, applicationName, dateReq, dateRec, dateStart, dateFin, problemDetails, remarks)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
                 taskId, convertDate(taskDate), taskStatus,  severity, 
                 taskType, taskDescription, itInCharge, department, 
                 departmentNo, requestedBy,  approvedBy,  itemName, 
                 deviceName, applicationName, convertDate(dateReq),
-                convertDate(dateRec), convertDate(dateStart), convertDate(dateFin)
+                convertDate(dateRec), convertDate(dateStart), convertDate(dateFin), problemDetails, remarks
             ]);
     
             res.status(201).json({ success: true, message: 'Task saved successfully' });

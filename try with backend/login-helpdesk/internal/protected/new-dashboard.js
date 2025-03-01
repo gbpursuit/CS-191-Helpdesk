@@ -187,7 +187,7 @@ const pdf = {
         const tableHeaders = [
             "Task ID", "Task Type", "Task Description", "Requested By", "Approved By", "Department",
             "Department No", "IT In Charge", "Device Name", "Item Name", "Application Name", "Status",
-            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished"
+            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished", "Problem Details"
         ];
 
         // Convert API data into table format
@@ -195,7 +195,7 @@ const pdf = {
             task.taskId, task.taskType, task.taskDescription, task.requestedBy, task.approvedBy,
             task.department, task.departmentNo, task.itInCharge, task.deviceName, task.itemName,
             task.applicationName, task.status, task.severity, task.transactionDate, task.dateRequested,
-            task.dateReceived, task.dateStarted, task.dateFinished
+            task.dateReceived, task.dateStarted, task.dateFinished, task.problemDetails, task.remarks
         ]);
 
         if (doc.autoTable) {
@@ -260,7 +260,7 @@ const search = {
             taskStatus: document.querySelector(".status-options"),
             taskDate: document.querySelector(".date-options"),
             severity: document.querySelector(".severity-options"),
-            department: document.querySelector(".dept-options")
+            department: document.querySelector(".dept-options"),
         };
 
         // Hide all dropdowns initially
@@ -372,6 +372,8 @@ const add = {
             <td>${util.format_date(task.dateRec)}</td>
             <td>${util.format_date(task.dateStart)}</td>
             <td>${util.format_date(task.dateFin)}</td>
+            <td>${task.problemDetails}</td>
+            <td>${task.remarks}</td>
         `;
     
         // Add event listener for row click
@@ -444,6 +446,14 @@ const add = {
                 <td><strong>Date Finished:</strong></td>
                 <td>${util.format_date(taskData.dateFin)}</td>
             </tr>
+            <tr>
+                <td><strong>Problem Details:</strong></td>
+                <td colspan="3">${taskData.problemDetails}</td>
+            </tr>
+            <tr>
+                <td><strong>Problem Remarks:</strong></td>
+                <td colspan="3">${taskData.remarks}</td>
+            </tr>
         </table>
     `;
     
@@ -508,7 +518,9 @@ const add = {
                 dateReq: util.get_field_value("dateReq"),
                 dateRec: util.get_field_value("dateRec"),
                 dateStart: util.get_field_value("dateStart"),
-                dateFin: util.get_field_value("dateFin")
+                dateFin: util.get_field_value("dateFin"),
+                problemDetails: util.get_field_value("problemDetails"),
+                remarks: util.get_field_value("remarks")
             };
 
             const newTask = await add.add_to_database(taskData);
@@ -626,7 +638,7 @@ const update = {
             taskType: "editTaskType", taskDescription: "editTaskDescription", severity: "editSeverity",
             requestedBy: "editRequestedBy", approvedBy: "editApprovedBy", itemName: "editItemName",
             deviceName: "editDeviceName", applicationName: "editApplicationName", dateReq: "editDateReq",
-            dateRec: "editDateRec", dateStart: "editDateStart", dateFin: "editDateFin"
+            dateRec: "editDateRec", dateStart: "editDateStart", dateFin: "editDateFin", problemDetails: "editProblemDetails", remarks: "editRemarks"
         };
     
         util.populate_form_fields(taskFields, taskData);
@@ -683,7 +695,9 @@ const update = {
             dateReq: util.get_field_value("editDateReq"),
             dateRec: util.get_field_value("editDateRec"),
             dateStart: util.get_field_value("editDateStart"),
-            dateFin: util.get_field_value("editDateFin")
+            dateFin: util.get_field_value("editDateFin"),
+            problemDetails: util.get_field_value("editProblemDetails"),
+            remarks: util.get_field_value("editRemarks"),
         };
     
         // Ensure "New" changes to "Pending" before submitting

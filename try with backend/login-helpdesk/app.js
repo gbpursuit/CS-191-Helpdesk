@@ -295,7 +295,7 @@ app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
                 taskDate = ?, taskStatus = ?, severity = ?, taskType = ?, 
                 taskDescription = ?, itInCharge = ?, department = ?, departmentNo = ?, 
                 requestedBy = ?, approvedBy = ?, itemName = ?, deviceName = ?, 
-                applicationName = ?, dateReq = ?, dateRec = ?, dateStart = ?, dateFin = ?
+                applicationName = ?, dateReq = ?, dateRec = ?, dateStart = ?, dateFin = ?, problemDetails = ?, remarks = ?
             WHERE taskId = ?
         `, updatedFields);
 

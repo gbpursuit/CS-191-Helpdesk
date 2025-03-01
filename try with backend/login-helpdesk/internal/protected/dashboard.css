@@ -425,8 +425,8 @@ label[for="check"]{
 
 
 .dash-elements {
-    display: none;
-    /* display: flex; */
+    /* display: none; */
+    display: flex;
     flex-direction: column; 
     background-color: var(--white);
     border-radius: 10px;
@@ -946,7 +946,8 @@ form button:hover {
 /* ======================== New Add Task Content ========================== */ 
 
 .department-add {
-    display: flex;
+    /* display: flex; */
+    display: none;
 }
 
 .it-add {

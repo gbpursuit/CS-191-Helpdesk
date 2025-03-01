@@ -160,6 +160,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             <td>${format_date(task.dateRec)}</td>
             <td>${format_date(task.dateStart)}</td>
             <td>${format_date(task.dateFin)}</td>
+            <td>${task.problemDetails}</td>
+            <td>${task.remarks}</td>
         `;
     
         // Add event listener for row click
@@ -211,7 +213,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             dateReq: "editDateReq",
             dateRec: "editDateRec",
             dateStart: "editDateStart",
-            dateFin: "editDateFin"
+            dateFin: "editDateFin",
+            problemDetails: "editProblemDetails",
+            remarks: "editRemarks"
         };
     
         // Populate form fields with existing task data
@@ -285,7 +289,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 dateReq: document.getElementById("editDateReq").value,
                 dateRec: document.getElementById("editDateRec").value,
                 dateStart: document.getElementById("editDateStart").value,
-                dateFin: document.getElementById("editDateFin").value
+                dateFin: document.getElementById("editDateFin").value,
+                problemDetails: document.getElementById("editproblemDetails").value,
+                remarks: document.getElementById("editRemarks").value,
             };
     
             // Ensure "New" changes to "Pending" before submitting
@@ -576,6 +582,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <td><strong>Date Finished:</strong></td>
                 <td>${format_date(taskData.dateFin)}</td>
             </tr>
+            <tr>
+                <td><strong>Problem Details:</strong></td>
+                <td colspan="3">${taskData.problemDetails}</td>
+            </tr>
+            <tr>
+                <td><strong>Problem Remarks:</strong></td>
+                <td colspan="3">${taskData.remarks}</td>
+            </tr>
         </table>
     `;
     
@@ -655,7 +669,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 dateReq: get_field_value("dateReq"),
                 dateRec: get_field_value("dateRec"),
                 dateStart: get_field_value("dateStart"),
-                dateFin: get_field_value("dateFin")
+                dateFin: get_field_value("dateFin"),
+                problemDetails: get_field_value("problemDetails"),
+                remarks: get_field_value("remarks")
             };
 
             const newTask = await add_task_to_database(taskData);
@@ -721,7 +737,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const tableHeaders = [
             "Task ID", "Task Type", "Task Description", "Requested By", "Approved By", "Department",
             "Department No", "IT In Charge", "Device Name", "Item Name", "Application Name", "Status",
-            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished"
+            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished", "Problem Details", "Remarks"
         ];
 
         // Convert API data into table format
@@ -729,7 +745,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             task.taskId, task.taskType, task.taskDescription, task.requestedBy, task.approvedBy,
             task.department, task.departmentNo, task.itInCharge, task.deviceName, task.itemName,
             task.applicationName, task.status, task.severity, task.transactionDate, task.dateRequested,
-            task.dateReceived, task.dateStarted, task.dateFinished
+            task.dateReceived, task.dateStarted, task.dateFinished, task.problemDetails, task.remarks
         ]);
 
         // Generate table in PDF

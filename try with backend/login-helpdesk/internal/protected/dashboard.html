@@ -31,10 +31,9 @@
                     <span class="welcome-message">Welcome! <strong id="userFullName">Username</strong></span>
                 </div>
                 <div class="top-bar-right">
-                    <button class="notification-button" onclick="openNotificationPopup()">
+                    <!-- <button class="notification-button" onclick="openNotificationPopup()">
                         <i class="fa-solid fa-bell"></i>
-                        <!-- <span class="notification-badge">3</span> -->
-                    </button>
+                    </button> -->
                     
                     <div class="user-profile">
                         <span class="page-name" id="pagename">Username</span>
@@ -127,9 +126,6 @@
                                 <option value="ASC">Ascending</option>
                                 <option value="DESC">Descending</option>
                             </select>
-
-
-
                         </div>
                         <div class = "right-section">
                             <button type = "button" id = "new-task" class="new-task-button" onclick="openModal()">+ New Task</button>
@@ -166,6 +162,8 @@
                                 <th>Date Received</th>
                                 <th>Date Started</th>
                                 <th>Date Finished</th>
+                                <th>Problem Details</th>
+                                <th>Remarks</th>
                             </tr>
                         </thead>
                         
@@ -281,7 +279,7 @@
 
                                 <div class="form-group">
                                     <label for="deviceName">Device Name</label>
-                                    <input type="text" id="deviceName" placeholder="Enter Device Name">
+                                    <input type="text" id="deviceName" placeholder="Enter Device Name">   
                                 </div>
                                 
                                 <div class="form-group">
@@ -329,12 +327,6 @@
                                         <option value="5">5</option>
                                     </select>                    
                                 </div>
-
-                                <!-- <div class="form-group">
-                                    <label for="dateInfo">Date Information</label>
-                                    <input type="text" id="dateInfo" placeholder="Enter Date Information" required>
-                                </div> -->
-
                                 <div class="form-group">
                                     <label for="dateReq">Date Requested</label>
                                     <input type="date" id="dateReq" placeholder="Enter Date Requested" >
@@ -356,7 +348,15 @@
                                 </div>
 
                             </div>
-                        </div>    
+                        </div>
+                        <div class="form-group">
+                            <label for="problemDetails">Problem Details</label>
+                            <input type="text" id="problemDetails" placeholder="Enter Problem Details">
+                        </div>
+                        <div class="form-group">
+                            <label for="remarks">Problem Remarks</label>
+                            <input type="text" id="remarks" placeholder="Enter Task Remarks">
+                        </div>  
                         <button type="submit" class = "button-add">Add Task</button>
                     </form>
                 </div>
@@ -565,7 +565,15 @@
                                     <input type="date" id="editDateFin" placeholder="Enter Date Finished">
                                 </div>
                             </div>
-                        </div>    
+                        </div>
+                        <div class="form-group">
+                            <label for="editProblemDetails">Problem Details</label>
+                            <input type="text" id="editProblemDetails" placeholder="Enter Task Details">
+                        </div>
+                        <div class="form-group">
+                            <label for="editRemarks">Problem Remarks</label>
+                            <input type="text" id="editRemarks" placeholder="Enter Problem Details">
+                        </div>   
                         <button type="submit" class="edit-button-update">Update Task</button>
                     </form>
                 </div>
