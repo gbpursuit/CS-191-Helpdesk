@@ -246,6 +246,8 @@ async function get_dump_file() {
     return path.join(BACKUP_DIR, dumpFiles[0]);
 }
 
+
+
 // Updated read_sql
 async function read_sql(filePath) {
     return new Promise((resolve, reject) => {
@@ -279,6 +281,28 @@ async function read_sql(filePath) {
             }
         });
     });
+}
+
+async function alter_tasks_table(pool) {
+    try {
+        const columns = [
+            {name: "problemDetails", type: 'VARCHAR(200)'},
+            {name: "remarks", type: 'VARCHAR(200)'}
+        ];
+
+        for (const column of columns) {
+            const [rows] = await pool.query('SHOW COLUMNS FROM tasks LIKE ?', column.name);
+
+            if (rows.length === 0) {
+                await pool.query(`ALTER TABLE tasks ADD COLUMN ${column.name} ${column.type}`);
+                console.log(`Column ${column.name} added to tasks table. `);
+            } else {
+                console.log(`Column ${column.name} already exists in tasks table. `);
+            }
+        }
+    } catch (err) {
+        console.error('Error modifying tasks table: ', err);
+    }
 }
 
 let pool;

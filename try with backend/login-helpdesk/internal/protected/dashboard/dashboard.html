@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Home</title>
+    <link rel="icon" href="/internal/browsericon.png" type="image/png">
+    <link rel="stylesheet" href="/internal/global.css">
+    <link rel="stylesheet" href="/internal/protected/dashboard/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Load jsPDF and AutoTable BEFORE dashboard.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>    
+    <script src="/internal/protected/dashboard/new-dashboard.js" type="module" defer></script>
+</head>
+<body>
+
+    <!-- Side Bar, Top Bar, and DashBoard Container -->
+    <div id="loginToNew" class="login-new">
+        <input type="checkbox" id="check" class="check-button">
+        <div id="topbar" class="top-bar">
+            <header>
+                <label for="check"> 
+                    <span class="label-text">check</span>
+                    <i class="fas fa-bars" id="btn"></i>
+                </label>
+                <div class="top-bar-left">
+                    <span class="welcome-message">Welcome! <strong id="userFullName">Username</strong></span>
+                </div>
+                <div class="top-bar-right">
+                    <!-- <button class="notification-button" onclick="openNotificationPopup()">
+                        <i class="fa-solid fa-bell"></i>
+                    </button> -->
+                    
+                    <div class="user-profile">
+                        <span class="page-name" id="pagename">Username</span>
+                        <button type = "button" class="logout-btn" aria-label="Toggle user options">
+                            <i class="fa fa-chevron-down arrow-icon"></i> <!-- check for error -->
+                        </button>
+                        <div id="dropdownMenu" class="dropdown-menu">
+                            <ul class="logout-elem">
+                                <li id = "profileText" class = "profile-text"><a href = "#">Profile</a></li>
+                                <li id = "logoutText" class = "logout-text"><a href="#">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>   
+                </div>      
+                <!-- Where Notification Pop-up was previously placed -->
+            </header>
+        </div>
+    
+        <div id="sideBar" class="side-bar">
+            <header id = "headerbar">IT HELPDESK</header>
+            <ul>
+                <li id = "dashboard" class="transition dashboard-list"><a href="#"><i class="fa-solid fa-house"></i>Dashboard</a></li>
+                <li id = "summary" class="transition summary-list"><a href="#"><i class="fa-solid fa-file"></i>Summary</a></li>
+                <li class="mode bottom-item"><a href="#">
+                    <div class="moon-sun">
+                        <i class="fa-solid fa-moon icon moon"></i>
+                        <i class="fa-regular fa-sun icon sun"></i>
+                    </div>
+                    <span class="toggle-mode">Dark Mode</span>
+
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="dashboardContainer" class = "dashboard-container">
+            <div class = "homepage">
+                <h2 id = "dashTitle" class = "d-title"></h2>
+            </div>
+
+            <div id = "dashElements" class = "dash-elements">
+                <div class = "fixed-head">
+                    <div class="search-filter">
+                        <div class="left-section">
+                            <input type="text" placeholder="Search" class="search-input">
+                            <select class="filter-select dropdown-filter" aria-label="Filter options">
+                                <option value="filter" disabled selected>Filter by</option>
+                                <option value="taskStatus">Status</option>
+                                <option value="taskDate">Date</option>
+                                <option value="severity">Severity</option>
+                                <option value="department">Department</option>
+                            </select>
+                            
+                            <select class="status-options dropdown-filter" aria-label="Status Options">
+                                <option value="filter" disabled selected>Choose</option>
+                                <option value="stop">Stop Filter</option>
+                                <option value="new">New</option>
+                                <option value="open">Open</option>
+                                <option value="pending">Pending</option>
+                                <option value="in progress">In Progress</option>
+                                <option value="on hold">On Hold</option>
+                                <option value="completed">Completed</option>
+                                <option value="closed">Closed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            
+                            <select class="date-options dropdown-filter" aria-label="Date Options">
+                                <option value="filter" disabled selected>Choose</option>
+                                <option value="stop">Stop Filter</option>
+                                <option value="ASC">Ascending</option>
+                                <option value="DESC">Descending</option>
+                            </select>
+                            
+                            <select class="severity-options dropdown-filter" aria-label="Severity Options">
+                                <option value="filter" disabled selected>Choose</option>
+                                <option value="stop">Stop Filter</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                            
+                            <select class="dept-options dropdown-filter" aria-label="Dept Options">
+                                <option value="filter" disabled selected>Choose</option>
+                                <option value="stop">Stop Filter</option>
+                                <option value="ASC">Ascending</option>
+                                <option value="DESC">Descending</option>
+                            </select>
+                        </div>
+                        <div class = "right-section">
+                            <button type = "button" id = "new-task" class="new-task-button" onclick="openModal()">+ New Task</button>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Task Table -->
+                <div id = "containerTable" class = "table">
+                    <div id="noData" class = "no-data">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image">
+                    </div>
+
+                    <table class="task-table">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Task Date</th>
+                                <th>Status</th>
+                                <th>Severity</th>
+                                <th>Task Type</th>
+                                <th>Task Description</th>
+                                <th>Problem Details</th>
+                                <th>Remarks</th>
+                                <th>IT in Charge</th>
+                                <th>Department</th>
+                                <th>Dprt. No.</th>
+                                <th>Requested By</th>
+                                <th>Approved By</th>
+                                <th>Item Name</th>
+                                <th>Device Name</th>
+                                <th>Application Name</th>
+                                <th>Date Requested</th>
+                                <th>Date Received</th>
+                                <th>Date Started</th>
+                                <th>Date Finished</th>
+                                <!-- <th>Problem Details</th>
+                                <th>Remarks</th> -->
+                            </tr>
+                        </thead>
+                        
+                        <!-- DONT TOUCH -->
+                        <tbody id="taskTableBody">
+                            <!-- New rows will be appended here -->
+                        </tbody>
+                    </table>
+                </div>
+                 <!-- Pagination  -->
+                 <div class="fixed-bottom">
+                    <div id = "legendStatus" class="legend-status">
+                        <div class="legend-item">
+                            <span class="status-box new"></span> New
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box open"></span> Open
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box pending"></span> Pending
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box in-progress"></span> In Progress
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box on-hold"></span> On Hold
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box completed"></span> Completed
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box closed"></span> Closed
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-box cancelled"></span> Cancelled
+                        </div>
+                    </div>
+                
+                    <div class="pagination">
+                        <button id="prevPage" class="pagination-button" type="button">Previous</button>
+                        <div class="pages">
+                            <span id="currentPage">1</span>
+                        </div>
+                        <button id="nextPage" class="pagination-button" type="button">Next</button>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Notification Pop-up -->
+            <div id="dashboard-notificationPopup" class="notification-popup">
+                <div id = "popupContent" class="popup-content">
+                    <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
+                    <h2 class="notif">Notifications</h2>
+                    <p>No new notifications.</p> 
+                </div>
+            </div>
+                      
+            <!-- New Task Modal -->
+                <!-- Check taskModal.html -->
+
+
+            <!-- Edit Task Modal -->
+                <!-- Check taskEditModal.html --> 
+        </div> 
+
+        <div id = "summaryContainer" class = "sum-container">
+            <div class = "homepage">
+                <h2 id = "summaryTitle" class = "s-title"></h2>
+            </div>
+
+            <div id = "summaryElements" class = "sum-elements">
+                <iframe id="pdfPreview" class = "pdf-preview"></iframe>
+                <div class="footer">
+                    <button id="printButton" class="print-button foot-btn">
+                        <span >Print Summary PDF</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="summary-notificationPopup" class="notification-popup">
+                <div class="popup-content">
+                    <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
+                    <h2 class="notif">Notifications</h2>
+                    <p>No new notifications.</p> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

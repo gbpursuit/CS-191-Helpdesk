@@ -110,15 +110,19 @@ app.get('/internal/:page/:view?', (req, res) => {
     server.get_valid_pages(easyPath, (err, { public: publicPages, protected: protectedPages }) => {
         if (err) return res.status(500).send('Error reading files');
 
-        if (publicPages.includes(page)) {
+        const matchPub = publicPages.find(p => p.endsWith(`/${page}.html`) || p === `${page}.html`);
+        const matchPro = protectedPages.find(p => p.endsWith(`/${page}.html`) || p === `${page}.html`);
+        
+
+        if (matchPub) {
             if (page === 'login' && (!view || view === 'logged-in')) {
-                return server.is_authenticated(req, res, () => server.serve_page(res, path.join(easyPath, 'public', `${page}.html`)));
+                return server.is_authenticated(req, res, () => server.serve_page(res, `${matchPub}`));
             }
-            return server.serve_page(res, path.join(easyPath, 'public', `${page}.html`));
+            return server.serve_page(res, `${matchPub}`);
         }
 
-        if (protectedPages.includes(page)) {
-            return server.is_authenticated(req, res, () => server.serve_page(res, path.join(easyPath, 'protected', `${page}.html`)));
+        if (matchPro) {
+            return server.is_authenticated(req, res, () => server.serve_page(res, `${matchPro}`));
         }
 
         return res.status(404).send('Page not found');
@@ -253,7 +257,7 @@ app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
         // Convert empty values to NULL
         const convertToNull = (value) => (value === '' ? null : value);
         const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
-        const formatDate = (date) => (date === null ? "--" : date); 
+        // const formatDate = (date) => (date === null ? "--" : date); 
 
         // Normalize values in req.body
         const validatedFields = Object.fromEntries(

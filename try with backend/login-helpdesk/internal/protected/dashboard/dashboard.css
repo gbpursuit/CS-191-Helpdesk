@@ -645,23 +645,27 @@ label[for="check"]{
     max-width: 150px; /* Adjust as needed */
 }
 
+.scroll::-webkit-scrollbar,
 .task-content::-webkit-scrollbar,
 .table::-webkit-scrollbar {
     width: 4x;  /* Vertical scrollbar width */
     height: 4px; /* Horizontal scrollbar height */
 }
 
+.scroll::-webkit-scrollbar-thumb
 .task-content::-webkit-scrollbar-thumb,
 .table::-webkit-scrollbar-thumb{
     border-radius: 5px; /* Rounded edges */
 }
 
+.scroll:hover::-webkit-scrollbar,
 .task-content:hover::-webkit-scrollbar,
 .table:hover::-webkit-scrollbar {
     width: 4px; 
     height: 4px; 
 }
 
+.scroll:hover::-webkit-scrollbar-thumb,
 .task-content:hover::-webkit-scrollbar-thumb,
 .table:hover::-webkit-scrollbar-thumb {
     background-color: var(--v2-gray);
@@ -793,6 +797,11 @@ label[for="check"]{
 
 /* ======================== New Task Modal ========================== */ 
 
+* {
+    box-sizing: border-box;
+}
+
+.edit-modal,
 .modal {
     display: none;
     position: absolute;
@@ -808,17 +817,29 @@ label[for="check"]{
     align-items: center;
 }
 
+.edit-modal-content,
 .modal-content {
+    display: flex;
+    flex-direction: column;
     background-color: var(--white);
     margin: 0 auto;
-    padding: 25px; /* Slightly smaller padding for compactness */
+    padding: 25px;
     border-radius: 8px;
     width: 80%;
-    max-width: 900px;
-    max-height: 90%; /* Set max height to fit viewport */
+    height: 90%;
+    max-width: 1100px;
+    max-height: 900px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
+.edit-task-header,
+.add-task-header {
+    width: 100%;
+    flex: 0 0 5%;
+}
+
+.edit-task,
 .add-task {
     color: var(--dark-green);
     text-align: center;
@@ -844,49 +865,73 @@ label[for="check"]{
 }
 
 /* Modal Content */
+.edit-task-form,
 .task-form {
     padding-top: 15px;
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow-x: hidden;
+    height: 95%;
+    overflow-x:hidden;
+    overflow-y: auto;
+    gap: 5px;
 }
 
+.edit-main-column,
 .main-column {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    gap: 25px; 
+    gap: 20px;
+    width: 100%;
+    flex: 1; 
 }
 
+.edit-column-one, .edit-column-two,
 .column-one, .column-two {
     display: flex;
     flex-direction: column;
-    width: 50%; 
-    gap: 2px; 
+    gap: 5px; 
 }
 
+.edit-column-one,
+.column-one {
+    width: 60%;
+}
+
+.edit-column-two,
+.column-two {
+    width: 40%;
+}
+
+.edit-form-group,
 .form-group {
     margin-bottom: 10px; 
     display: flex;
-    align-items: center;
-    gap: 10px; 
+    align-items: flex-start;
+    /* gap: 10px;  */
 }
 
+.outside label,
+.edit-form-group label,
 .form-group label {
     font-weight: bold;
     font-size: 0.825rem;
-    width: 120px; /* Set a fixed width for labels */
-    text-align: right; 
+    width: 120px; 
+    text-align: left; 
     margin-right: 10px;
 }
 
+
+.outside textarea,
+.edit-form-group .edit-dropdown, 
+.edit-form-group input,
 .form-group .dropdown,
 .form-group input {
     flex: 1;
     width: 100%; 
     padding: 8px;
-    border: 1px solid var(--v2-gray);
+    border: 1px solid var(--v1-gray);
     border-radius: 4px;
     font-size: 0.765rem;
     color: var(--text-color); 
@@ -897,24 +942,30 @@ input[type="date"] {
     color-scheme: light;
 }
 
+.outside textarea::placeholder,
+.edit-form-group input::placeholder,
 .form-group input::placeholder {
     color: var(--text-color); 
 }
-/* .form-group .dropdown,
-.form-group .dropdown option:disabled,
-.form-group input::placeholder,
-.form-group input[type="date"] {
-    color: var(--v2-gray);
+
+.edit-task-footer,
+.add-task-footer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 35%;
+    flex: auto;
 }
 
-.form-group .dropdown option,
-.form-group .dropdown:valid {
-    color: var(--text-color); 
-}  */
+.outside textarea{
+    width: 100%;
+    height: 70px; 
+    resize: vertical; 
+    min-height: 70px;
+}
 
-
-
-form button {
+.button-update,
+.button-add {
     padding: 9px 20px;
     background-color: var(--dark-green);
     color: white;
@@ -925,28 +976,83 @@ form button {
     margin-top: 10px;
 }
 
-form button:hover {
+.button-update,
+.button-add:hover {
     background-color: var(--hover-button);
 }
 
-.date-box[disabled] {
+.disable[disabled] {
     background-color: var(--disable-input);
     color: var(--disable-text);
     cursor: not-allowed;
     flex: 1;
 }
 
-.id-box[disabled] {
+.edit-date-box[disabled] {
     background-color: var(--disable-input);
     color: var(--disable-text);
     cursor: not-allowed;
     flex: 1;
 }
+
+.edit-id-box[disabled] {
+    background-color: var(--disable-input);
+    color: var(--disable-text);
+    cursor: not-allowed;
+    flex: 1;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+    /* background-color: red; */
+}
+
+.label-container {
+    display: flex;
+    flex-direction: row;
+    /* background-color: green; */
+    width: 100%;
+}
+
+.look-btn {
+    background-color: var(--v1-gray);
+    color: var(--text-color);
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.look-btn:hover {
+    background-color: var(--v2-gray);
+}
+
+.look-btn:active {
+    outline: none;
+    transform: scale(0.9); 
+    transition: transform 0.5s ease;
+}
+
+
+
+
+/* .outside label {
+    font-weight: bold;
+    width: 140px; 
+    text-align: left; 
+    margin-right: 8px;
+} */
 
 /* ======================== New Add Task Content ========================== */ 
 
 .department-add {
-    /* display: flex; */
     display: none;
 }
 
@@ -970,21 +1076,11 @@ form button:hover {
     overflow: hidden;
     justify-content: center;
     align-items: center;
+    z-index: 15;
 }
-
-.dept-content {
-    display: flex;
-}
-
-.it-content {
-    display: none;
-}
-
-.app-content {
-    display: none;
-}   
 
 .layout-content {
+    display: flex;
     flex-direction: column;
     background-color: var(--v1-gray);
 
@@ -1010,13 +1106,24 @@ form button:hover {
 }
 
 .title-cont {
+    position: relative; /* Allows absolute positioning inside */
+    display: flex;
+    justify-content: center; /* Centers the h2 */
+    align-items: center;
     width: 100%;
     height: 20%;
     background-color: orange;
 }
 
+.title {
+    text-align: center;
+    flex-grow: 1; 
+    font-size: 20px;
+}
+
 .close-cont {
-    float: right;
+    position: absolute;
+    right: 10px; /* Adjust as needed */
     color: var(--dark-green);
     font-size: 28px;
     font-weight: bold;
@@ -1264,7 +1371,7 @@ form button:hover {
 
 /* ======================== Edit Task Modal ========================== */ 
 
-.edit-modal {
+/* .edit-modal {
     display: none;
     position: absolute;
     left: 0;
@@ -1293,7 +1400,6 @@ form button:hover {
     text-align: center;
 }
 
-/* Close button */
 .edit-close {
     float: right;
     color: var(--dark-green);
@@ -1311,7 +1417,6 @@ form button:hover {
     cursor: pointer;
 }
 
-/* Modal Content */
 .edit-task-form {
     padding-top: 15px;
     display: flex;
@@ -1380,14 +1485,13 @@ form button:hover {
     background-color: var(--hover-button);
 }
 
-/* Disabled Fields */
 .edit-date-box[disabled], 
 .edit-id-box[disabled] {
     background-color: var(--disable-input);
     color: var(--disable-text);
     cursor: not-allowed;
     flex: 1;
-}
+} */
 
 /* ======================== Summary Container ========================== */  
 

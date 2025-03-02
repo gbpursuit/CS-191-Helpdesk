@@ -1,4 +1,4 @@
-import { UI } from '../common.js';
+import { UI } from '../../common.js';
 
 // Document Page
 document.addEventListener("DOMContentLoaded", async function() {

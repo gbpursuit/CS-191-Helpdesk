@@ -1,0 +1,224 @@
+<div id="taskModal" class="modal">
+    <div id = "modalContent" class="modal-content" onclick = "event.stopPropagation()">   
+        <div class="add-task-header">
+            <span class="close">&times;</span>
+            <h2 class = "add-task">Add New Task</h2>
+        </div>         
+        <form id="newTaskForm" onsubmit="addTask(event)" class="task-form scroll">
+            <div class="main-column">
+                <div class = "column-one">
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="taskType">Task Type<span class="required"> *</span></label>
+                            <input type="text" id="taskType" placeholder="Enter Task Type" required>
+                        </div>
+                        <button type="button" id="taskBtn" class="look-btn" aria-label="Open Task Table"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDescription">Task Description</label>
+                        <input type="text" id="taskDescription" placeholder="Enter Task Description">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestedBy">Requested by<span class="required"> *</span></label>
+                        <input type="text" id="requestedBy" placeholder="Enter Requestor Name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="approvedBy">Approved by</label>
+                        <input type="text" id="approvedBy" placeholder="Enter Approver Name">
+                    </div>
+
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="department">Department<span class="required"> *</span></label>
+                            <select id="department" class = "dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Department</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Executive">Executive</option>
+                                <option value="Warehouse">Warehouse</option>
+                                <option value="IT">IT</option>
+                            </select>
+                        </div>
+                        <button type="button" id="dprtBtn" class="look-btn" aria-label="Open Department Table"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="departmentNo">Department No</label>
+                        <input type="text" id="departmentNo"  class="input-box disable" placeholder="Enter Dept. No." disabled>
+                    </div>
+
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="itInCharge">IT in Charge<span class="required"> *</span></label>
+                            <select id="itInCharge" class="dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select IT in Charge</option>
+                                <option value="Weng Castrillon">Weng Castrillon</option>
+                                <option value="Anne Ranay">Anne Ranay</option>
+                                <option value="Julius Jara">Julius Jara</option>
+                            </select>  
+                        </div>         
+                        <button type="button" id="itChargeBtn" class="look-btn" aria-label="Open It in Charge Table"><i class="fa-solid fa-magnifying-glass"></i></button>                         
+                    </div>
+
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="deviceName">Device Name</label>
+                            <input type="text" id="deviceName" placeholder="Enter Device Name">
+                        </div>
+                        <button type="button" id="deviceBtn" class="look-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                    
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="itemName">Item Name</label>
+                            <input type="text" id="itemName" placeholder="Enter Item Name">
+                        </div>
+                        <button type="button" id="itemBtn" class="look-btn" aria-label="Open Item Table"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="applicationName">Application Name</label>
+                            <input type="text" id="applicationName" placeholder="Enter Application Name">
+                        </div>
+                        <button type="button" id="appBtn" class="look-btn" aria-label="Open Application Table"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                </div>
+
+                <div class="column-two">
+                    <div class="form-group">
+                        <label for="taskId">Task ID</label>
+                        <input type="text" id="taskId" class="id-box disable" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDate">Transaction Date</label>
+                        <input type="text" id="taskDate" class = "date-box disable" disabled>
+                    </div>                             
+
+                    <div class="form-group">
+                        <label for="taskStatus">Status<span class="required"> *</span></label>
+                        <select id="taskStatus" class = "dropdown" required>
+                            <option value="New"  selected>New</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="On Hold">On Hold</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="severity">Severity<span class="required"> *</span></label>
+                        <select id="severity" class = "dropdown" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>                    
+                    </div>
+                    <div class="form-group">
+                        <label for="dateReq">Date Requested</label>
+                        <input type="date" id="dateReq" placeholder="Enter Date Requested" >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateRec">Date Received</label>
+                        <input type="date" id="dateRec" placeholder="Enter Date Received">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateStart">Date Started</label>
+                        <input type="date" id="dateStart" placeholder="Enter Date Started">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateFin">Date Finished</label>
+                        <input type="date" id="dateFin" placeholder="Enter Date Finished">
+                    </div>
+
+                </div>
+            </div>
+            <div class="add-task-footer">
+                <div class="form-group outside">
+                    <label for="problemDetails">Problem Details<span class="required"> *</span></label>
+                    <textarea id="problemDetails" class="scroll" placeholder="Enter Problem Details" required></textarea>
+                </div>
+                <div class="form-group outside">
+                    <label for="remarks">Remarks<span class="required"> *</span></label>
+                    <textarea id="remarks" class="scroll"  placeholder="Enter Task Remarks" required></textarea>
+                </div>  
+                <button type="submit" class="button-add">Add Task</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id = "departmentAdd" class="department-add outermost">
+    <div id="deptContent" class="dept-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Department</h2>
+            <span class="close-cont" onclick="document.getElementById('departmentAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="deptColOne" class="dept col-one">
+                <div class="groups">
+                    <div class="c1 box"></div>
+                    <div class="c2 box"></div>
+                    <div class="c3 box"></div>
+                </div>
+            </div>
+            <div id="deptColTwo" class="dept col-two">
+                <p>hiii</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id = "itAdd" class="it-add outermost">
+    <div id="itContent" class="it-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">IT in Charge</h2>
+            <span class="close-cont" onclick="document.getElementById('itAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="itColOne" class="it col-one">
+                <!-- <div class="groups">
+                    <div class="c1 box"></div>
+                    <div class="c2 box"></div>
+                    <div class="c3 box"></div>
+                    <div class="c4 box"></div>
+                </div> -->
+            </div>
+            <div id="itColTwo" class="it col-two">
+                <p>hiii</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id = "applicationAdd" class="application-add outermost">
+    <div id="appContent" class="app-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Application Name</h2>
+            <span class="close-cont" onclick="document.getElementById('applicationAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="appColOne" class="app col-one">
+                <!-- <div class="groups">
+                    <div class="c1 box"></div>
+                    <div class="c2 box"></div>
+                    <div class="c3 box"></div>
+                    <div class="c4 box"></div>
+                </div> -->
+            </div>
+            <div id="appColTwo" class="app col-two">
+                <p>hiii</p>
+            </div>
+        </div>
+    </div>
+</div>
+

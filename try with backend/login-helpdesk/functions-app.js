@@ -104,18 +104,40 @@ export const server = {
         const publicPath = path.join(easyPath, 'public');
         const protectedPath = path.join(easyPath, 'protected');
 
+        async function get_all_files(dir, baseDir = '') {
+            let results = [];
+            try {
+                const files = await fs.promises.readdir(dir, {withFileTypes: true});
+                for (const file of files) {
+                    const absPath = path.join(dir, file.name);
+                    const relPath = path.join(dir, file.name);
+
+                    if(file.isDirectory()){
+                        const subFiles = await get_all_files(absPath, relPath);
+                        results = results.concat(subFiles);
+                    } else if (file.name.endsWith('.html')) {
+                        results.push(relPath);
+                    }
+                }
+
+            } catch (err) {
+                console.error(`Error reading directory ${dir}:`, err);
+            }
+            // console.log(results);
+            return results;
+        }
+
         Promise.all([
-            fs.promises.readdir(publicPath),
-            fs.promises.readdir(protectedPath)
+            get_all_files(publicPath),
+            get_all_files(protectedPath)
         ])
         .then(([publicFiles, protectedFiles]) => {
             callback(null, {
-                public: publicFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html')),
-                protected: protectedFiles.filter(file => file.endsWith('.html')).map(file => path.basename(file, '.html'))
+                public: publicFiles.filter(file => file.endsWith('.html')).map(file => file.replace(/\\/g, '/')),
+                protected: protectedFiles.filter(file => file.endsWith('.html')).map(file => file.replace(/\\/g, '/'))
             })
         })
     }
-
 }
 
 export const account = {
@@ -316,7 +338,7 @@ export const task = {
     get_task: async function (db, req, res) {
         const { search, filterBy, value } = req.query; // Get search and filter values from the URL
     
-        let type = ['taskType', 'taskDescription'];
+        let type = ['taskType', 'taskDescription', 'problemDetails', 'remarks'];
 
         try {
             let tasks;

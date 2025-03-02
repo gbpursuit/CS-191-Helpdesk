@@ -1,51 +1,93 @@
-import { UI } from '../common.js';
+import { UI } from '../../common.js';
 
 // May bug parin ako sa paking tasks per page na yan ughhhhh pero wooo naayos and naseparate ko na :>
 // if may bug pasabi nalang huehue
 
 document.addEventListener("DOMContentLoaded", async function() {
-    document.getElementById('containerTable').addEventListener('wheel', (event) => {
-        event.preventDefault();
-        event.currentTarget.scrollLeft += event.deltaY; 
+    requestIdleCallback(async() => {
+        await load.load_html("/internal/protected/taskModal.html", "dashboardContainer"); // dashboardContainer instead of dashElements
+        await load.load_html("/internal/protected/taskEditModal.html", "dashboardContainer"); //since position is absolute
+
+        document.getElementById('containerTable').addEventListener('wheel', (event) => {
+            event.preventDefault();
+            event.currentTarget.scrollLeft += event.deltaY; 
+        });
+    
+        document.getElementById("printButton").addEventListener("click", async function () {
+            if (!generatedPDF) {
+                console.log("Generating new PDF...");
+                generatedPDF = await pdf.generate_pdf();
+            }
+            if (generatedPDF) {
+                generatedPDF.save("summary_report.pdf");
+            }
+        });
+
+        document.querySelectorAll(".look-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const buttonId = this.id;
+                console.log(`Button clicked: ${buttonId}`);
+        
+                switch (buttonId) {
+                    case "taskBtn":
+                    case "editTaskBtn":
+                        btn.open_table("taskBtn");
+                        break;
+                    case "dprtBtn":
+                    case "editDprtBtn":
+                        btn.open_table("departmentAdd");
+                        break;
+                    case "itChargeBtn":
+                    case "editItChargeBtn":
+                        btn.open_table("itAdd");
+                        break;
+                    case "deviceBtn":
+                    case "editDeviceBtn":
+                        btn.open_table("deviceBtn");
+                        break;
+                    case "itemBtn":
+                    case "editItemBtn":
+                        btn.open_table("itemBtn");
+                        break;
+                    case "appBtn":
+                    case "editAppBtn":
+                        btn.open_table("applicationAdd");
+                        break;
+                    default:
+                        console.warn(`No function assigned for this button: ${buttonId}`);
+                }
+            });
+        });
+        
+    
+        // Layout Functions
+        layout.list_navigation();
+        layout.notification_popup();
+    
+        // Add Functions
+        add.modal_handling();
+    
+        // Load Functions
+        await load.load_tasks();
+    
+        // Filter Functions
+        search.search_filter();
+        search.filter_dropdown();
+    
+        // Period Functions
+        period.setup_updates();
+    
+        // Util Functions
+        util.window_listeners();
+        await util.session_ends();
+    
+        // UI Functions
+        UI.handle_darkmode(".toggle-switch");
+        UI.dropdown_toggle();
+        UI.handle_sidebar();
+        UI.show_profile();
+        await UI.reflect_username();
     });
-
-    document.getElementById("printButton").addEventListener("click", async function () {
-        if (!generatedPDF) {
-            console.log("Generating new PDF...");
-            generatedPDF = await pdf.generate_pdf();
-        }
-        if (generatedPDF) {
-            generatedPDF.save("summary_report.pdf");
-        }
-    });
-
-    // Layout Functions
-    layout.list_navigation();
-    layout.notification_popup();
-
-    // Add Functions
-    add.modal_handling();
-
-    // Load Functions
-    await load.load_tasks();
-
-    // Filter Functions
-    search.search_filter();
-    search.filter_dropdown();
-
-    // Period Functions
-    period.setup_updates();
-
-    // Util Functions
-    util.window_listeners();
-    await util.session_ends();
-
-    // UI Functions
-    UI.handle_darkmode(".toggle-switch");
-    UI.dropdown_toggle();
-    UI.handle_sidebar();
-    UI.show_profile();
-    await UI.reflect_username();
 })
 
 // Layout Page Logic
@@ -187,7 +229,7 @@ const pdf = {
         const tableHeaders = [
             "Task ID", "Task Type", "Task Description", "Requested By", "Approved By", "Department",
             "Department No", "IT In Charge", "Device Name", "Item Name", "Application Name", "Status",
-            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished", "Problem Details"
+            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished", "Problem Details", "Remarks"
         ];
 
         // Convert API data into table format
@@ -360,6 +402,8 @@ const add = {
             <td>${task.severity}</td>
             <td>${task.taskType}</td>
             <td>${task.taskDescription}</td>
+            <td>${task.problemDetails}</td>
+            <td>${task.remarks}</td>
             <td>${task.itInCharge}</td>
             <td>${task.department}</td>
             <td>${task.departmentNo}</td>
@@ -372,8 +416,6 @@ const add = {
             <td>${util.format_date(task.dateRec)}</td>
             <td>${util.format_date(task.dateStart)}</td>
             <td>${util.format_date(task.dateFin)}</td>
-            <td>${task.problemDetails}</td>
-            <td>${task.remarks}</td>
         `;
     
         // Add event listener for row click
@@ -534,7 +576,7 @@ const add = {
         };
 
         // taskInfoModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'submittedContent', 'taskInfoModal'));
-        taskModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'modalContent', 'taskModal'));
+        // taskModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'modalContent', 'taskModal'));
         pop.addEventListener('click', (event) => UI.close_outside_modal(event, 'popupContent', 'notificationPopup'));
 
         if (closeButton) closeButton.addEventListener('click', () => UI.close_modal('taskModal', true));
@@ -746,7 +788,7 @@ const update = {
     }
 }
 
-// Database Logic -- Loading
+// HTML/Database Logic -- Loading tasks and page
 const load = {
     load_tasks: async function(query = null, resetPage = false) {
         try {
@@ -826,9 +868,21 @@ const load = {
         } catch (err) {
             console.error('Error loading tasks:', err);
         } 
+    },
+
+    load_html: async function(url, targetId) {
+        try {
+            const response = await fetch(url);
+            if(!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+            const html = await response.text();
+            document.getElementById(targetId).insertAdjacentHTML("beforeend", html);
+
+        } catch(err) {
+            console.error(`Error loading content from ${url}:`, err);
+        }
     }
 }
-
 
 // Database Logic -- Page
 const prevButton = document.getElementById("prevPage");
@@ -937,6 +991,13 @@ const period = {
             }
         });
         period.periodic_updates();
+    }
+}
+
+const btn = {
+    open_table: function(id) {
+        const dept = document.getElementById(id);
+        dept.style.display = 'flex';
     }
 }
 

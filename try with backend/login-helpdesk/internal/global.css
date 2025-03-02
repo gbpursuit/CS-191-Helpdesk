@@ -37,6 +37,7 @@
     --overlay-dark: rgba(84, 96, 100, 0.4);
     --overlay-light: rgba(84, 96, 100, 0);
     --txt-shadow: rgba(255, 255, 255, 0.5);
+    --green-overlay: rgb(138, 202, 183);
     --shadow: rgba(0, 0, 0, 0.4);
 
     --status-new: #1463e2;        
