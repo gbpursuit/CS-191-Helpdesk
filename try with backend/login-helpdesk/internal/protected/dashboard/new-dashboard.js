@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 switch (buttonId) {
                     case "taskBtn":
                     case "editTaskBtn":
-                        btn.open_table("taskBtn");
+                        // btn.open_table("taskBtn");
                         break;
                     case "dprtBtn":
                     case "editDprtBtn":
@@ -43,11 +43,11 @@ document.addEventListener("DOMContentLoaded", async function() {
                         break;
                     case "deviceBtn":
                     case "editDeviceBtn":
-                        btn.open_table("deviceBtn");
+                        // btn.open_table("deviceBtn");
                         break;
                     case "itemBtn":
                     case "editItemBtn":
-                        btn.open_table("itemBtn");
+                        // btn.open_table("itemBtn");
                         break;
                     case "appBtn":
                     case "editAppBtn":
