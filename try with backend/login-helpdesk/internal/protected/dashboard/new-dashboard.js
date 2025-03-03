@@ -1,8 +1,5 @@
 import { UI } from '../../common.js';
 
-// May bug parin ako sa paking tasks per page na yan ughhhhh pero wooo naayos and naseparate ko na :>
-// if may bug pasabi nalang huehue
-
 document.addEventListener("DOMContentLoaded", async function() {
     requestIdleCallback(async() => {
         await load.load_html("/internal/protected/taskModal.html", "dashboardContainer"); // dashboardContainer instead of dashElements
@@ -108,6 +105,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         UI.handle_sidebar();
         UI.show_profile();
         await UI.reflect_username();
+
+
     });
 })
 
@@ -1285,4 +1284,38 @@ const util = {
     }
 }
 
+// // Function to open the "Add" modal
+// const openAddModal = (modalId) => {
+//     const modal = document.getElementById(modalId);
+//     const table = modal.querySelector('table');
+//     const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText);
+    
+//     // Remove any existing form before adding a new one
+//     const existingForm = modal.querySelector('form');
+//     if (existingForm) existingForm.remove();
 
+//     const formHtml = headers.map(header => `
+//         <label for="${header}">${header}</label>
+//         <input type="text" id="${header}" name="${header}" required>
+//     `).join('');
+
+//     modal.querySelector('.groups').insertAdjacentHTML('afterend', `<form>${formHtml}<button type="submit">Submit</button></form>`);
+//     modal.style.display = 'block';
+// };
+
+// // Function to open the "Edit" modal (prefilling is not implemented here but can be added)
+// const openEditModal = (modalId) => {
+//     openAddModal(modalId); // Reuse add modal logic
+// };
+
+// // Function to delete a selected row
+// const deleteEntry = (modalId) => {
+//     const modal = document.getElementById(modalId);
+//     const selectedRow = modal.querySelector('table tbody tr.selected');
+
+//     if (selectedRow) {
+//         selectedRow.remove();
+//     } else {
+//         alert('Please select a row to delete.');
+//     }
+// };

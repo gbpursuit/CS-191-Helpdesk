@@ -1149,7 +1149,7 @@ input[type="date"] {
     height: 10%;
     background-color: var(--dark-green2);
     border-radius: 4px;
-    box-shadow: 0px 3px 4px var(--shadow);
+    box-shadow: 0px 1px 2px var(--shadow);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1182,11 +1182,47 @@ input[type="date"] {
 
 .col-two {
     background-color: var(--white);
-    width: 120%;
     border-radius: 4px;
-    box-shadow: 0px 2px 4px var(--table-b-shadow);
     padding: 10px;
     font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.col-two table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.col-two th, 
+.col-two td {
+    border: 1px solid var(--v2-gray);
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 0.86rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.col-two th {
+    background-color: var(--whitesmoke);
+    font-size: smaller;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0px 2px 2px var(--table-b-shadow);
+}
+
+.col-two tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.col-two tbody tr:hover {
+    filter: brightness(110%);
 }
 
 

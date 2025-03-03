@@ -26,6 +26,7 @@
         <form id="editTaskForm" onsubmit="updateTask(event)" class="edit-task-form">
             <div class="edit-main-column">
                 <div class="edit-column-one">
+                    
                     <div class="edit-form-group container">
                         <div class="label-container">
                             <label for="editTaskType">Task Type<span class="required"> *</span></label>
@@ -42,14 +43,28 @@
                         <input type="text" id="editTaskDescription" placeholder="Enter Task Description">
                     </div>
 
-                    <div class="edit-form-group">
-                        <label for="editRequestedBy">Requested by<span class="required"> *</span></label>
-                        <input type="text" id="editRequestedBy" placeholder="Enter Requestor Name">
+                    <div class="edit-form-group container">
+                        <div class="label-container">
+                            <label for="editRequestedBy">Requested by<span class="required"> *</span></label>
+                            <select id="editRequestedBy" class = "edit-dropdown">
+                                <option value="" class="option-values" disabled selected>Select Requested by</option>
+                            </select>
+                        </div>
+                        <button type="button" id="requestedByBtn" class="look-btn" onclick="openPopup('requestedByAdd')" aria-label="Open Requested By Table">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </div>
-
-                    <div class="edit-form-group">
-                        <label for="editApprovedBy">Approved by</label>
-                        <input type="text" id="editApprovedBy" placeholder="Enter Approver Name">
+                               
+                    <div class="edit-form-group container">
+                        <div class="label-container">
+                            <label for="editApprovedBy">Approved by</label>
+                            <select id="editApprovedBy" class = "edit-dropdown">
+                                <option value="" class="option-values" disabled selected>Select Approved by</option>
+                            </select>
+                        </div>
+                        <button type="button" id="approvedByBtn" class="look-btn" onclick="openPopup('approvedByAdd')" aria-label="Open Approved By Table">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </div>
 
                     <div class="edit-form-group container">

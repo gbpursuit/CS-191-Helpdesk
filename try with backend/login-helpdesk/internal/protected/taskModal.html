@@ -202,7 +202,17 @@
                 </div>                
             </div>
             <div id="taskTypeColTwo" class="task-type col-two">
-                <p>Select a Task Type</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Task Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -218,13 +228,24 @@
         <div class="cont-cont">
             <div id="requestedByColOne" class="requested-by col-one">
                 <div class="groups">
-                    <div class="c1 box">Add</div>
-                    <div class="c2 box">Edit</div>
-                    <div class="c3 box">Delete</div>
+                    <button class="c1 box" onclick="openAddModal('taskTypeAdd')">Add</button>
+                    <button class="c2 box" onclick="openEditModal('taskTypeAdd')">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry('taskTypeAdd')">Delete</button>                    
                 </div>
             </div>
             <div id="requestedByColTwo" class="requested-by col-two">
-                <p>Select a Requestor</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Contact No.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -240,13 +261,23 @@
         <div class="cont-cont">
             <div id="approvedByColOne" class="approved-by col-one">
                 <div class="groups">
-                    <div class="c1 box">Add</div>
-                    <div class="c2 box">Edit</div>
-                    <div class="c3 box">Delete</div>
+                    <button class="c1 box" onclick="openAddModal('taskTypeAdd')">Add</button>
+                    <button class="c2 box" onclick="openEditModal('taskTypeAdd')">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry('taskTypeAdd')">Delete</button>
                 </div>
             </div>
             <div id="approvedByColTwo" class="approved-by col-two">
-                <p>Select an Approver</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -261,13 +292,22 @@
         <div class="cont-cont">
             <div id="deviceColOne" class="device col-one">
                 <div class="groups">
-                    <div class="c1 box">Add</div>
-                    <div class="c2 box">Edit</div>
-                    <div class="c3 box">Delete</div>
+                    <button class="c1 box" onclick="openAddModal()">Add</button>
+                    <button class="c2 box" onclick="openEditModal()">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry()">Delete</button>
                 </div>
             </div>
             <div id="deviceColTwo" class="device col-two">
-                <p>Select a Device</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Device Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -282,13 +322,22 @@
         <div class="cont-cont">
             <div id="itemColOne" class="item col-one">
                 <div class="groups">
-                    <div class="c1 box">Add</div>
-                    <div class="c2 box">Edit</div>
-                    <div class="c3 box">Delete</div>
+                    <button class="c1 box" onclick="openAddModal()">Add</button>
+                    <button class="c2 box" onclick="openEditModal()">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry()">Delete</button>
                 </div>
             </div>
             <div id="itemColTwo" class="item col-two">
-                <p>Select an Item</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -303,13 +352,23 @@
         <div class="cont-cont">
             <div id="deptColOne" class="dept col-one">
                 <div class="groups">
-                    <div class="c1 box">Add</div>
-                    <div class="c2 box">Edit</div>
-                    <div class="c3 box">Delete</div>
+                    <button class="c1 box" onclick="openAddModal()">Add</button>
+                    <button class="c2 box" onclick="openEditModal()">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry()">Delete</button>
                 </div>
             </div>
             <div id="deptColTwo" class="dept col-two">
-                <p>hiii</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Department No.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -324,13 +383,22 @@
         <div class="cont-cont">
             <div id="itColOne" class="it col-one">
                 <div class="groups">
-                    <div class="c1 box">Add</div>
-                    <div class="c2 box">Edit</div>
-                    <div class="c3 box">Delete</div>
+                    <button class="c1 box" onclick="openAddModal()">Add</button>
+                    <button class="c2 box" onclick="openEditModal()">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry()">Delete</button>
                 </div>
             </div>
             <div id="itColTwo" class="it col-two">
-                <p>hiii</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -345,13 +413,22 @@
         <div class="cont-cont">
             <div id="appColOne" class="app col-one">
                 <div class="groups">
-                    <div class="c1 box">Add</div>
-                    <div class="c2 box">Edit</div>
-                    <div class="c3 box">Delete</div>
+                    <button class="c1 box" onclick="openAddModal()">Add</button>
+                    <button class="c2 box" onclick="openEditModal()">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry()">Delete</button>
                 </div>
             </div>
             <div id="appColTwo" class="app col-two">
-                <p>hiii</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
