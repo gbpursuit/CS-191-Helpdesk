@@ -10,7 +10,10 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="taskType">Task Type<span class="required"> *</span></label>
-                            <input type="text" id="taskType" placeholder="Enter Task Type" required>
+                            <select id="taskType" class = "dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Task Type</option>
+                            </select>
+                            <!-- <input type="text" id="taskType" placeholder="Enter Task Type" required> -->
                         </div>
                         <button type="button" id="taskBtn" class="look-btn" aria-label="Open Task Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -65,7 +68,10 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="deviceName">Device Name</label>
-                            <input type="text" id="deviceName" placeholder="Enter Device Name">
+                            <select id="deviceName" class = "dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Device Name</option>
+                            </select>
+                            <!-- <input type="text" id="deviceName" placeholder="Enter Device Name"> -->
                         </div>
                         <button type="button" id="deviceBtn" class="look-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -73,7 +79,10 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="itemName">Item Name</label>
-                            <input type="text" id="itemName" placeholder="Enter Item Name">
+                            <select id="itemName" class = "dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Item Name</option>
+                            </select>
+                            <!-- <input type="text" id="itemName" placeholder="Enter Item Name"> -->
                         </div>
                         <button type="button" id="itemBtn" class="look-btn" aria-label="Open Item Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -81,7 +90,10 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="applicationName">Application Name</label>
-                            <input type="text" id="applicationName" placeholder="Enter Application Name">
+                            <select id="applicationName" class = "dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Application Name</option>
+                            </select>
+                            <!-- <input type="text" id="applicationName" placeholder="Enter Application Name"> -->
                         </div>
                         <button type="button" id="appBtn" class="look-btn" aria-label="Open Application Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -102,10 +114,12 @@
                         <label for="taskStatus">Status<span class="required"> *</span></label>
                         <select id="taskStatus" class = "dropdown" required>
                             <option value="New"  selected>New</option>
+                            <option value="Open">Open</option>
                             <option value="Pending">Pending</option>
                             <option value="In Progress">In Progress</option>
                             <option value="On Hold">On Hold</option>
                             <option value="Completed">Completed</option>
+                            <option value="Closed">Closed</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>

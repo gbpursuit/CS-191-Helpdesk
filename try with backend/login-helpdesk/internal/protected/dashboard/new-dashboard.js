@@ -76,6 +76,18 @@ document.addEventListener("DOMContentLoaded", async function() {
     
         // Period Functions
         period.setup_updates();
+
+        // Fetch Functions
+        Object.values(fetch_data).forEach(fn => {
+            fn();      
+            fn(true);  
+        });
+        // await fetch_data.task_datalist();
+        // await fetch_data.dept_datalist();
+        // await fetch_data.it_datalist();
+        // await fetch_data.device_datalist();
+        // await fetch_data.item_datalist();
+        // await fetch_data.app_datalist();
     
         // Util Functions
         util.window_listeners();
@@ -388,8 +400,7 @@ const add = {
         // Create row
         let row = document.createElement("tr");
     
-        // Assign a class based on task status
-        let statusClass = util.get_status_class(task.taskStatus); // Ensure correct property
+        let statusClass = util.get_status_class(task.taskStatus);
         if (statusClass) row.classList.add(statusClass);
     
         // Populate row with task data
@@ -510,9 +521,10 @@ const add = {
         const editTaskButton = document.getElementById('editTaskButton');
         editTaskButton.onclick = async () => {
             taskInfoModal.style.display = 'none';
+            console.log(taskData);
             await update.open_edit_modal(taskData);
         };
-        console.log("Editing Task Data:", taskData);
+        // console.log("Editing Task Data:", taskData);
     },
 
     modal_handling: function() {
@@ -673,6 +685,15 @@ const update = {
         const editModal = document.getElementById('taskEditModal');
         const editTaskForm = document.getElementById('editTaskForm');
     
+        await Promise.all([
+            fetch_data.task_datalist(true),
+            fetch_data.dept_datalist(true),
+            fetch_data.it_datalist(true),
+            fetch_data.device_datalist(true),
+            fetch_data.item_datalist(true),
+            fetch_data.app_datalist(true)
+        ]);
+
         // Define task fields mapping
         const taskFields = {
             taskId: "editTaskId", taskStatus: "editTaskStatus", taskDate: "editTaskDate",
@@ -684,7 +705,17 @@ const update = {
         };
     
         util.populate_form_fields(taskFields, taskData);
+
+            // console.log('after util populate')
+        // console.log('From open edit modal:', taskFields);
+        // console.log('From open edit modal:', taskData);
+
+            
         update.setup_status_logic(taskData);
+        // console.log('after update setup status logic');
+        // console.log('From open edit modal:', taskData);
+
+
     
         editTaskForm.onsubmit = async (event) => {
             event.preventDefault();
@@ -741,11 +772,14 @@ const update = {
             problemDetails: util.get_field_value("editProblemDetails"),
             remarks: util.get_field_value("editRemarks"),
         };
-    
+        // console.log(document.getElementById("editDepartmentNo").value);
+
         // Ensure "New" changes to "Pending" before submitting
         if (formData.taskStatus === "New") {
             formData.taskStatus = "Pending";
         }
+
+        console.log(formData);
     
         await update.update_task(taskId, formData);
     },
@@ -838,6 +872,8 @@ const load = {
                 table.style.display = 'table';
                 noData.style.display = 'none';  
             }
+
+            console.log("Tasks: ", tasks);
     
             const startIndex = (currentPage - 1) * tasksPerPage;
             const endIndex = startIndex + tasksPerPage;
@@ -883,6 +919,109 @@ const load = {
         }
     }
 }
+
+const fetch_data = {
+    task_datalist: async function(isEdit = false) {
+        const response = await fetch('/api/ref-table/task_types');
+        const data = await response.json();
+
+        const select = isEdit ? document.getElementById('editTaskType') : document.getElementById('taskType');
+        select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
+    
+        data.forEach(task => {
+            const option = document.createElement("option");
+            option.value = task.id;
+            option.textContent = task.name;
+            select.appendChild(option);
+        });
+    },
+
+    dept_datalist: async function(isEdit = false) {
+        const response = await fetch('/api/ref-table/departments');
+        const data = await response.json();
+
+        const select = isEdit ? document.getElementById('editDepartment') : document.getElementById('department');
+        const departmentNo = isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo');
+
+        select.innerHTML = `<option selected disabled>Select Department</option>`; 
+    
+        data.forEach(dept => {
+            const option = document.createElement("option");
+            option.value = dept.id;
+            option.textContent = dept.name;
+            option.setAttribute("dept-no", dept.department_no);
+            select.appendChild(option);
+        });
+
+        // Automatically update departmentNo input when selecting a department
+        select.addEventListener("change", function() {
+            const selectedOption = select.options[select.selectedIndex]; 
+            const deptNo = selectedOption.getAttribute("dept-no"); 
+            departmentNo.value = deptNo || ""; 
+        });
+    },
+
+    it_datalist: async function(isEdit = false) {
+        const response = await fetch('/api/ref-table/it_in_charge');
+        const data = await response.json();   
+
+        const select = isEdit ? document.getElementById('editItInCharge') : document.getElementById('itInCharge');
+        select.innerHTML = `<option selected disabled>Select IT in Charge</option>`; 
+    
+        data.forEach(it => {
+            const option = document.createElement("option");
+            option.value = it.id;
+            option.textContent = it.name;
+            select.appendChild(option);
+        });
+    },
+
+    device_datalist: async function(isEdit = false) {
+        const response = await fetch('/api/ref-table/devices');
+        const data = await response.json();
+
+        const select = isEdit ? document.getElementById('editDeviceName') : document.getElementById('deviceName');
+        select.innerHTML = `<option selected disabled>Select Device</option>`; 
+    
+        data.forEach(device => {
+            const option = document.createElement("option");
+            option.value = device.id;
+            option.textContent = device.name;
+            select.appendChild(option);
+        });
+    },
+
+    item_datalist: async function(isEdit = false) {
+        const response = await fetch('/api/ref-table/items');
+        const data = await response.json();
+
+        const select = isEdit ? document.getElementById('editItemName') : document.getElementById('itemName');
+        select.innerHTML = `<option selected disabled>Select Item</option>`; 
+    
+        data.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.id;
+            option.textContent = item.name;
+            select.appendChild(option);
+        });
+    },
+
+    app_datalist: async function(isEdit = false) {
+        const response = await fetch('/api/ref-table/applications');
+        const data = await response.json();
+
+        const select = isEdit ? document.getElementById('editApplicationName') : document.getElementById('applicationName');
+        select.innerHTML = `<option selected disabled>Select Application</option>`; 
+    
+        data.forEach(app => {
+            const option = document.createElement("option");
+            option.value = app.id;
+            option.textContent = app.name;
+            select.appendChild(option);
+        });
+    }
+}
+
 
 // Database Logic -- Page
 const prevButton = document.getElementById("prevPage");
@@ -1028,6 +1167,7 @@ const util = {
             if (!field) return;
     
             if (field.tagName === "SELECT") {
+                console.log('taskdate: ',taskData);
                 util.set_selected_option(field, taskData[key], key === "taskStatus");
             } else {
                 field.value = taskData[key] || "";
@@ -1037,7 +1177,8 @@ const util = {
 
     set_selected_option: function(field, value, isStatusField) {
         for (let i = 0; i < field.options.length; i++) {
-            if (field.options[i].value === value) {
+            console.log(field.options[i].textContent, value)
+            if (field.options[i].textContent === value) {
                 field.selectedIndex = i;
                 break;
             }
@@ -1046,6 +1187,7 @@ const util = {
         if (isStatusField && value === "New") {
             field.selectedIndex = [...field.options].findIndex(opt => opt.value === "Pending");
         }
+
     },
 
     update_url: function() {
@@ -1060,6 +1202,7 @@ const util = {
 
     get_field_value: function(id) {
         const field = document.getElementById(id);
+        console.log(`${id}:`, field.value);
         if (!field) return "--";
 
         return field.value.trim() || "--";  // Always return the value, which is now the full name

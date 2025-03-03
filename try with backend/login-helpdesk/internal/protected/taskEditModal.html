@@ -29,7 +29,10 @@
                     <div class="edit-form-group container">
                         <div class="label-container">
                             <label for="editTaskType">Task Type<span class="required"> *</span></label>
-                            <input type="text" id="editTaskType" placeholder="Enter Task Type">
+                            <select id="editTaskType" class = "edit-dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Task Type</option>
+                            </select>
+                            <!-- <input type="text" id="editTaskType" placeholder="Enter Task Type"> -->
                         </div>
                         <button type="button" id="editTaskBtn" class="look-btn" aria-label="Open Task Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -98,24 +101,33 @@
 
                     <div class="edit-form-group container">
                         <div class="label-container">
-                            <label for="editDeviceName">Device Name<span class="required"> *</span></label>
-                            <input type="text" id="editDeviceName" placeholder="Enter Device Name">
+                            <label for="editDeviceName">Device Name</label>
+                            <select id="editDeviceName" class = "edit-dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Task Type</option>
+                            </select>
+                            <!-- <input type="text" id="editDeviceName" placeholder="Enter Device Name"> -->
                         </div>
                         <button type="button" id="editDeviceBtn" class="look-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
                     
                     <div class="edit-form-group container">
                         <div class="label-container">
-                            <label for="editItemName">Item Name<span class="required"> *</span></label>
-                            <input type="text" id="editItemName" placeholder="Enter Item Name">
+                            <label for="editItemName">Item Name</label>
+                            <select id="editItemName" class = "edit-dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Task Type</option>
+                            </select>
+                            <!-- <input type="text" id="editItemName" placeholder="Enter Item Name"> -->
                         </div>
                         <button type="button" id="editItemBtn" class="look-btn" aria-label="Open Item Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
 
                     <div class="edit-form-group container">
                         <div class="label-container">
-                            <label for="editApplicationName">Application Name<span class="required"> *</span></label>
-                            <input type="text" id="editApplicationName" placeholder="Enter Application Name">
+                            <label for="editApplicationName">Application Name</label>
+                            <select id="editApplicationName" class = "edit-dropdown" required>
+                                <option value="" class="option-values" disabled selected>Select Task Type</option>
+                            </select>
+                            <!-- <input type="text" id="editApplicationName" placeholder="Enter Application Name"> -->
                         </div>
                         <button type="button" id="editAppBtn" class="look-btn" aria-label="Open Application Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -133,19 +145,21 @@
                     </div>                             
 
                     <div class="edit-form-group">
-                        <label for="editTaskStatus">Status<span class="required"> *</span></label>
+                        <label for="editTaskStatus">Status</label>
                         <select id="editTaskStatus" class="edit-dropdown">
                             <option value="New">New</option>
+                            <option value="Open">Open</option>
                             <option value="Pending">Pending</option>
                             <option value="In Progress">In Progress</option>
                             <option value="On Hold">On Hold</option>
                             <option value="Completed">Completed</option>
+                            <option value="Closed">Closed</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>
 
                     <div class="edit-form-group">
-                        <label for="editSeverity">Severity<span class="required"> *</span></label>
+                        <label for="editSeverity">Severity</label>
                         <select id="editSeverity" class="edit-dropdown">
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -178,11 +192,11 @@
             </div>
             <div class="edit-task-footer">
                 <div class="edit-form-group outside">
-                    <label for="editProblemDetails">Problem Details<span class="required"> *</span></label>
+                    <label for="editProblemDetails">Problem Details</label>
                     <textarea id="editProblemDetails" class="scroll" placeholder="Enter Problem Details" required></textarea>
                 </div>
                 <div class="edit-form-group outside">
-                    <label for="editRemarks">Remarks<span class="required"> *</span></label>
+                    <label for="editRemarks">Remarks</label>
                     <textarea id="editRemarks" class="scroll"  placeholder="Enter Task Remarks" required></textarea>
                 </div>   
                 <button type="submit" class="button-update">Update Task</button>

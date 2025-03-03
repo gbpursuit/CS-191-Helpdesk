@@ -1,17 +1,52 @@
 USE simple_helpdesk;
 
-DESCRIBE users;
-DESCRIBE tasks;
+-- DESCRIBE users;
+-- DESCRIBE tasks;
+-- DESCRIBE applications;
+-- DESCRIBE departments;
+-- DESCRIBE devices;
+-- DESCRIBE it_in_charge;
+-- DESCRIBE items;
+-- DESCRIBE task_types;
 
-SELECT username, first_name, last_name, `password`
-FROM users
-ORDER BY username;
 
 
+-- ALTER TABLE departments ADD COLUMN departmentNo VARCHAR(50) UNIQUE DEFAULT NULL;
+-- ALTER TABLE departments DROP COLUMN departmentNo;
 
-SELECT *
-FROM tasks
-ORDER by id;
+-- -- Insert into task_types
+-- INSERT INTO task_types (name) VALUES ('Bug Fix'), ('Feature Request'), ('Hardware Issue');
+
+-- -- Insert into it_in_charge
+-- INSERT INTO it_in_charge (name) VALUES ('John Doe'), ('Jane Smith');
+
+-- Insert into departments
+INSERT INTO departments (name, department_no) VALUES ('IT Department', '123'), ('HR Department', '321');
+
+-- Insert into items
+INSERT INTO items (name) VALUES ('Monitor'), ('Keyboard');
+
+-- Insert into devices
+INSERT INTO devices (name) VALUES ('Acer Laptop'), ('Dell Desktop');
+
+-- Insert into applications
+INSERT INTO applications (name) VALUES ('MS Office'), ('Google Chrome');
+
+SELECT * FROM tasks ORDER BY id DESC;
+SELECT * FROM task_types;
+SELECT * FROM departments;
+SELECT * FROM it_in_charge;
+SELECT * FROM items;
+SELECT * FROM devices;
+SELECT * FROM applications;
+
+-- SELECT username, first_name, last_name, `password`
+-- FROM users
+-- ORDER BY username;
+
+-- SELECT *
+-- FROM tasks
+-- ORDER by id;
 
 -- DELETE u1
 -- FROM users u1

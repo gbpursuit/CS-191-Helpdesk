@@ -1,135 +1,3 @@
-// import mysql from 'mysql2/promise';
-// import path from 'path'; // Ensure path module is imported
-// import { exec } from 'child_process'; // Ensure exec is imported
-// import fs from 'fs'; // If you haven't already, import fs
-
-// export async function sql_dump() {
-//     return new Promise((resolve, reject) => {
-//         const dumpFilePath = path.join(__dirname, 'users_dump.sql');
-//         process.env.MYSQL_PWD = 'password';  // Replace 'password' with your MySQL root password
-        
-//         const command = `mysqldump -u root simple_helpdesk users > "${dumpFilePath}"`;
-
-//         exec(command, (error, stdout, stderr) => {
-//             if (error) {
-//                 reject(`Error executing mysqldump: ${error}`);
-//             } else if (stderr) {
-//                 reject(`stderr: ${stderr}`);
-//             } else {
-//                 resolve(dumpFilePath); // Return the path to the SQL file
-//             }
-//         });
-//     });
-// }
-
-
-// async function read_sql(filePath) {
-//     return new Promise((resolve, reject) => {
-//         fs.readFile(filePath, 'utf8', (err, data) => {
-//             if (err) {
-//                 reject(`Error reading SQL file: ${err}`);
-//             } else {
-//                 const tableInsertPattern = /INSERT INTO `(\w+)` VALUES\s*\((.*?)\);/g;
-//                 const matches = [];
-//                 let match;
-
-//                 // Find all INSERT statements
-//                 while ((match = tableInsertPattern.exec(data)) !== null) {
-//                     const tableName = match[1];  // The table name
-//                     const valuesString = match[2]; // The values inserted
-//                     const records = valuesString.split("),(").map(record => record.replace(/[()]/g, '').split(','));
-
-//                     // Clean each record and store in matches array
-//                     records.forEach(record => {
-//                         const rowData = {};
-//                         record.forEach((field, idx) => {
-//                             // Using the table structure to dynamically map fields (if required)
-//                             rowData[`field${idx + 1}`] = field.replace(/'/g, ''); // Simple field mapping, you can adjust this to match actual field names
-//                         });
-//                         matches.push({ table: tableName, data: rowData });
-//                     });
-//                 }
-
-//                 resolve(matches); // Return array of all table data found
-//             }
-//         });
-//     });
-// }
-
-// export async function setup_database() {
-//     try {
-//         // Create a connection without specifying a database
-//         const connection = await mysql.createConnection({
-//             host: 'localhost',
-//             user: 'root',
-//             password: 'password',
-//         });
-
-//         // Ensure the database exists
-//         await connection.query('CREATE DATABASE IF NOT EXISTS simple_helpdesk');
-
-//         // Use the database
-//         const pool = mysql.createPool({
-//             host: 'localhost',
-//             user: 'root',
-//             password: 'password',
-//             database: 'simple_helpdesk',
-//         });
-
-//         await pool.query(`
-//             CREATE TABLE IF NOT EXISTS users (
-//                 username VARCHAR(100) UNIQUE NOT NULL PRIMARY KEY,
-//                 first_name VARCHAR(100),
-//                 last_name VARCHAR(100),
-//                 password VARCHAR(255)
-//             )
-//         `);
-
-//         // await pool.query(`
-//         //     ALTER TABLE if not exist users ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL;
-//         // `);
-        
-//         //await pool.query(`DROP TABLE IF EXISTS tasks`);
-
-//         await pool.query(`
-//             CREATE TABLE IF NOT EXISTS tasks (
-//                 id INT AUTO_INCREMENT PRIMARY KEY,
-//                 taskId VARCHAR(10) UNIQUE NOT NULL,
-//                 taskDate DATE DEFAULT NULL,
-//                 taskStatus VARCHAR(50),
-//                 severity VARCHAR(50),
-//                 taskType VARCHAR(100),
-//                 taskDescription TEXT,
-//                 itInCharge VARCHAR(100),
-//                 department VARCHAR(100), 
-//                 departmentNo VARCHAR(100),
-//                 requestedBy VARCHAR(100),
-//                 approvedBy VARCHAR(100),
-//                 itemName VARCHAR(100),
-//                 deviceName VARCHAR(100),
-//                 applicationName VARCHAR(100),
-//                 dateReq DATE DEFAULT NULL,
-//                 dateRec DATE DEFAULT NULL,
-//                 dateStart DATE DEFAULT NULL,
-//                 dateFin DATE DEFAULT NULL
-//             )
-//         `);
-
-//         const [columns] = await pool.query("SHOW COLUMNS FROM users LIKE 'profile_image'");
-//         if (columns.length === 0) {
-//             await pool.query("ALTER TABLE users ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL;");
-//         }
-
-//         // Insert default users if they don’t exist
-//         const [existingUsers] = await pool.query('SELECT * FROM users');
-
-//         return pool; 
-//     } catch (err) {
-//         console.error('Database setup failed:', err);
-//         throw err; 
-//     }
-// }
-
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -246,8 +114,6 @@ async function get_dump_file() {
     return path.join(BACKUP_DIR, dumpFiles[0]);
 }
 
-
-
 // Updated read_sql
 async function read_sql(filePath) {
     return new Promise((resolve, reject) => {
@@ -283,23 +149,101 @@ async function read_sql(filePath) {
     });
 }
 
-async function alter_tasks_table(pool) {
+async function create_new_tables(pool) {
     try {
-        const columns = [
-            {name: "problemDetails", type: 'VARCHAR(200)'},
-            {name: "remarks", type: 'VARCHAR(200)'}
-        ];
+        console.log('Creating new tables');
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS task_types (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) UNIQUE NOT NULL
+            );
+        `);
 
-        for (const column of columns) {
-            const [rows] = await pool.query('SHOW COLUMNS FROM tasks LIKE ?', column.name);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS departments (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) UNIQUE NOT NULL,
+                department_no VARCHAR(50) UNIQUE NOT NULL
+            );
+        `);
 
-            if (rows.length === 0) {
-                await pool.query(`ALTER TABLE tasks ADD COLUMN ${column.name} ${column.type}`);
-                console.log(`Column ${column.name} added to tasks table. `);
-            } else {
-                console.log(`Column ${column.name} already exists in tasks table. `);
-            }
-        }
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS it_in_charge (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) UNIQUE NOT NULL
+            );
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS devices (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) UNIQUE NOT NULL
+            );
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS items (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) UNIQUE NOT NULL
+            );
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS applications (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) UNIQUE NOT NULL
+            );
+        `);
+
+        console.log('Table creation successful.')
+    } catch (err) {
+        console.error('Error modifying tasks table: ', err);
+    }
+}
+
+async function alter_and_add(pool) {
+    try {
+
+        console.log('Dropping existing tasks table');
+        await pool.query(`DROP TABLE IF EXISTS tasks`);
+
+        console.log('Recreating tasks table with updated structure...');
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INT NOT NULL AUTO_INCREMENT,
+                taskId VARCHAR(10) NOT NULL UNIQUE,
+                taskDate DATE DEFAULT NULL,
+                taskStatus VARCHAR(50) DEFAULT NULL,
+                severity TINYINT NOT NULL CHECK (severity BETWEEN 1 AND 5),
+                taskType INT DEFAULT NULL,
+                taskDescription TEXT,
+                itInCharge INT DEFAULT NULL,
+                department INT DEFAULT NULL,
+                departmentNo VARCHAR(50) DEFAULT NULL,
+                requestedBy VARCHAR(100) DEFAULT NULL,
+                approvedBy VARCHAR(100) DEFAULT NULL,
+                itemName INT DEFAULT NULL,
+                deviceName INT DEFAULT NULL,
+                applicationName INT DEFAULT NULL,
+                dateReq DATE DEFAULT NULL,
+                dateRec DATE DEFAULT NULL,
+                dateStart DATE DEFAULT NULL,
+                dateFin DATE DEFAULT NULL,
+                problemDetails TEXT,
+                remarks TEXT,
+                PRIMARY KEY (id),
+                FOREIGN KEY (taskType) REFERENCES task_types(id),
+                FOREIGN KEY (itInCharge) REFERENCES it_in_charge(id),
+                FOREIGN KEY (department) REFERENCES departments(id),
+                FOREIGN KEY (itemName) REFERENCES items(id),
+                FOREIGN KEY (deviceName) REFERENCES devices(id),
+                FOREIGN KEY (applicationName) REFERENCES applications(id)
+            );
+        `);
+
+        console.log('Tasks table recreated successfully.');
+        console.log('You can check MySQL for the newly updated database layout.');
+        
     } catch (err) {
         console.error('Error modifying tasks table: ', err);
     }
@@ -340,10 +284,6 @@ export async function setup_database() {
                     'simple_helpdesk'
                 ], { stdio: ['pipe', 'inherit', 'inherit'] });
 
-                // const restoreProcess = spawn('mysql', ['--defaults-extra-file=' + process.env.MYSQL_CNF, 'simple_helpdesk'], {
-                //     stdio: ['pipe', 'inherit', 'inherit']
-                // });
-
                 fs.createReadStream(dumpFilePath).pipe(restoreProcess.stdin);
 
                 restoreProcess.on('close', (code) => {
@@ -365,6 +305,9 @@ export async function setup_database() {
         });
 
         console.log('Database connected successfully');
+
+        await create_new_tables(pool);
+        await alter_and_add(pool);
 
         // if (databases.length !== 0) {
         //     const dumpFilePath = await get_dump_file();

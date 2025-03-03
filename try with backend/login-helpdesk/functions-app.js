@@ -242,8 +242,8 @@ export const task = {
                 });
             }
             else {
-            conditions.push(`?? LIKE ?`);
-            params.push(type, `%${query}%`);
+                conditions.push(`?? LIKE ?`);
+                params.push(type, `%${query}%`);
             }
         }
         
@@ -258,9 +258,44 @@ export const task = {
         
         let whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
         let sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC'
-        let sortField = ['taskDate', 'department'].includes(filterBy) ? filterBy : 'id';
-        let baseQuery = `SELECT * FROM tasks ${whereClause} ORDER BY ?? ${sortOrder}`;
-        
+        let sortField = ['taskDate', 'department'].includes(filterBy) ? filterBy : 'tasks.id';
+        // let baseQuery = `SELECT * FROM tasks ${whereClause} ORDER BY ?? ${sortOrder}`;
+
+        // Replace the id values with actual names in their respective tables
+        let baseQuery = `
+            SELECT 
+                tasks.id,
+                tasks.taskId,
+                tasks.taskDate,
+                tasks.taskStatus,
+                tasks.severity,
+                task_types.name AS taskType, 
+                tasks.taskDescription,
+                tasks.problemDetails,
+                tasks.remarks,
+                it_in_charge.name AS itInCharge,
+                departments.name AS department, 
+                tasks.departmentNo,
+                tasks.requestedBy,
+                tasks.approvedBy,
+                items.name AS itemName, 
+                devices.name AS deviceName, 
+                applications.name AS applicationName, 
+                tasks.dateReq,
+                tasks.dateRec,
+                tasks.dateStart,
+                tasks.dateFin
+            FROM tasks
+            LEFT JOIN task_types ON tasks.taskType = task_types.id
+            LEFT JOIN it_in_charge ON tasks.itInCharge = it_in_charge.id
+            LEFT JOIN departments ON tasks.department = departments.id
+            LEFT JOIN items ON tasks.itemName = items.id
+            LEFT JOIN devices ON tasks.deviceName = devices.id
+            LEFT JOIN applications ON tasks.applicationName = applications.id
+            ${whereClause}
+            ORDER BY ?? ${sortOrder}
+        `;
+
         params.push(sortField);
 
         const [tasks] = await db.query(baseQuery, params);
@@ -283,27 +318,166 @@ export const task = {
                 dateReq, dateRec, dateStart, dateFin, problemDetails, remarks
             } = req.body;
     
-            // Ensure dates are valid and empty strings are converted to NULL
+            // async function get_or_insert(table, column, value) {
+            //     if (!value) return null; // Handle NULL values
+    
+            //     // Check if value exists
+            //     const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
+            //     if (existing.length) return existing[0].id;
+    
+            //     // Insert new value and return ID
+            //     const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
+            //     return result.insertId; // return the id of newly created value
+            // }
+    
+            // // Convert incoming text values to their corresponding IDs
+            // const taskTypeId = await get_or_insert('task_types', 'name', taskType);
+            // const itInChargeId = await get_or_insert('it_in_charge', 'name', itInCharge);
+            // const departmentId = await get_or_insert('departments', 'name', department);
+            // const itemId = await get_or_insert('items', 'name', itemName);
+            // const deviceId = await get_or_insert('devices', 'name', deviceName);
+            // const applicationId = await get_or_insert('applications', 'name', applicationName);
+    
             const convertDate = (date) => date && date !== '--' ? date : null;
+            const severityNumber = parseInt(severity, 10);
     
             await db.query(`
-                INSERT INTO tasks (taskId, taskDate, taskStatus, severity, taskType, taskDescription, itInCharge, department, departmentNo,
-                    requestedBy, approvedBy, itemName, deviceName, applicationName, dateReq, dateRec, dateStart, dateFin, problemDetails, remarks)
+                INSERT INTO tasks (taskId, taskDate, taskStatus, severity, taskType, taskDescription, 
+                    itInCharge, department, departmentNo, requestedBy, approvedBy, 
+                    itemName, deviceName, applicationName, dateReq, dateRec, dateStart, dateFin, 
+                    problemDetails, remarks)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
-                taskId, convertDate(taskDate), taskStatus,  severity, 
+                taskId, convertDate(taskDate), taskStatus, severityNumber, 
                 taskType, taskDescription, itInCharge, department, 
-                departmentNo, requestedBy,  approvedBy,  itemName, 
+                departmentNo, requestedBy, approvedBy, itemName, 
                 deviceName, applicationName, convertDate(dateReq),
                 convertDate(dateRec), convertDate(dateStart), convertDate(dateFin), problemDetails, remarks
             ]);
     
             res.status(201).json({ success: true, message: 'Task saved successfully' });
+    
         } catch (err) {
             console.error('Error saving task:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     },
+    
+    update_task: async function(db, req, res) {
+        try {
+            const taskId = req.params.taskId;
+    
+            // Convert empty values to NULL
+            const convertToNull = (value) => (value === '' ? null : value);
+            const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
+            // const formatDate = (date) => (date === null ? "--" : date); 
+    
+            // async function get_or_insert(table, column, value) {
+            //     if (!value) return null;
+    
+            //     // Check if value exists
+            //     const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
+            //     if (existing.length) return existing[0].id;
+    
+            //     // Insert new value and return ID
+            //     const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
+            //     return result.insertId; // return the id of newly created value
+            // }
+
+            const validatedFields = Object.fromEntries(
+                await Promise.all(Object.entries(req.body).map(async ([key, value]) => {
+                    if (key.toLowerCase().includes('date')) return [key, isValidDate(value)];
+                    
+                    // Convert names to IDs for relevant fields
+                    // if (key === "taskType") value = await get_or_insert('task_types', 'name', value);
+                    // if (key === "itInCharge") value = await get_or_insert('it_in_charge', 'name', value);
+                    // if (key === "department") value = await get_or_insert('departments', 'name', value);
+                    // if (key === "itemName") value = await get_or_insert('items', 'name', value);
+                    // if (key === "deviceName") value = await get_or_insert('devices', 'name', value);
+                    // if (key === "applicationName") value = await get_or_insert('applications', 'name', value);
+                    if (key === "severity") value = parseInt(value, 10);
+    
+                    return [key, convertToNull(value)];
+                }))
+            );
+
+    
+            const [existingTasks] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
+    
+            if (existingTasks.length === 0) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+    
+            // Check if the information being updated has new information
+            const existingTask = existingTasks[0];
+            const newTasks = Object.fromEntries(
+                Object.entries(existingTask).map(([key, value]) => [
+                    key, key.toLowerCase().includes('date')
+                        ? (value ? value.toLocaleDateString('en-CA') : null)
+                        : convertToNull(value)
+                ])
+            );
+    
+            const hasChanged = Object.entries(validatedFields).some(([key, newValue]) => {
+                return newTasks[key] !== newValue;
+            });
+    
+    
+            if (!hasChanged) {
+                return res.json({ success: false, message: 'No changes detected, task not updated.' });
+            }
+    
+            const updatedFields = [...Object.values(validatedFields), taskId];
+    
+            const [result] = await db.query(`
+                UPDATE tasks SET 
+                    taskDate = ?, taskStatus = ?, severity = ?, taskType = ?, 
+                    taskDescription = ?, itInCharge = ?, department = ?, departmentNo = ?, 
+                    requestedBy = ?, approvedBy = ?, itemName = ?, deviceName = ?, 
+                    applicationName = ?, dateReq = ?, dateRec = ?, dateStart = ?, dateFin = ?, problemDetails = ?, remarks = ?
+                WHERE taskId = ?
+            `, updatedFields);
+    
+            if (result.affectedRows > 0) {
+                res.json({ success: true, message: 'Task updated successfully' });
+            } else {
+                res.status(404).json({ error: 'Task not found' });
+            }
+        } catch (err) {
+            console.error('Error updating task:', err);
+            res.status(500).json({ error: err.sqlMessage || 'Internal server error' });
+        }
+    },
+
+    // add_task: async function (db, req, res) {
+    //     try {
+    //         const {
+    //             taskId, taskDate, taskStatus, severity, taskType, taskDescription,
+    //             itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
+    //             dateReq, dateRec, dateStart, dateFin, problemDetails, remarks
+    //         } = req.body;
+    
+    //         // Ensure dates are valid and empty strings are converted to NULL
+    //         const convertDate = (date) => date && date !== '--' ? date : null;
+    
+    //         await db.query(`
+    //             INSERT INTO tasks (taskId, taskDate, taskStatus, severity, taskType, taskDescription, itInCharge, department, departmentNo,
+    //                 requestedBy, approvedBy, itemName, deviceName, applicationName, dateReq, dateRec, dateStart, dateFin, problemDetails, remarks)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    //         `, [
+    //             taskId, convertDate(taskDate), taskStatus,  severity, 
+    //             taskType, taskDescription, itInCharge, department, 
+    //             departmentNo, requestedBy,  approvedBy,  itemName, 
+    //             deviceName, applicationName, convertDate(dateReq),
+    //             convertDate(dateRec), convertDate(dateStart), convertDate(dateFin), problemDetails, remarks
+    //         ]);
+    
+    //         res.status(201).json({ success: true, message: 'Task saved successfully' });
+    //     } catch (err) {
+    //         console.error('Error saving task:', err);
+    //         res.status(500).json({ error: 'Internal server error' });
+    //     }
+    // },
 
     session_user: async function(db, req, res) {
         try {
@@ -336,7 +510,7 @@ export const task = {
     },
 
     get_task: async function (db, req, res) {
-        const { search, filterBy, value } = req.query; // Get search and filter values from the URL
+        const { search, filterBy, value } = req.query; 
     
         let type = ['taskType', 'taskDescription', 'problemDetails', 'remarks'];
 
@@ -361,7 +535,6 @@ export const task = {
                     tasks = await task.fetching_tasks(db, true, value, filterBy, 'DESC');
                 }
             } else {
-                // Fetch all tasks if no search or filter is provided
                 tasks = await task.fetching_tasks(db, false, null, 'id');
             }
     
@@ -384,6 +557,23 @@ export const task = {
 
         } catch(err) {
             console.error('Error fetching uers:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    get_reference_table: async function(db, req, res, tableName) {
+        try {
+            const validTables = ['task_types', 'it_in_charge', 'departments', 'items', 'devices', 'applications'];
+        
+            if (!validTables.includes(tableName)) {
+                return res.status(400).json({ error: 'Invalid reference table' });
+            }
+    
+            const [rows] = await db.query(`SELECT * FROM ??`, [tableName]); 
+            res.json(rows);
+
+        } catch(err) {
+            console.error('Error fetching referenced table:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
