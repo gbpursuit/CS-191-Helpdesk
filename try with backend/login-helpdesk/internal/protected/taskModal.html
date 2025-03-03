@@ -10,27 +10,41 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="taskType">Task Type<span class="required"> *</span></label>
-                            <select id="taskType" class = "dropdown" required>
+                            <select id="taskType" class="dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Task Type</option>
                             </select>
                             <!-- <input type="text" id="taskType" placeholder="Enter Task Type" required> -->
                         </div>
-                        <button type="button" id="taskBtn" class="look-btn" aria-label="Open Task Table"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button type="button" id="taskTypeBtn" class="look-btn" onclick="openPopup('taskTypeAdd')" aria-label="Open Task Type Table">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </div>
 
                     <div class="form-group">
                         <label for="taskDescription">Task Description</label>
                         <input type="text" id="taskDescription" placeholder="Enter Task Description">
                     </div>
-
-                    <div class="form-group">
-                        <label for="requestedBy">Requested by<span class="required"> *</span></label>
-                        <input type="text" id="requestedBy" placeholder="Enter Requestor Name" required>
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="requestedBy">Requested by<span class="required"> *</span></label>
+                            <select id="requestedBy" class = "dropdown">
+                                <option value="" class="option-values" disabled selected>Select Requested by</option>
+                            </select>
+                        </div>
+                        <button type="button" id="requestedByBtn" class="look-btn" onclick="openPopup('requestedByAdd')" aria-label="Open Requested By Table">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </div>
-
-                    <div class="form-group">
-                        <label for="approvedBy">Approved by</label>
-                        <input type="text" id="approvedBy" placeholder="Enter Approver Name">
+                    <div class="form-group container">
+                        <div class="label-container">
+                            <label for="approvedBy">Approved by</label>
+                            <select id="approvedBy" class = "dropdown">
+                                <option value="" class="option-values" disabled selected>Select Approved by</option>
+                            </select>
+                        </div>
+                        <button type="button" id="approvedByBtn" class="look-btn" onclick="openPopup('approvedByAdd')" aria-label="Open Approved By Table">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </div>
 
                     <div class="form-group container">
@@ -171,7 +185,116 @@
     </div>
 </div>
 
-<div id = "departmentAdd" class="department-add outermost">
+
+<!-- Task Type Pop-up -->
+<div id="taskTypeAdd" class="task-type-add outermost display">
+    <div id="taskTypeContent" class="taskType-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Task Type</h2>
+            <span class="close-cont" onclick="document.getElementById('taskTypeAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="taskTypeColOne" class="task-type col-one">
+                <div class="groups">
+                    <button class="c1 box" onclick="openAddModal()">Add</button>
+                    <button class="c2 box" onclick="openEditModal()">Edit</button>
+                    <button class="c3 box" onclick="deleteEntry()">Delete</button>
+                </div>                
+            </div>
+            <div id="taskTypeColTwo" class="task-type col-two">
+                <p>Select a Task Type</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Requested By Pop-up -->
+<div id="requestedByAdd" class="requested-by-add outermost display">
+    <div id="requestedByContent" class="requestedBy-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Requested By</h2>
+            <span class="close-cont" onclick="document.getElementById('requestedByAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="requestedByColOne" class="requested-by col-one">
+                <div class="groups">
+                    <div class="c1 box">Add</div>
+                    <div class="c2 box">Edit</div>
+                    <div class="c3 box">Delete</div>
+                </div>
+            </div>
+            <div id="requestedByColTwo" class="requested-by col-two">
+                <p>Select a Requestor</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approved By Pop-up -->
+<div id="approvedByAdd" class="approved-by-add outermost display">
+    <div id="approvedByContent" class="approvedBy-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Approved By</h2>
+            <span class="close-cont" onclick="document.getElementById('approvedByAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="approvedByColOne" class="approved-by col-one">
+                <div class="groups">
+                    <div class="c1 box">Add</div>
+                    <div class="c2 box">Edit</div>
+                    <div class="c3 box">Delete</div>
+                </div>
+            </div>
+            <div id="approvedByColTwo" class="approved-by col-two">
+                <p>Select an Approver</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="deviceAdd" class="device-add outermost display">
+    <div id="deviceContent" class="device-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Device Name</h2>
+            <span class="close-cont" onclick="document.getElementById('deviceAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="deviceColOne" class="device col-one">
+                <div class="groups">
+                    <div class="c1 box">Add</div>
+                    <div class="c2 box">Edit</div>
+                    <div class="c3 box">Delete</div>
+                </div>
+            </div>
+            <div id="deviceColTwo" class="device col-two">
+                <p>Select a Device</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="itemAdd" class="item-add outermost display">
+    <div id="itemContent" class="item-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Item Name</h2>
+            <span class="close-cont" onclick="document.getElementById('itemAdd').style.display='none'">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div id="itemColOne" class="item col-one">
+                <div class="groups">
+                    <div class="c1 box">Add</div>
+                    <div class="c2 box">Edit</div>
+                    <div class="c3 box">Delete</div>
+                </div>
+            </div>
+            <div id="itemColTwo" class="item col-two">
+                <p>Select an Item</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id = "departmentAdd" class="department-add outermost display">
     <div id="deptContent" class="dept-content layout-content">
         <div class="title-cont">
             <h2 class="title">Department</h2>
@@ -180,9 +303,9 @@
         <div class="cont-cont">
             <div id="deptColOne" class="dept col-one">
                 <div class="groups">
-                    <div class="c1 box"></div>
-                    <div class="c2 box"></div>
-                    <div class="c3 box"></div>
+                    <div class="c1 box">Add</div>
+                    <div class="c2 box">Edit</div>
+                    <div class="c3 box">Delete</div>
                 </div>
             </div>
             <div id="deptColTwo" class="dept col-two">
@@ -192,7 +315,7 @@
     </div>
 </div>
 
-<div id = "itAdd" class="it-add outermost">
+<div id = "itAdd" class="it-add outermost display">
     <div id="itContent" class="it-content layout-content">
         <div class="title-cont">
             <h2 class="title">IT in Charge</h2>
@@ -200,12 +323,11 @@
         </div>
         <div class="cont-cont">
             <div id="itColOne" class="it col-one">
-                <!-- <div class="groups">
-                    <div class="c1 box"></div>
-                    <div class="c2 box"></div>
-                    <div class="c3 box"></div>
-                    <div class="c4 box"></div>
-                </div> -->
+                <div class="groups">
+                    <div class="c1 box">Add</div>
+                    <div class="c2 box">Edit</div>
+                    <div class="c3 box">Delete</div>
+                </div>
             </div>
             <div id="itColTwo" class="it col-two">
                 <p>hiii</p>
@@ -214,7 +336,7 @@
     </div>
 </div>
 
-<div id = "applicationAdd" class="application-add outermost">
+<div id = "applicationAdd" class="application-add outermost display">
     <div id="appContent" class="app-content layout-content">
         <div class="title-cont">
             <h2 class="title">Application Name</h2>
@@ -222,12 +344,11 @@
         </div>
         <div class="cont-cont">
             <div id="appColOne" class="app col-one">
-                <!-- <div class="groups">
-                    <div class="c1 box"></div>
-                    <div class="c2 box"></div>
-                    <div class="c3 box"></div>
-                    <div class="c4 box"></div>
-                </div> -->
+                <div class="groups">
+                    <div class="c1 box">Add</div>
+                    <div class="c2 box">Edit</div>
+                    <div class="c3 box">Delete</div>
+                </div>
             </div>
             <div id="appColTwo" class="app col-two">
                 <p>hiii</p>

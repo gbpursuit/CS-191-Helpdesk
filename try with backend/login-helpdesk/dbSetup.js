@@ -306,8 +306,8 @@ export async function setup_database() {
 
         console.log('Database connected successfully');
 
-        await create_new_tables(pool);
-        await alter_and_add(pool);
+        // await create_new_tables(pool);
+        // await alter_and_add(pool);
 
         // if (databases.length !== 0) {
         //     const dumpFilePath = await get_dump_file();

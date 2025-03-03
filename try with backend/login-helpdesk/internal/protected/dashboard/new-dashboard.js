@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 switch (buttonId) {
                     case "taskBtn":
                     case "editTaskBtn":
-                        // btn.open_table("taskBtn");
+                        btn.open_table("taskBtn");
                         break;
                     case "dprtBtn":
                     case "editDprtBtn":
@@ -43,15 +43,24 @@ document.addEventListener("DOMContentLoaded", async function() {
                         break;
                     case "deviceBtn":
                     case "editDeviceBtn":
-                        // btn.open_table("deviceBtn");
+                        btn.open_table("deviceAdd"); 
                         break;
                     case "itemBtn":
                     case "editItemBtn":
-                        // btn.open_table("itemBtn");
+                        btn.open_table("itemAdd"); 
                         break;
                     case "appBtn":
                     case "editAppBtn":
                         btn.open_table("applicationAdd");
+                        break;
+                    case "taskTypeBtn": 
+                        btn.open_table("taskTypeAdd");
+                        break;
+                    case "requestedByBtn":
+                        btn.open_table("requestedByAdd");
+                        break;
+                    case "approvedByBtn": 
+                        btn.open_table("approvedByAdd");
                         break;
                     default:
                         console.warn(`No function assigned for this button: ${buttonId}`);
