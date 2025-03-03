@@ -21,16 +21,16 @@ USE simple_helpdesk;
 -- INSERT INTO it_in_charge (name) VALUES ('John Doe'), ('Jane Smith');
 
 -- Insert into departments
-INSERT INTO departments (name, department_no) VALUES ('IT Department', '123'), ('HR Department', '321');
+-- INSERT INTO departments (name, department_no) VALUES ('IT Department', '123'), ('HR Department', '321');
 
 -- Insert into items
-INSERT INTO items (name) VALUES ('Monitor'), ('Keyboard');
+-- INSERT INTO items (name) VALUES ('Monitor'), ('Keyboard');
 
 -- Insert into devices
-INSERT INTO devices (name) VALUES ('Acer Laptop'), ('Dell Desktop');
+-- INSERT INTO devices (name) VALUES ('Acer Laptop'), ('Dell Desktop');
 
 -- Insert into applications
-INSERT INTO applications (name) VALUES ('MS Office'), ('Google Chrome');
+-- INSERT INTO applications (name) VALUES ('MS Office'), ('Google Chrome');
 
 SELECT * FROM tasks ORDER BY id DESC;
 SELECT * FROM task_types;

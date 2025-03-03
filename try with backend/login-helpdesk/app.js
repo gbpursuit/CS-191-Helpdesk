@@ -483,12 +483,31 @@ app.get('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {
 // Cancel Task (User Role)
 app.put('/api/tasks/:taskId/cancel', server.is_authenticated, async (req, res) => {
     try {
-        await task.cancel_task(app.locals.db, req, res);
+        const db = app.locals.db;
+        const { taskId } = req.params;
+
+        const [taskExists] = await db.query('SELECT * FROM tasks where taskId = ?', [taskId]);
+        if (taskExists.length === 0) {
+            console.warn(`ask ID ${taskId} not found in database.`);
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const [result] = await db.query(
+            `UPDATE tasks SET taskStatus = ? WHERE taskId = ?`,
+            ['Cancelled', taskId]
+        );
+
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: `Task ${taskId} cancalled successfully` });
+        } else {
+            res.status(404).json({ error: 'Task not found' });
+        }
+        
     } catch (err) {
         console.error('Error canceling task:', err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: err.sqlMessage || 'Internal server error' });
     }
-});
+})
 
 // Edit Tasks
 app.put('/api/tasks/:taskId', server.is_authenticated, async (req, res) => {

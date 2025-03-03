@@ -371,43 +371,21 @@ export const task = {
             const convertToNull = (value) => (value === '' ? null : value);
             const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
             // const formatDate = (date) => (date === null ? "--" : date); 
-    
-            // async function get_or_insert(table, column, value) {
-            //     if (!value) return null;
-    
-            //     // Check if value exists
-            //     const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
-            //     if (existing.length) return existing[0].id;
-    
-            //     // Insert new value and return ID
-            //     const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
-            //     return result.insertId; // return the id of newly created value
-            // }
 
+            // Normalize values in req.body
             const validatedFields = Object.fromEntries(
-                await Promise.all(Object.entries(req.body).map(async ([key, value]) => {
-                    if (key.toLowerCase().includes('date')) return [key, isValidDate(value)];
-                    
-                    // Convert names to IDs for relevant fields
-                    // if (key === "taskType") value = await get_or_insert('task_types', 'name', value);
-                    // if (key === "itInCharge") value = await get_or_insert('it_in_charge', 'name', value);
-                    // if (key === "department") value = await get_or_insert('departments', 'name', value);
-                    // if (key === "itemName") value = await get_or_insert('items', 'name', value);
-                    // if (key === "deviceName") value = await get_or_insert('devices', 'name', value);
-                    // if (key === "applicationName") value = await get_or_insert('applications', 'name', value);
-                    if (key === "severity") value = parseInt(value, 10);
-    
-                    return [key, convertToNull(value)];
-                }))
+                Object.entries(req.body).map(([key, value]) => [
+                    key, key.toLowerCase().includes('date') 
+                    ? isValidDate(value) : convertToNull(value)
+                ])
             );
 
-    
             const [existingTasks] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
-    
+
             if (existingTasks.length === 0) {
                 return res.status(404).json({ error: 'Task not found' });
             }
-    
+
             // Check if the information being updated has new information
             const existingTask = existingTasks[0];
             const newTasks = Object.fromEntries(
@@ -417,18 +395,21 @@ export const task = {
                         : convertToNull(value)
                 ])
             );
-    
+
             const hasChanged = Object.entries(validatedFields).some(([key, newValue]) => {
                 return newTasks[key] !== newValue;
             });
-    
-    
+
+            console.log(existingTask);
+            console.log(newTasks);
+            console.log(hasChanged);
+
             if (!hasChanged) {
                 return res.json({ success: false, message: 'No changes detected, task not updated.' });
             }
-    
+
             const updatedFields = [...Object.values(validatedFields), taskId];
-    
+
             const [result] = await db.query(`
                 UPDATE tasks SET 
                     taskDate = ?, taskStatus = ?, severity = ?, taskType = ?, 
@@ -437,7 +418,7 @@ export const task = {
                     applicationName = ?, dateReq = ?, dateRec = ?, dateStart = ?, dateFin = ?, problemDetails = ?, remarks = ?
                 WHERE taskId = ?
             `, updatedFields);
-    
+
             if (result.affectedRows > 0) {
                 res.json({ success: true, message: 'Task updated successfully' });
             } else {
