@@ -11,12 +11,12 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="taskType">Task Type<span class="required"> *</span></label>
-                            <select id="taskType" class="dropdown" required>
+                            <!-- <select id="taskType" class="dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Task Type</option>
-                            </select>
-                            <!-- <input type="text" id="taskType" placeholder="Enter Task Type" required> -->
+                            </select> -->
+                            <input type="text" id="taskType" placeholder="Enter Task Type" required>
                         </div>
-                        <button type="button" id="taskTypeBtn" class="look-btn" onclick="openPopup('taskTypeAdd')" aria-label="Open Task Type Table">
+                        <button type="button" id="taskTypeBtn" class="look-btn" aria-label="Open Task Type Table">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </div>
@@ -29,11 +29,12 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="requestedBy">Requested by<span class="required"> *</span></label>
-                            <select id="requestedBy" class = "dropdown">
+                            <input type="text" id="requestedBy" placeholder="Enter Requested By" required>
+                            <!-- <select id="requestedBy" class = "dropdown">
                                 <option value="" class="option-values" disabled selected>Select Requested by</option>
-                            </select>
+                            </select> -->
                         </div>
-                        <button type="button" id="requestedByBtn" class="look-btn" onclick="openPopup('requestedByAdd')" aria-label="Open Requested By Table">
+                        <button type="button" id="requestedByBtn" class="look-btn"  aria-label="Open Requested By Table">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </div>
@@ -41,11 +42,12 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="approvedBy">Approved by</label>
-                            <select id="approvedBy" class = "dropdown">
+                            <input type="text" id="approvedBy" placeholder="Enter Approved By">
+                            <!-- <select id="approvedBy" class = "dropdown">
                                 <option value="" class="option-values" disabled selected>Select Approved by</option>
-                            </select>
+                            </select> -->
                         </div>
-                        <button type="button" id="approvedByBtn" class="look-btn" onclick="openPopup('approvedByAdd')" aria-label="Open Approved By Table">
+                        <button type="button" id="approvedByBtn" class="look-btn" aria-label="Open Approved By Table">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </div>
@@ -53,13 +55,14 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="department">Department<span class="required"> *</span></label>
-                            <select id="department" class = "dropdown" required>
+                            <input type="text" id="department" placeholder="Enter Department Name">
+                            <!-- <select id="department" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Department</option>
                                 <option value="Marketing">Marketing</option>
                                 <option value="Executive">Executive</option>
                                 <option value="Warehouse">Warehouse</option>
                                 <option value="IT">IT</option>
-                            </select>
+                            </select> -->
                         </div>
                         <button type="button" id="dprtBtn" class="look-btn" aria-label="Open Department Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -72,12 +75,13 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="itInCharge">IT in Charge<span class="required"> *</span></label>
-                            <select id="itInCharge" class="dropdown" required>
+                            <input type="text" id="itInCharge" placeholder="Enter It In Charge" required>
+                            <!-- <select id="itInCharge" class="dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select IT in Charge</option>
                                 <option value="Weng Castrillon">Weng Castrillon</option>
                                 <option value="Anne Ranay">Anne Ranay</option>
                                 <option value="Julius Jara">Julius Jara</option>
-                            </select>  
+                            </select>   -->
                         </div>         
                         <button type="button" id="itChargeBtn" class="look-btn" aria-label="Open It in Charge Table"><i class="fa-solid fa-magnifying-glass"></i></button>                         
                     </div>
@@ -85,10 +89,10 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="deviceName">Device Name</label>
-                            <select id="deviceName" class = "dropdown" required>
+                            <!-- <select id="deviceName" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Device Name</option>
-                            </select>
-                            <!-- <input type="text" id="deviceName" placeholder="Enter Device Name"> -->
+                            </select> -->
+                            <input type="text" id="deviceName" placeholder="Enter Device Name">
                         </div>
                         <button type="button" id="deviceBtn" class="look-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -96,10 +100,10 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="itemName">Item Name</label>
-                            <select id="itemName" class = "dropdown" required>
+                            <!-- <select id="itemName" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Item Name</option>
-                            </select>
-                            <!-- <input type="text" id="itemName" placeholder="Enter Item Name"> -->
+                            </select> -->
+                            <input type="text" id="itemName" placeholder="Enter Item Name">
                         </div>
                         <button type="button" id="itemBtn" class="look-btn" aria-label="Open Item Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -107,10 +111,10 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="applicationName">Application Name</label>
-                            <select id="applicationName" class = "dropdown" required>
+                            <!-- <select id="applicationName" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Application Name</option>
-                            </select>
-                            <!-- <input type="text" id="applicationName" placeholder="Enter Application Name"> -->
+                            </select> -->
+                            <input type="text" id="applicationName" placeholder="Enter Application Name">
                         </div>
                         <button type="button" id="appBtn" class="look-btn" aria-label="Open Application Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -212,7 +216,7 @@
                             <th>Description</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id = "taskTypeTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>
@@ -245,7 +249,7 @@
                             <th>Contact No.</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id = "requestTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>
@@ -277,7 +281,7 @@
                             <th>Department</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id = "approveTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>
@@ -307,7 +311,7 @@
                             <th>Device Name</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id = "deviceTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>
@@ -337,7 +341,7 @@
                             <th>Item Name</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id = "itemTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>
@@ -368,7 +372,7 @@
                             <th>Department No.</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id = "deptTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>
@@ -398,7 +402,7 @@
                             <th>Employee</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="itTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>
@@ -428,7 +432,7 @@
                             <th>Application Name</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id= "appTable">
                         <!-- Table rows will be populated dynamically -->
                     </tbody>
                 </table>

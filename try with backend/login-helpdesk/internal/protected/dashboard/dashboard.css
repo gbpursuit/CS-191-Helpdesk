@@ -1222,9 +1222,25 @@ input[type="date"] {
 }
 
 .col-two tbody tr:hover {
-    filter: brightness(110%);
+    cursor: pointer;
+    background-color: var(--v1-gray);
+    color: var(--another-green);
+    font-weight: bold;
+    box-shadow: 0px 0px 3px rgba(4, 66, 4, 0.5);
+    /* filter: brightness(110%); */
 }
 
+.highlight {
+    background-color: var(--dark-green2); 
+    filter: contrast(90%);
+    color: var(--white);
+    font-weight: bold;
+}
+
+.highlight:hover {
+    color: var(--white) !important;
+    background-color: var(--another-green) !important;
+}
 
 /* ======================== Submitted Task Modal ========================== */  
 

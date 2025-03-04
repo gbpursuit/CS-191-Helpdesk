@@ -273,11 +273,11 @@ export const task = {
                 tasks.taskDescription,
                 tasks.problemDetails,
                 tasks.remarks,
-                it_in_charge.name AS itInCharge,
+                itInCharge.full_name AS itInCharge,
                 departments.name AS department, 
                 tasks.departmentNo,
-                tasks.requestedBy,
-                tasks.approvedBy,
+                requestedUser.full_name AS requestedBy,  
+                approvedUser.full_name AS approvedBy,    
                 items.name AS itemName, 
                 devices.name AS deviceName, 
                 applications.name AS applicationName, 
@@ -287,8 +287,10 @@ export const task = {
                 tasks.dateFin
             FROM tasks
             LEFT JOIN task_types ON tasks.taskType = task_types.id
-            LEFT JOIN it_in_charge ON tasks.itInCharge = it_in_charge.id
+            LEFT JOIN users AS itInCharge ON tasks.itInCharge = itInCharge.username
             LEFT JOIN departments ON tasks.department = departments.id
+            LEFT JOIN users AS requestedUser ON tasks.requestedBy = requestedUser.username
+            LEFT JOIN users AS approvedUser ON tasks.approvedBy = approvedUser.username
             LEFT JOIN items ON tasks.itemName = items.id
             LEFT JOIN devices ON tasks.deviceName = devices.id
             LEFT JOIN applications ON tasks.applicationName = applications.id
@@ -366,26 +368,49 @@ export const task = {
     update_task: async function(db, req, res) {
         try {
             const taskId = req.params.taskId;
-    
+
             // Convert empty values to NULL
             const convertToNull = (value) => (value === '' ? null : value);
             const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
-            // const formatDate = (date) => (date === null ? "--" : date); 
 
-            // Normalize values in req.body
+            async function get_or_insert(table, column, value) {
+                if (!value) return null;  
+            
+                const lookupColumn = column === 'full_name' ? 'username' : 'id'; 
+            
+                // Check if value exists
+                const [existing] = await db.query(`SELECT ${lookupColumn} FROM ${table} WHERE ${column} = ?`, [value]);
+                if (existing.length) return existing[0][lookupColumn];
+            
+                const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
+                return result.insertId; 
+            }
+
             const validatedFields = Object.fromEntries(
-                Object.entries(req.body).map(([key, value]) => [
-                    key, key.toLowerCase().includes('date') 
-                    ? isValidDate(value) : convertToNull(value)
-                ])
+                await Promise.all(Object.entries(req.body).map(async ([key, value]) => {
+                    if (key.toLowerCase().includes('date')) return [key, isValidDate(value)];
+    
+                    // Convert names to IDs for relevant fields
+                    if (key === "taskType") value = await get_or_insert('task_types', 'name', value);
+                    if (key === "itInCharge") value = await get_or_insert('users', 'full_name', value);
+                    if (key === "requestedBy") value = await get_or_insert('users', 'full_name', value);
+                    if (key === "approvedBy") value = await get_or_insert('users', 'full_name', value);
+                    if (key === "department") value = await get_or_insert('departments', 'name', value);
+                    if (key === "itemName") value = await get_or_insert('items', 'name', value);
+                    if (key === "deviceName") value = await get_or_insert('devices', 'name', value);
+                    if (key === "applicationName") value = await get_or_insert('applications', 'name', value);
+                    if (key === "severity") value = parseInt(value, 10);
+    
+                    return [key, convertToNull(value)];
+                }))
             );
-
+    
             const [existingTasks] = await db.query('SELECT * FROM tasks WHERE taskId = ?', [taskId]);
-
+    
             if (existingTasks.length === 0) {
                 return res.status(404).json({ error: 'Task not found' });
             }
-
+    
             // Check if the information being updated has new information
             const existingTask = existingTasks[0];
             const newTasks = Object.fromEntries(
@@ -395,21 +420,20 @@ export const task = {
                         : convertToNull(value)
                 ])
             );
-
+    
             const hasChanged = Object.entries(validatedFields).some(([key, newValue]) => {
                 return newTasks[key] !== newValue;
-            });
-
-            console.log(existingTask);
+            });    
+    
+            console.log(validatedFields);
             console.log(newTasks);
-            console.log(hasChanged);
 
             if (!hasChanged) {
                 return res.json({ success: false, message: 'No changes detected, task not updated.' });
             }
-
+    
             const updatedFields = [...Object.values(validatedFields), taskId];
-
+    
             const [result] = await db.query(`
                 UPDATE tasks SET 
                     taskDate = ?, taskStatus = ?, severity = ?, taskType = ?, 
@@ -418,7 +442,7 @@ export const task = {
                     applicationName = ?, dateReq = ?, dateRec = ?, dateStart = ?, dateFin = ?, problemDetails = ?, remarks = ?
                 WHERE taskId = ?
             `, updatedFields);
-
+    
             if (result.affectedRows > 0) {
                 res.json({ success: true, message: 'Task updated successfully' });
             } else {
@@ -544,14 +568,28 @@ export const task = {
 
     get_reference_table: async function(db, req, res, tableName) {
         try {
-            const validTables = ['task_types', 'it_in_charge', 'departments', 'items', 'devices', 'applications'];
-        
+            const validTables = ['task_types', 'it_in_charge', 'departments', 'items', 'devices', 'applications', 'users'];
+
             if (!validTables.includes(tableName)) {
                 return res.status(400).json({ error: 'Invalid reference table' });
             }
-    
-            const [rows] = await db.query(`SELECT * FROM ??`, [tableName]); 
+            
+            let rows;
+            
+            if (tableName === 'departments') {
+                [rows] = await db.query(`SELECT * FROM departments WHERE id != 1`);
+            } else if (tableName === 'users') {
+                [rows] = await db.query(`
+                    SELECT users.username, users.full_name, departments.name AS dep_name, departments.department_no AS dep_no
+                    FROM users 
+                    LEFT JOIN departments ON users.department = departments.id
+                `);
+            } else {
+                [rows] = await db.query(`SELECT * FROM ??`, [tableName]);
+            }
+            
             res.json(rows);
+            
 
         } catch(err) {
             console.error('Error fetching referenced table:', err);

@@ -203,51 +203,100 @@ async function create_new_tables(pool) {
 
 async function alter_and_add(pool) {
     try {
-
-        console.log('Dropping existing tasks table');
-        await pool.query(`DROP TABLE IF EXISTS tasks`);
-
-        console.log('Recreating tasks table with updated structure...');
+        console.log('Adding new generated full_name column in users...');
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS tasks (
-                id INT NOT NULL AUTO_INCREMENT,
-                taskId VARCHAR(10) NOT NULL UNIQUE,
-                taskDate DATE DEFAULT NULL,
-                taskStatus VARCHAR(50) DEFAULT NULL,
-                severity TINYINT NOT NULL CHECK (severity BETWEEN 1 AND 5),
-                taskType INT DEFAULT NULL,
-                taskDescription TEXT,
-                itInCharge INT DEFAULT NULL,
-                department INT DEFAULT NULL,
-                departmentNo VARCHAR(50) DEFAULT NULL,
-                requestedBy VARCHAR(100) DEFAULT NULL,
-                approvedBy VARCHAR(100) DEFAULT NULL,
-                itemName INT DEFAULT NULL,
-                deviceName INT DEFAULT NULL,
-                applicationName INT DEFAULT NULL,
-                dateReq DATE DEFAULT NULL,
-                dateRec DATE DEFAULT NULL,
-                dateStart DATE DEFAULT NULL,
-                dateFin DATE DEFAULT NULL,
-                problemDetails TEXT,
-                remarks TEXT,
-                PRIMARY KEY (id),
-                FOREIGN KEY (taskType) REFERENCES task_types(id),
-                FOREIGN KEY (itInCharge) REFERENCES it_in_charge(id),
-                FOREIGN KEY (department) REFERENCES departments(id),
-                FOREIGN KEY (itemName) REFERENCES items(id),
-                FOREIGN KEY (deviceName) REFERENCES devices(id),
-                FOREIGN KEY (applicationName) REFERENCES applications(id)
-            );
+            ALTER TABLE users 
+            ADD COLUMN full_name VARCHAR(200) 
+            GENERATED ALWAYS AS (
+                TRIM(CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')))
+            ) STORED AFTER last_name;
         `);
 
-        console.log('Tasks table recreated successfully.');
-        console.log('You can check MySQL for the newly updated database layout.');
-        
+        console.log('Dropping foreign key constraints on tasks...');
+        await pool.query(`ALTER TABLE tasks DROP FOREIGN KEY tasks_ibfk_2;`);
+
+        console.log('Truncating tasks table...');
+        await pool.query(`TRUNCATE TABLE tasks;`);
+
+        console.log('Modifying itInCharge column and adding foreign key to users...');
+        await pool.query(`
+            ALTER TABLE tasks
+            MODIFY COLUMN itInCharge VARCHAR(100) NULL,
+            ADD CONSTRAINT fk_it_in_users 
+            FOREIGN KEY (itInCharge) REFERENCES users(username) ON DELETE SET NULL;
+        `);
+
+        console.log('Modifying requestedBy column and adding foreign key to users...');
+        await pool.query(`
+            ALTER TABLE tasks
+            MODIFY COLUMN requestedBy VARCHAR(100) NULL,
+            ADD CONSTRAINT fk_requested_by 
+            FOREIGN KEY (requestedBy) REFERENCES users(username) ON DELETE SET NULL;
+        `);
+
+        console.log('Modifying approvedBy column and adding foreign key to users...');
+        await pool.query(`
+            ALTER TABLE tasks
+            MODIFY COLUMN approvedBy VARCHAR(100) NULL,
+            ADD CONSTRAINT fk_approved_by 
+            FOREIGN KEY (approvedBy) REFERENCES users(username) ON DELETE SET NULL;
+        `);
+
+        console.log('Database modifications completed successfully.');
+        console.log('You can check MySQL for the updated table structure.');
+
     } catch (err) {
-        console.error('Error modifying tasks table: ', err);
+        console.error('Error modifying database schema: ', err);
     }
 }
+
+// async function alter_and_add(pool) {
+//     try {
+
+//         console.log('Dropping existing tasks table');
+//         await pool.query(`DROP TABLE IF EXISTS tasks`);
+
+//         console.log('Recreating tasks table with updated structure...');
+//         await pool.query(`
+//             CREATE TABLE IF NOT EXISTS tasks (
+//                 id INT NOT NULL AUTO_INCREMENT,
+//                 taskId VARCHAR(10) NOT NULL UNIQUE,
+//                 taskDate DATE DEFAULT NULL,
+//                 taskStatus VARCHAR(50) DEFAULT NULL,
+//                 severity TINYINT NOT NULL CHECK (severity BETWEEN 1 AND 5),
+//                 taskType INT DEFAULT NULL,
+//                 taskDescription TEXT,
+//                 itInCharge INT DEFAULT NULL,
+//                 department INT DEFAULT NULL,
+//                 departmentNo VARCHAR(50) DEFAULT NULL,
+//                 requestedBy VARCHAR(100) DEFAULT NULL,
+//                 approvedBy VARCHAR(100) DEFAULT NULL,
+//                 itemName INT DEFAULT NULL,
+//                 deviceName INT DEFAULT NULL,
+//                 applicationName INT DEFAULT NULL,
+//                 dateReq DATE DEFAULT NULL,
+//                 dateRec DATE DEFAULT NULL,
+//                 dateStart DATE DEFAULT NULL,
+//                 dateFin DATE DEFAULT NULL,
+//                 problemDetails TEXT,
+//                 remarks TEXT,
+//                 PRIMARY KEY (id),
+//                 FOREIGN KEY (taskType) REFERENCES task_types(id),
+//                 FOREIGN KEY (itInCharge) REFERENCES it_in_charge(id),
+//                 FOREIGN KEY (department) REFERENCES departments(id),
+//                 FOREIGN KEY (itemName) REFERENCES items(id),
+//                 FOREIGN KEY (deviceName) REFERENCES devices(id),
+//                 FOREIGN KEY (applicationName) REFERENCES applications(id)
+//             );
+//         `);
+
+//         console.log('Tasks table recreated successfully.');
+//         console.log('You can check MySQL for the newly updated database layout.');
+        
+//     } catch (err) {
+//         console.error('Error modifying tasks table: ', err);
+//     }
+// }
 
 let pool;
 

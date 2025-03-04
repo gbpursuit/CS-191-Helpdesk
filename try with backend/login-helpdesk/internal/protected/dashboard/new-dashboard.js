@@ -23,12 +23,11 @@ document.addEventListener("DOMContentLoaded", async function() {
         document.querySelectorAll(".look-btn").forEach(button => {
             button.addEventListener("click", function () {
                 const buttonId = this.id;
-                console.log(`Button clicked: ${buttonId}`);
         
                 switch (buttonId) {
                     case "taskBtn":
                     case "editTaskBtn":
-                        btn.open_table("taskBtn");
+                        btn.open_table("taskTypeAdd");
                         break;
                     case "dprtBtn":
                     case "editDprtBtn":
@@ -64,7 +63,6 @@ document.addEventListener("DOMContentLoaded", async function() {
                 }
             });
         });
-        
     
         // Layout Functions
         layout.list_navigation();
@@ -84,17 +82,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         period.setup_updates();
 
         // Fetch Functions
-        Object.values(fetch_data).forEach(fn => {
-            fn();      
-            fn(true);  
-        });
-        // await fetch_data.task_datalist();
-        // await fetch_data.dept_datalist();
-        // await fetch_data.it_datalist();
-        // await fetch_data.device_datalist();
-        // await fetch_data.item_datalist();
-        // await fetch_data.app_datalist();
-    
+
         // Util Functions
         util.window_listeners();
         await util.session_ends();
@@ -528,11 +516,12 @@ const add = {
 
         const editTaskButton = document.getElementById('editTaskButton');
         editTaskButton.onclick = async () => {
+            Object.values(fetch_data).forEach(fn => {
+                fn(true);      
+            });
             taskInfoModal.style.display = 'none';
-            console.log(taskData);
             await update.open_edit_modal(taskData);
         };
-        // console.log("Editing Task Data:", taskData);
     },
 
     modal_handling: function() {
@@ -544,11 +533,29 @@ const add = {
         const pop = document.querySelector('.notification-popup');
         const currentDate = new Date().toISOString().split('T')[0];
 
-      
-        window.openModal = function () {
-            taskModal.style.display = "flex";
-            document.getElementById('taskDate').value = currentDate;
-            document.getElementById('taskId').value = util.generate_unique_id();
+        window.openModal = async function (event) {
+            try {
+
+                Object.values(fetch_data).forEach(fn => {
+                    fn();      
+                });
+
+                const select = document.getElementById('itInCharge');
+                const newResponse = await fetch('/api/session-user');
+                const newData = await newResponse.json();
+
+                if (newData.fullName) {
+                    select.value = newData.fullName;
+                    select.setAttribute("data-id", newData.username);
+                }
+
+                taskModal.style.display = "flex";
+                document.getElementById('taskDate').value = currentDate;
+                document.getElementById('taskId').value = util.generate_unique_id();
+
+            } catch(err) {
+                console.error("Error fetching session user:", err);
+            }
         };
 
         const statusField = document.getElementById("new-task");
@@ -607,6 +614,39 @@ const add = {
         }
     }
 }
+
+// const mini_table = {
+//     it_modal: function() {
+//         const taskTypeBtn = document.getElementById('taskTypeBtn');
+
+//         taskTypeBtn.addEventListener("click", async (event) => {
+//             event.preventDefault();
+
+//             try {
+//                 const response = await fetch('/api/ref-table/task_types');
+//                 const data = await response.json();
+
+                
+            
+
+//             } catch(err) {
+//                 console.error("Error fetching data:", err);
+//             }
+
+
+//         } )
+//     },
+
+//     load_small_modal: async function(value) {
+//         try {
+//             console.e
+
+
+//         } catch (err) {
+//             console.error("Error loading data", err);
+//         }
+//     }
+// }
 
 // Database Logic -- Cancel / Delete
 const cancel = {
@@ -693,17 +733,8 @@ const update = {
         const editModal = document.getElementById('taskEditModal');
         const editTaskForm = document.getElementById('editTaskForm');
     
-        await Promise.all([
-            fetch_data.task_datalist(true),
-            fetch_data.dept_datalist(true),
-            fetch_data.it_datalist(true),
-            fetch_data.device_datalist(true),
-            fetch_data.item_datalist(true),
-            fetch_data.app_datalist(true)
-        ]);
-
         // Define task fields mapping
-        const taskFields = {
+        const editTaskFields = {
             taskId: "editTaskId", taskStatus: "editTaskStatus", taskDate: "editTaskDate",
             itInCharge: "editItInCharge", department: "editDepartment", departmentNo: "editDepartmentNo",
             taskType: "editTaskType", taskDescription: "editTaskDescription", severity: "editSeverity",
@@ -712,18 +743,17 @@ const update = {
             dateRec: "editDateRec", dateStart: "editDateStart", dateFin: "editDateFin", problemDetails: "editProblemDetails", remarks: "editRemarks"
         };
     
-        util.populate_form_fields(taskFields, taskData);
+        const taskFields = {
+            taskId: "taskId", taskStatus: "taskStatus", taskDate: "taskDate",
+            itInCharge: "itInCharge", department: "department", departmentNo: "departmentNo",
+            taskType: "taskType", taskDescription: "taskDescription", severity: "severity",
+            requestedBy: "requestedBy", approvedBy: "approvedBy", itemName: "itemName",
+            deviceName: "deviceName", applicationName: "applicationName", dateReq: "dateReq",
+            dateRec: "dateRec", dateStart: "dateStart", dateFin: "dateFin", problemDetails: "problemDetails", remarks: "remarks"
+        };
 
-            // console.log('after util populate')
-        // console.log('From open edit modal:', taskFields);
-        // console.log('From open edit modal:', taskData);
-
-            
+        util.populate_form_fields(editTaskFields, taskData, taskFields);            
         update.setup_status_logic(taskData);
-        // console.log('after update setup status logic');
-        // console.log('From open edit modal:', taskData);
-
-
     
         editTaskForm.onsubmit = async (event) => {
             event.preventDefault();
@@ -738,15 +768,12 @@ const update = {
         const dateFinField = document.getElementById("editDateFin");
         const dateStartField = document.getElementById("editDateStart");
     
-        // Ensure the "New" status changes to "Pending" when opening the modal
         const selectedStatus = taskData.taskStatus === "New" ? "Pending" : taskData.taskStatus;
     
-        // Enable all options first, then disable the selected one
         Array.from(statusField.options).forEach(option => option.disabled = false);
         const selectedOption = statusField.querySelector(`option[value="${selectedStatus}"]`);
         if (selectedOption) selectedOption.disabled = true;
     
-        // Auto-fill Date Finished or Date Started when status changes
         statusField.addEventListener("change", function () {
             const currentDate = new Date().toISOString().split('T')[0];
     
@@ -780,9 +807,7 @@ const update = {
             problemDetails: util.get_field_value("editProblemDetails"),
             remarks: util.get_field_value("editRemarks"),
         };
-        // console.log(document.getElementById("editDepartmentNo").value);
 
-        // Ensure "New" changes to "Pending" before submitting
         if (formData.taskStatus === "New") {
             formData.taskStatus = "Pending";
         }
@@ -930,103 +955,274 @@ const load = {
 
 const fetch_data = {
     task_datalist: async function(isEdit = false) {
-        const response = await fetch('/api/ref-table/task_types');
-        const data = await response.json();
-
-        const select = isEdit ? document.getElementById('editTaskType') : document.getElementById('taskType');
-        select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
+        try {
+            const response = await fetch('/api/ref-table/task_types');
+            const data = await response.json();
     
-        data.forEach(task => {
-            const option = document.createElement("option");
-            option.value = task.id;
-            option.textContent = task.name;
-            select.appendChild(option);
-        });
+            const container = document.getElementById('taskTypeAdd');
+            const select = isEdit ? document.getElementById('editTaskType') : document.getElementById('taskType');
+            // select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
+    
+            const body = document.getElementById("taskTypeTable");
+            body.innerHTML = "";
+    
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${val.name}</td>
+                    <td>${val.description}</td>
+                `;
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.name;
+                    select.setAttribute("data-id", val.id);
+                    container.style.display = 'none';
+                })
+                body.appendChild(row);
+            });
+
+        } catch (err) {
+            console.error("Error loading task data:", err);
+        }
     },
 
-    dept_datalist: async function(isEdit = false) {
-        const response = await fetch('/api/ref-table/departments');
-        const data = await response.json();
-
-        const select = isEdit ? document.getElementById('editDepartment') : document.getElementById('department');
-        const departmentNo = isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo');
-
-        select.innerHTML = `<option selected disabled>Select Department</option>`; 
+    request_datalist: async function(isEdit = false) {
+        try {
+            const response = await fetch('/api/ref-table/users');
+            const data = await response.json();
     
-        data.forEach(dept => {
-            const option = document.createElement("option");
-            option.value = dept.id;
-            option.textContent = dept.name;
-            option.setAttribute("dept-no", dept.department_no);
-            select.appendChild(option);
-        });
+            const container = document.getElementById('requestedByAdd');
+            const select = isEdit ? document.getElementById('editRequestedBy') : document.getElementById('requestedBy');
+            // select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
+    
+            const body = document.getElementById("requestTable");
+            body.innerHTML = "";
+    
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${val.full_name}</td>
+                    <td>${val.dep_name}</td>
+                    <td>${val.dep_no}</td>
+                `;
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.full_name;
+                    select.setAttribute("data-id", val.username);
+                    container.style.display = 'none';
+                })
+                body.appendChild(row);
+            });
 
-        // Automatically update departmentNo input when selecting a department
-        select.addEventListener("change", function() {
-            const selectedOption = select.options[select.selectedIndex]; 
-            const deptNo = selectedOption.getAttribute("dept-no"); 
-            departmentNo.value = deptNo || ""; 
-        });
+        } catch (err) {
+            console.error("Error loading task data:", err);
+        }
+    },
+
+    approve_datalist: async function(isEdit = false) {
+        try {
+            const response = await fetch('/api/ref-table/users');
+            const data = await response.json();
+    
+            const container = document.getElementById('approvedByAdd');
+            const select = isEdit ? document.getElementById('editApprovedBy') : document.getElementById('approvedBy');
+            // select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
+    
+            const body = document.getElementById("approveTable");
+            body.innerHTML = "";
+    
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${val.full_name}</td>
+                    <td>${val.dep_name}</td>
+                `;
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.full_name;
+                    select.setAttribute("data-id", val.username);
+                    container.style.display = 'none';
+                })
+                body.appendChild(row);
+            });
+
+        } catch (err) {
+            console.error("Error loading task data:", err);
+        }
+    },
+            // data.forEach(dept => {
+        //     const option = document.createElement("option");
+        //     option.value = dept.id;
+        //     option.textContent = dept.name;
+        //     option.setAttribute("dept-no", dept.department_no);
+        //     select.appendChild(option);
+        // });
+
+        // // Automatically update departmentNo input when selecting a department
+        // select.addEventListener("change", function() {
+        //     const selectedOption = select.options[select.selectedIndex]; 
+        //     const deptNo = selectedOption.getAttribute("dept-no"); 
+        //     departmentNo.value = deptNo || ""; 
+        // });
+    
+    dept_datalist: async function(isEdit = false) {
+        try {
+            const response = await fetch('/api/ref-table/departments');
+            const data = await response.json();
+    
+            const container = document.getElementById('departmentAdd');
+            const select = isEdit ? document.getElementById('editDepartment') : document.getElementById('department');
+            const departmentNo = isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo');
+            // select.innerHTML = `<option selected disabled>Select Department</option>`;    
+            
+            const body = document.getElementById("deptTable");
+            body.innerHTML = "";
+    
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${val.name}</td>
+                    <td>${val.department_no}</td>
+                `;
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.name;
+                    select.setAttribute("data-id", val.id);
+
+                    // document.querySelectorAll("#itTable tr").forEach(tr => tr.classList.remove("highlight"));
+                    // row.classList.add("highlight");
+                    
+                    departmentNo.value = val.department_no;
+                    container.style.display = 'none';
+                })
+                body.appendChild(row);
+            });
+            
+        } catch(err) {
+            console.error("Error loading dept data:", err);
+        }
     },
 
     it_datalist: async function(isEdit = false) {
-        const response = await fetch('/api/ref-table/it_in_charge');
-        const data = await response.json();   
-
-        const select = isEdit ? document.getElementById('editItInCharge') : document.getElementById('itInCharge');
-        select.innerHTML = `<option selected disabled>Select IT in Charge</option>`; 
+        try {
+            const response = await fetch('/api/ref-table/users');
+            const data = await response.json();   
     
-        data.forEach(it => {
-            const option = document.createElement("option");
-            option.value = it.id;
-            option.textContent = it.name;
-            select.appendChild(option);
-        });
+            const container = document.getElementById('itAdd');
+            const select = isEdit ? document.getElementById('editItInCharge') : document.getElementById('itInCharge');
+    
+            const body = document.getElementById("itTable");
+            body.innerHTML = "";
+       
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `<td>${val.full_name}</td>`;
+    
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.full_name; 
+                    select.setAttribute("data-id", val.username);
+                    container.style.display = 'none';
+                });
+    
+                body.appendChild(row);
+            });
+            
+    
+        } catch (err) {
+            console.error("Error loading IT data:", err);
+        }
     },
+    
 
     device_datalist: async function(isEdit = false) {
-        const response = await fetch('/api/ref-table/devices');
-        const data = await response.json();
+        try {
+            const response = await fetch('/api/ref-table/devices');
+            const data = await response.json();
 
-        const select = isEdit ? document.getElementById('editDeviceName') : document.getElementById('deviceName');
-        select.innerHTML = `<option selected disabled>Select Device</option>`; 
+            const container = document.getElementById('deviceAdd');
+            const select = isEdit ? document.getElementById('editDeviceName') : document.getElementById('deviceName');
+
+            const body = document.getElementById("deviceTable");
+            body.innerHTML = "";
     
-        data.forEach(device => {
-            const option = document.createElement("option");
-            option.value = device.id;
-            option.textContent = device.name;
-            select.appendChild(option);
-        });
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${val.name}</td>
+                `;
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.name;
+                    select.setAttribute("data-id", val.id);
+                    container.style.display = 'none';
+                })
+                body.appendChild(row);
+            });
+
+        } catch(err) {
+            console.error("Error loading device data:", err);
+        }
     },
 
     item_datalist: async function(isEdit = false) {
-        const response = await fetch('/api/ref-table/items');
-        const data = await response.json();
+        try {
+            const response = await fetch('/api/ref-table/items');
+            const data = await response.json();
 
-        const select = isEdit ? document.getElementById('editItemName') : document.getElementById('itemName');
-        select.innerHTML = `<option selected disabled>Select Item</option>`; 
+            const container = document.getElementById('itemAdd');
+            const select = isEdit ? document.getElementById('editItemName') : document.getElementById('itemName');
+
+            const body = document.getElementById("itemTable");
+            body.innerHTML = "";
     
-        data.forEach(item => {
-            const option = document.createElement("option");
-            option.value = item.id;
-            option.textContent = item.name;
-            select.appendChild(option);
-        });
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${val.name}</td>
+                `;
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.name;
+                    select.setAttribute("data-id", val.id);
+                    container.style.display = 'none';
+                })
+                body.appendChild(row);
+            });
+
+        } catch(err) {
+            console.error("Error loading item data:", err);
+        }
     },
 
     app_datalist: async function(isEdit = false) {
-        const response = await fetch('/api/ref-table/applications');
-        const data = await response.json();
+        try {
+            const response = await fetch('/api/ref-table/applications');
+            const data = await response.json();
+            
+            const container = document.getElementById('applicationAdd');
+            const select = isEdit ? document.getElementById('editApplicationName') : document.getElementById('applicationName');
 
-        const select = isEdit ? document.getElementById('editApplicationName') : document.getElementById('applicationName');
-        select.innerHTML = `<option selected disabled>Select Application</option>`; 
+            const body = document.getElementById("appTable");
+            body.innerHTML = "";
     
-        data.forEach(app => {
-            const option = document.createElement("option");
-            option.value = app.id;
-            option.textContent = app.name;
-            select.appendChild(option);
-        });
+            data.forEach(val => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${val.name}</td>
+                `;
+                row.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    select.value = val.name;
+                    select.setAttribute("data-id", val.id);
+                    container.style.display = 'none';
+                })
+                body.appendChild(row);
+            });
+
+        } catch(err) {
+            console.error("Error loading item data:", err);
+        }
     }
 }
 
@@ -1169,15 +1365,21 @@ const util = {
         }
     },
 
-    populate_form_fields: function(fieldMap, taskData) {
+    populate_form_fields: function(fieldMap, taskData, oldMap) {
+        console.log(taskData);
         Object.entries(fieldMap).forEach(([key, id]) => {
             const field = document.getElementById(id);
             if (!field) return;
     
             if (field.tagName === "SELECT") {
-                console.log('taskdate: ',taskData);
                 util.set_selected_option(field, taskData[key], key === "taskStatus");
-            } else {
+            } 
+            // else if (field.hasAttribute("data-select")){
+            //     const oldField = document.getElementById(oldMap[key]); 
+            //     field.value = oldField ? oldField.value : "";
+            //     console.log(oldField);
+            // } 
+            else {
                 field.value = taskData[key] || "";
             }
         });
@@ -1185,13 +1387,11 @@ const util = {
 
     set_selected_option: function(field, value, isStatusField) {
         for (let i = 0; i < field.options.length; i++) {
-            console.log(field.options[i].textContent, value)
             if (field.options[i].textContent === value) {
                 field.selectedIndex = i;
                 break;
             }
         }
-
         if (isStatusField && value === "New") {
             field.selectedIndex = [...field.options].findIndex(opt => opt.value === "Pending");
         }
@@ -1210,10 +1410,11 @@ const util = {
 
     get_field_value: function(id) {
         const field = document.getElementById(id);
-        console.log(`${id}:`, field.value);
-        if (!field) return "--";
 
-        return field.value.trim() || "--";  // Always return the value, which is now the full name
+        if (!field) return "--";
+        if (field.getAttribute("data-id") !== null) return field.getAttribute("data-id").trim();
+
+        return field.value.trim() || "--";  
     },
 
     window_listeners: function() {
