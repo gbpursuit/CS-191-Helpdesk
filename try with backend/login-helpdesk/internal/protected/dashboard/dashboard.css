@@ -539,7 +539,6 @@ label[for="check"]{
     border-radius: 5px;
     cursor: pointer;
     width: 105px;
-    /* width: 100px; */
 }
 
 .new-task-button:hover {
@@ -548,7 +547,6 @@ label[for="check"]{
 }
 
 /* No data image */
-
 .no-data {
     display: none;
     width: 100%; 
@@ -927,7 +925,8 @@ label[for="check"]{
 .edit-form-group .edit-dropdown, 
 .edit-form-group input,
 .form-group .dropdown,
-.form-group input {
+.form-group input,
+.input-group input {
     flex: 1;
     width: 100%; 
     padding: 8px;
@@ -938,13 +937,27 @@ label[for="check"]{
     background-color: var(--white); 
 }
 
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: var(--v2-dark-gray);
+}
+
 input[type="date"] {
     color-scheme: light;
 }
 
 .outside textarea::placeholder,
 .edit-form-group input::placeholder,
-.form-group input::placeholder {
+.form-group input::placeholder,
+.input-group input::placeholder {
     color: var(--text-color); 
 }
 
@@ -1076,16 +1089,16 @@ input[type="date"] {
     display: flex;
     flex-direction: column;
     background-color: var(--white);
-    width: 60%;
-    max-width: 700px;
-    max-height: 80%;
+    width: min(60%, 700px); 
+    max-height: 80vh;
+    height: fit-content; 
     padding: 15px;
     border-radius: 6px;
     box-shadow: 0 4px 8px var(--shadow);
     gap: 10px;
     overflow-y: auto;
-
 }
+
 
 .title-cont {
     position: relative;
@@ -1097,7 +1110,7 @@ input[type="date"] {
     background-color: var(--dark-green2);
     border-radius: 4px 4px 0 0;
     color: var(--white);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
 }
 
@@ -1229,7 +1242,7 @@ input[type="date"] {
     box-shadow: 0px 0px 3px rgba(4, 66, 4, 0.5);
     /* filter: brightness(110%); */
 }
-
+/* 
 .highlight {
     background-color: var(--dark-green2); 
     filter: contrast(90%);
@@ -1240,6 +1253,64 @@ input[type="date"] {
 .highlight:hover {
     color: var(--white) !important;
     background-color: var(--another-green) !important;
+} */
+
+/* ========================================= */
+
+.add-layout-content {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    width: min(50%, 600px); 
+    max-height: 80vh;
+    height: fit-content; 
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px var(--shadow);
+    gap: 10px;
+    overflow-y: auto;
+}
+
+/* .input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    font-weight: normal; 
+    margin-bottom: 5px;
+    font-size: 14px; 
+    color: var(--v2-dark-gray);
+}
+
+.input-group input {
+    padding: 6px;
+    border: 1px solid var(--v2-gray);
+    border-radius: 4px;
+    font-size: 13px; 
+} */
+
+.save-button {
+    margin: 0 auto; 
+    display: block;
+    padding: 5px 12px;
+    width: 105px;
+    height: 10%;
+    background-color: var(--dark-green2); 
+    color: var(--white);
+    border-radius: 4px; 
+    box-shadow: 0px 1px 2px var(--shadow); 
+    font-size: 14px; 
+    font-weight: bold; 
+    text-align: center; 
+    cursor: pointer;
+    border-style: none; 
+}
+
+.save-button:hover {
+    background-color: var(--hover-button);
+    color: var(--white);
 }
 
 /* ======================== Submitted Task Modal ========================== */  
@@ -1335,16 +1406,6 @@ input[type="date"] {
 .task-info-table tr:hover {
     background-color: var(--hint-green);
 }
-
-/* .close-task {
-    float: right;
-    color: var(--dark-green);
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 10;
-    position: relative;
-} */
 
 .close-task {
     float: right;

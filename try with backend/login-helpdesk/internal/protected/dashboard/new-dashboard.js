@@ -63,6 +63,12 @@ document.addEventListener("DOMContentLoaded", async function() {
                 }
             });
         });
+
+        // Modal Functions - Ensure global availability
+        window.openAddModal = openAddModal;
+        window.openEditModal = openEditModal;
+        window.deleteEntry = deleteEntry;
+        window.closeModal = closeModal;
     
         // Layout Functions
         layout.list_navigation();
@@ -1464,38 +1470,105 @@ const util = {
     }
 }
 
-// // Function to open the "Add" modal
-// const openAddModal = (modalId) => {
-//     const modal = document.getElementById(modalId);
-//     const table = modal.querySelector('table');
-//     const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText);
+
+// ================================== TASK TYPE ==================================
+// Function to open "Add" modal
+const openAddModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (!modal) return console.error(`Modal with ID '${modalId}' not found.`);
     
-//     // Remove any existing form before adding a new one
-//     const existingForm = modal.querySelector('form');
-//     if (existingForm) existingForm.remove();
+    modal.style.display = 'flex'; // Show modal
 
-//     const formHtml = headers.map(header => `
-//         <label for="${header}">${header}</label>
-//         <input type="text" id="${header}" name="${header}" required>
-//     `).join('');
+    const modalBody = modal.querySelector('.modal-body');
+    
+    // Prevent duplicate form creation
+    if (modalBody.querySelector('form')) return;
 
-//     modal.querySelector('.groups').insertAdjacentHTML('afterend', `<form>${formHtml}<button type="submit">Submit</button></form>`);
-//     modal.style.display = 'block';
-// };
+    modalBody.innerHTML = `
+        <form id="taskTypeForm">
+            <div class="input-group">
+                <label for="taskTypeName">Task Type:</label>
+                <input type="text" id="taskTypeName" name="taskTypeName" required>
+            </div>
+            <div class="input-group">
+                <label for="taskTypeDescription">Description:</label>
+                <input type="text" id="taskTypeDescription" name="taskTypeDescription" required>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="submit-btn">Save</button>
+                <button type="button" class="submit-btn" onclick="closeModal('${modalId}')">Exit</button>
+            </div>
+        </form>
+    `;
 
-// // Function to open the "Edit" modal (prefilling is not implemented here but can be added)
-// const openEditModal = (modalId) => {
-//     openAddModal(modalId); // Reuse add modal logic
-// };
+    // Handle form submission
+    document.getElementById('taskTypeForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        submitTaskType(modalId);
+    });
+};
 
-// // Function to delete a selected row
-// const deleteEntry = (modalId) => {
-//     const modal = document.getElementById(modalId);
-//     const selectedRow = modal.querySelector('table tbody tr.selected');
+// Function to open "Edit" modal
+const openEditModal = (modalId) => {
+    const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
+    if (!selectedRow) {
+        alert("Please select a row to edit.");
+        return;
+    }
 
-//     if (selectedRow) {
-//         selectedRow.remove();
-//     } else {
-//         alert('Please select a row to delete.');
-//     }
-// };
+    openAddModal(modalId);
+
+    // Populate input fields with selected row data
+    document.getElementById('taskTypeName').value = selectedRow.cells[0].textContent;
+    document.getElementById('taskTypeDescription').value = selectedRow.cells[1].textContent;
+};
+
+// Function to delete a selected row
+const deleteEntry = () => {
+    const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
+    if (selectedRow) {
+        selectedRow.remove();
+    } else {
+        alert('Please select a row to delete.');
+    }
+};
+
+// Function to close modal
+const closeModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'none';
+};
+
+// Function to submit task type and add row to table
+const submitTaskType = (modalId) => {
+    const tableBody = document.getElementById('taskTypeTable');
+    const taskTypeName = document.getElementById('taskTypeName').value.trim();
+    const taskTypeDescription = document.getElementById('taskTypeDescription').value.trim();
+
+    if (!taskTypeName || !taskTypeDescription) {
+        alert("Both fields are required.");
+        return;
+    }
+
+    // Check if editing existing row
+    const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
+    if (selectedRow) {
+        selectedRow.cells[0].textContent = taskTypeName;
+        selectedRow.cells[1].textContent = taskTypeDescription;
+        selectedRow.classList.remove('selected'); // Unselect after editing
+    } else {
+        // Add a new row
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `<td>${taskTypeName}</td><td>${taskTypeDescription}</td>`;
+        
+        // Enable row selection
+        newRow.addEventListener('click', function () {
+            document.querySelectorAll('#taskTypeTable tbody tr').forEach(row => row.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+
+        tableBody.appendChild(newRow);
+    }
+
+    closeModal(modalId);
+};

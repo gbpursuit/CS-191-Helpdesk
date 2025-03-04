@@ -21,7 +21,7 @@ USE simple_helpdesk;
 -- INSERT INTO it_in_charge (name) VALUES ('John Doe'), ('Jane Smith');
 
 -- Insert into departments
--- INSERT INTO departments (name, department_no) VALUES ('IT Department', '123'), ('HR Department', '321');
+-- INSERT INTO departments (name, department_no) VALUES ('IT', '123'), ('Marketing', '321');
 
 -- Insert into items
 -- INSERT INTO items (name) VALUES ('Monitor'), ('Keyboard');
@@ -32,6 +32,19 @@ USE simple_helpdesk;
 -- Insert into applications
 -- INSERT INTO applications (name) VALUES ('MS Office'), ('Google Chrome');
 
+-- SET FOREIGN_KEY_CHECKS = 0;
+-- DELETE FROM departments WHERE id = 1;
+-- DELETE FROM departments WHERE id = 2;
+-- SET FOREIGN_KEY_CHECKS = 1;
+
+-- SET FOREIGN_KEY_CHECKS = 0; 
+-- DELETE FROM task_types WHERE id = 24;
+-- SET FOREIGN_KEY_CHECKS = 1;
+
+-- TRUNCATE tasks;
+
+
+
 SELECT * FROM tasks ORDER BY id DESC;
 SELECT * FROM task_types;
 SELECT * FROM departments;
@@ -39,6 +52,14 @@ SELECT * FROM it_in_charge;
 SELECT * FROM items;
 SELECT * FROM devices;
 SELECT * FROM applications;
+SELECT * FROM users;
+ 
+ 
+
+-- ALTER TABLE users
+-- ADD COLUMN role VARCHAR(10) NOT NULL DEFAULT 'user',
+-- ADD COLUMN department INT DEFAULT NULL,
+-- ADD CONSTRAINT fk_department FOREIGN KEY (department) REFERENCES departments(id);
 
 -- SELECT username, first_name, last_name, `password`
 -- FROM users
