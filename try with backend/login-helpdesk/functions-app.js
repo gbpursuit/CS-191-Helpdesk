@@ -4,7 +4,7 @@ import portfinder from 'portfinder';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { sql_dump, setup_database } from './dbSetup.js';
+import { sql_dump, setup_database, restore_existing_database } from './dbSetup.js';
 import rateLimit from 'express-rate-limit'; // npm install express-rate-limit
 import validator from 'validator'; // npm install validator
 import cron from 'node-cron';
@@ -48,6 +48,7 @@ export const server = {
 
     launch_server: async function(app) {
         try {
+            await restore_existing_database();
             const db = await setup_database();
             app.locals.db = db;
     
@@ -332,13 +333,35 @@ export const task = {
             //     return result.insertId; // return the id of newly created value
             // }
     
-            // // Convert incoming text values to their corresponding IDs
-            // const taskTypeId = await get_or_insert('task_types', 'name', taskType);
-            // const itInChargeId = await get_or_insert('it_in_charge', 'name', itInCharge);
-            // const departmentId = await get_or_insert('departments', 'name', department);
-            // const itemId = await get_or_insert('items', 'name', itemName);
-            // const deviceId = await get_or_insert('devices', 'name', deviceName);
-            // const applicationId = await get_or_insert('applications', 'name', applicationName);
+            async function get_or_insert(table, column, value) {
+                if (!value) return null;
+            
+                // Check if value exists
+                if (column === 'full_name') {
+                    const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
+                    return existing.length ? existing[0].username : null;
+                }
+            
+                const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
+                if (existing.length) return existing[0].id;
+            
+                if (column === 'full_name') {
+                    throw new Error("Cannot insert into a generated column: full_name");
+                }
+            
+                const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
+                return result.insertId; 
+            }
+
+            // Convert incoming text values to their corresponding IDs
+            const taskTypeId = await get_or_insert('task_types', 'name', taskType);
+            const itInChargeId = await get_or_insert('users', 'full_name', itInCharge);
+            const requestedById = await get_or_insert('users', 'full_name', requestedBy);
+            const approvedById = await get_or_insert('users', 'full_name', approvedBy);
+            const departmentId = await get_or_insert('departments', 'name', department);
+            const itemId = await get_or_insert('items', 'name', itemName);
+            const deviceId = await get_or_insert('devices', 'name', deviceName);
+            const applicationId = await get_or_insert('applications', 'name', applicationName);
     
             const convertDate = (date) => date && date !== '--' ? date : null;
             const severityNumber = parseInt(severity, 10);
@@ -351,9 +374,9 @@ export const task = {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
                 taskId, convertDate(taskDate), taskStatus, severityNumber, 
-                taskType, taskDescription, itInCharge, department, 
-                departmentNo, requestedBy, approvedBy, itemName, 
-                deviceName, applicationName, convertDate(dateReq),
+                taskTypeId, taskDescription, itInChargeId, departmentId, 
+                departmentNo, requestedById, approvedById, itemId, 
+                deviceId, applicationId, convertDate(dateReq),
                 convertDate(dateRec), convertDate(dateStart), convertDate(dateFin), problemDetails, remarks
             ]);
     
@@ -374,16 +397,25 @@ export const task = {
             const isValidDate = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? dateString : null;
 
             async function get_or_insert(table, column, value) {
-                if (!value) return null;  
-            
-                const lookupColumn = column === 'full_name' ? 'username' : 'id'; 
+                if (!value) return null;
             
                 // Check if value exists
-                const [existing] = await db.query(`SELECT ${lookupColumn} FROM ${table} WHERE ${column} = ?`, [value]);
-                if (existing.length) return existing[0][lookupColumn];
+                if (column === 'full_name') {
+                    const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
+                    return existing.length ? existing[0].username : null;
+                }
             
+                const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
+                if (existing.length) return existing[0].id;
+            
+                // If column is full_name, we should NEVER insert it
+                if (column === 'full_name') {
+                    throw new Error("Cannot insert into a generated column: full_name");
+                }
+            
+                // Insert new value and return ID
                 const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
-                return result.insertId; 
+                return result.insertId; // return the id of newly created value
             }
 
             const validatedFields = Object.fromEntries(
@@ -425,8 +457,6 @@ export const task = {
                 return newTasks[key] !== newValue;
             });    
     
-            console.log(validatedFields);
-            console.log(newTasks);
 
             if (!hasChanged) {
                 return res.json({ success: false, message: 'No changes detected, task not updated.' });
@@ -453,36 +483,6 @@ export const task = {
             res.status(500).json({ error: err.sqlMessage || 'Internal server error' });
         }
     },
-
-    // add_task: async function (db, req, res) {
-    //     try {
-    //         const {
-    //             taskId, taskDate, taskStatus, severity, taskType, taskDescription,
-    //             itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
-    //             dateReq, dateRec, dateStart, dateFin, problemDetails, remarks
-    //         } = req.body;
-    
-    //         // Ensure dates are valid and empty strings are converted to NULL
-    //         const convertDate = (date) => date && date !== '--' ? date : null;
-    
-    //         await db.query(`
-    //             INSERT INTO tasks (taskId, taskDate, taskStatus, severity, taskType, taskDescription, itInCharge, department, departmentNo,
-    //                 requestedBy, approvedBy, itemName, deviceName, applicationName, dateReq, dateRec, dateStart, dateFin, problemDetails, remarks)
-    //             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    //         `, [
-    //             taskId, convertDate(taskDate), taskStatus,  severity, 
-    //             taskType, taskDescription, itInCharge, department, 
-    //             departmentNo, requestedBy,  approvedBy,  itemName, 
-    //             deviceName, applicationName, convertDate(dateReq),
-    //             convertDate(dateRec), convertDate(dateStart), convertDate(dateFin), problemDetails, remarks
-    //         ]);
-    
-    //         res.status(201).json({ success: true, message: 'Task saved successfully' });
-    //     } catch (err) {
-    //         console.error('Error saving task:', err);
-    //         res.status(500).json({ error: 'Internal server error' });
-    //     }
-    // },
 
     session_user: async function(db, req, res) {
         try {

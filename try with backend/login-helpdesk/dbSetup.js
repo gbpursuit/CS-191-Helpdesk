@@ -102,16 +102,26 @@ async function cleanup_old_dumps(){
     }
 }
 
-async function get_dump_file() {
-    const files = await fs.promises.readdir(BACKUP_DIR);
-    const dumpFiles = files.filter(file => file.startsWith('simple_helpdesk_dump_') && file.endsWith('.sql'));
+async function get_latest_dump_file() {
+    try {
+        const files = await fs.promises.readdir(BACKUP_DIR);
+        const dumpFiles = files
+            .filter(file => file.startsWith('simple_helpdesk_dump_') && file.endsWith('.sql'))
+            .map(file => ({
+                file,
+                time: fs.statSync(path.join(BACKUP_DIR, file)).mtime
+            }))
+            .sort((a, b) => b.time - a.time); 
 
-    if (dumpFiles.length === 0) {
-        throw new Error('No backup dump files found.');
+        if (dumpFiles.length === 0) {
+            throw new Error('No backup dump files found.');
+        }
+
+        return path.join(BACKUP_DIR, dumpFiles[0].file);
+    } catch (err) {
+        console.error('Error retrieving latest dump file:', err);
+        throw err;
     }
-
-    dumpFiles.sort((a, b) => fs.statSync(path.join(BACKUP_DIR, b)).mtime - fs.statSync(path.join(BACKUP_DIR, a)).mtime);
-    return path.join(BACKUP_DIR, dumpFiles[0]);
 }
 
 // Updated read_sql
@@ -203,47 +213,47 @@ async function create_new_tables(pool) {
 
 async function alter_and_add(pool) {
     try {
-        console.log('Adding new generated full_name column in users...');
-        await pool.query(`
-            ALTER TABLE users 
-            ADD COLUMN full_name VARCHAR(200) 
-            GENERATED ALWAYS AS (
-                TRIM(CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')))
-            ) STORED AFTER last_name;
-        `);
+        // console.log('Adding new generated full_name column in users...');
+        // await pool.query(`
+        //     ALTER TABLE users 
+        //     ADD COLUMN full_name VARCHAR(200) 
+        //     GENERATED ALWAYS AS (
+        //         TRIM(CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')))
+        //     ) STORED AFTER last_name;
+        // `);
 
-        console.log('Dropping foreign key constraints on tasks...');
-        await pool.query(`ALTER TABLE tasks DROP FOREIGN KEY tasks_ibfk_2;`);
+        // console.log('Dropping foreign key constraints on tasks...');
+        // await pool.query(`ALTER TABLE tasks DROP FOREIGN KEY tasks_ibfk_2;`);
 
-        console.log('Truncating tasks table...');
-        await pool.query(`TRUNCATE TABLE tasks;`);
+        // console.log('Truncating tasks table...');
+        // await pool.query(`TRUNCATE TABLE tasks;`);
 
-        console.log('Modifying itInCharge column and adding foreign key to users...');
-        await pool.query(`
-            ALTER TABLE tasks
-            MODIFY COLUMN itInCharge VARCHAR(100) NULL,
-            ADD CONSTRAINT fk_it_in_users 
-            FOREIGN KEY (itInCharge) REFERENCES users(username) ON DELETE SET NULL;
-        `);
+        // console.log('Modifying itInCharge column and adding foreign key to users...');
+        // await pool.query(`
+        //     ALTER TABLE tasks
+        //     MODIFY COLUMN itInCharge VARCHAR(100) NULL,
+        //     ADD CONSTRAINT fk_it_in_users 
+        //     FOREIGN KEY (itInCharge) REFERENCES users(username) ON DELETE SET NULL;
+        // `);
 
-        console.log('Modifying requestedBy column and adding foreign key to users...');
-        await pool.query(`
-            ALTER TABLE tasks
-            MODIFY COLUMN requestedBy VARCHAR(100) NULL,
-            ADD CONSTRAINT fk_requested_by 
-            FOREIGN KEY (requestedBy) REFERENCES users(username) ON DELETE SET NULL;
-        `);
+        // console.log('Modifying requestedBy column and adding foreign key to users...');
+        // await pool.query(`
+        //     ALTER TABLE tasks
+        //     MODIFY COLUMN requestedBy VARCHAR(100) NULL,
+        //     ADD CONSTRAINT fk_requested_by 
+        //     FOREIGN KEY (requestedBy) REFERENCES users(username) ON DELETE SET NULL;
+        // `);
 
-        console.log('Modifying approvedBy column and adding foreign key to users...');
-        await pool.query(`
-            ALTER TABLE tasks
-            MODIFY COLUMN approvedBy VARCHAR(100) NULL,
-            ADD CONSTRAINT fk_approved_by 
-            FOREIGN KEY (approvedBy) REFERENCES users(username) ON DELETE SET NULL;
-        `);
+        // console.log('Modifying approvedBy column and adding foreign key to users...');
+        // await pool.query(`
+        //     ALTER TABLE tasks
+        //     MODIFY COLUMN approvedBy VARCHAR(100) NULL,
+        //     ADD CONSTRAINT fk_approved_by 
+        //     FOREIGN KEY (approvedBy) REFERENCES users(username) ON DELETE SET NULL;
+        // `);
 
-        console.log('Database modifications completed successfully.');
-        console.log('You can check MySQL for the updated table structure.');
+        // console.log('Database modifications completed successfully.');
+        // console.log('You can check MySQL for the updated table structure.');
 
     } catch (err) {
         console.error('Error modifying database schema: ', err);
@@ -300,6 +310,30 @@ async function alter_and_add(pool) {
 
 let pool;
 
+async function restore_database(dumpFilePath) {
+    return new Promise((resolve, reject) => {
+        console.log(`Restoring database from: ${dumpFilePath}`);
+
+        const restoreProcess = spawn('mysql', [
+            '-h', process.env.MYSQL_HOST,
+            '-u', process.env.MYSQL_USER,
+            `--password=${process.env.MYSQL_PWD}`,
+            process.env.MYSQL_DTB
+        ], { stdio: ['pipe', 'inherit', 'inherit'] });
+
+        fs.createReadStream(dumpFilePath).pipe(restoreProcess.stdin);
+
+        restoreProcess.on('close', (code) => {
+            if (code === 0) {
+                console.log('Database restored successfully!');
+                resolve();
+            } else {
+                reject(new Error(`mysql restore process exited with code ${code}`));
+            }
+        });
+    });
+}
+
 export async function setup_database() {
 
     if (pool) {
@@ -321,29 +355,13 @@ export async function setup_database() {
 
         if (databases.length === 0) {
             console.log('Database does not exist. Creating and restoring from dump...');
+            await connection.query(`CREATE DATABASE ${process.env.MYSQL_DTB}`);
+            console.log(`Database ${process.env.MYSQL_DTB} created.`);
 
-            await connection.query(`CREATE DATABASE simple_helpdesk`);
-            console.log('Database simple_helpdesk created.');
-
-            await new Promise((resolve, reject) => {
-                const restoreProcess = spawn('mysql', [
-                    '-h', process.env.MYSQL_HOST,
-                    '-u', process.env.MYSQL_USER,
-                    `--password=${process.env.MYSQL_PWD}`, // Use --password= format
-                    'simple_helpdesk'
-                ], { stdio: ['pipe', 'inherit', 'inherit'] });
-
-                fs.createReadStream(dumpFilePath).pipe(restoreProcess.stdin);
-
-                restoreProcess.on('close', (code) => {
-                    if (code === 0) {
-                        console.log('Database restored successfully!');
-                        resolve();
-                    } else {
-                        reject(new Error(`mysql restore process exited with code ${code}`));
-                    }
-                });
-            });
+            const dumpFilePath = await get_latest_dump_file();
+            if (dumpFilePath) {
+                await restore_database(dumpFilePath);
+            }
         }
 
         pool = mysql.createPool({
@@ -401,6 +419,66 @@ export async function setup_database() {
         throw err;
     }
 }
+
+// Used for debugging and testing -- developers lang
+export async function restore_existing_database() {
+    try {
+        console.log('Connecting to MySQL...');
+        const connection = await mysql.createConnection({
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PWD,
+            database: process.env.MYSQL_DTB
+        });
+
+        console.log('Disabling foreign key checks...');
+        await connection.query('SET FOREIGN_KEY_CHECKS = 0;');
+
+        console.log('Dropping all tables in the database...');
+        const [tables] = await connection.query(`SHOW TABLES`);
+        if (tables.length > 0) {
+            for (let row of tables) {
+                const tableName = Object.values(row)[0];
+                console.log(`Dropping table: ${tableName}`);
+                await connection.query(`DROP TABLE IF EXISTS \`${tableName}\``);
+            }
+        }
+
+        console.log('Re-enabling foreign key checks...');
+        await connection.query('SET FOREIGN_KEY_CHECKS = 1;');
+
+        const dumpFilePath = await get_latest_dump_file();
+        console.log(`Restoring database from: ${dumpFilePath}`);
+
+        await new Promise((resolve, reject) => {
+            const restoreProcess = spawn('mysql', [
+                '-h', process.env.MYSQL_HOST,
+                '-u', process.env.MYSQL_USER,
+                `--password=${process.env.MYSQL_PWD}`, // Use --password= format
+                process.env.MYSQL_DTB
+            ], { stdio: ['pipe', 'inherit', 'inherit'] });
+
+            fs.createReadStream(dumpFilePath).pipe(restoreProcess.stdin);
+
+            restoreProcess.on('close', (code) => {
+                if (code === 0) {
+                    console.log('Database restored successfully!');
+                    resolve();
+                } else {
+                    reject(new Error(`mysql restore process exited with code ${code}`));
+                }
+            });
+        });
+
+        await connection.end();
+    } catch (err) {
+        console.error('Error restoring database:', err);
+        throw err;
+    }
+}
+
+
+
 
 
 // export async function setup_database() {

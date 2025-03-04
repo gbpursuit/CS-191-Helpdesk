@@ -546,7 +546,6 @@ const add = {
 
                 if (newData.fullName) {
                     select.value = newData.fullName;
-                    select.setAttribute("data-id", newData.username);
                 }
 
                 taskModal.style.display = "flex";
@@ -592,6 +591,7 @@ const add = {
                 remarks: util.get_field_value("remarks")
             };
 
+            console.log(taskData);
             const newTask = await add.add_to_database(taskData);
             if (newTask) {
                 console.log('Task saved:', newTask);
@@ -812,7 +812,7 @@ const update = {
             formData.taskStatus = "Pending";
         }
 
-        console.log(formData);
+        console.log("Form data:", formData);
     
         await update.update_task(taskId, formData);
     },
@@ -961,7 +961,6 @@ const fetch_data = {
     
             const container = document.getElementById('taskTypeAdd');
             const select = isEdit ? document.getElementById('editTaskType') : document.getElementById('taskType');
-            // select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
     
             const body = document.getElementById("taskTypeTable");
             body.innerHTML = "";
@@ -975,7 +974,6 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
                     select.value = val.name;
-                    select.setAttribute("data-id", val.id);
                     container.style.display = 'none';
                 })
                 body.appendChild(row);
@@ -1008,7 +1006,6 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
                     select.value = val.full_name;
-                    select.setAttribute("data-id", val.username);
                     container.style.display = 'none';
                 })
                 body.appendChild(row);
@@ -1040,7 +1037,6 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
                     select.value = val.full_name;
-                    select.setAttribute("data-id", val.username);
                     container.style.display = 'none';
                 })
                 body.appendChild(row);
@@ -1086,12 +1082,7 @@ const fetch_data = {
                 `;
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
-                    select.value = val.name;
-                    select.setAttribute("data-id", val.id);
-
-                    // document.querySelectorAll("#itTable tr").forEach(tr => tr.classList.remove("highlight"));
-                    // row.classList.add("highlight");
-                    
+                    select.value = val.name;                    
                     departmentNo.value = val.department_no;
                     container.style.display = 'none';
                 })
@@ -1121,7 +1112,6 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
                     select.value = val.full_name; 
-                    select.setAttribute("data-id", val.username);
                     container.style.display = 'none';
                 });
     
@@ -1154,7 +1144,6 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
                     select.value = val.name;
-                    select.setAttribute("data-id", val.id);
                     container.style.display = 'none';
                 })
                 body.appendChild(row);
@@ -1184,7 +1173,6 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
                     select.value = val.name;
-                    select.setAttribute("data-id", val.id);
                     container.style.display = 'none';
                 })
                 body.appendChild(row);
@@ -1214,7 +1202,6 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
                     select.value = val.name;
-                    select.setAttribute("data-id", val.id);
                     container.style.display = 'none';
                 })
                 body.appendChild(row);
@@ -1462,14 +1449,6 @@ const util = {
                     const now = Date.now();
                     const timeLeft = expiresAt - now;
 
-                    console.log(timeLeft);
-    
-                    // if (timeLeft <= warningTime && timeLeft > 1) {
-                    //     if(!window.sessionWarningShown) {
-                    //         alert('Your session is about to expire! Please save your work.');
-                    //         window.sessionWarningShown = true; 
-                    //     }
-                    // } 
                     if (timeLeft <= 1) {
                         alert('Your session has expired. Please log in again.');
                         clearInterval(sessionInterval);
