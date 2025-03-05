@@ -429,7 +429,7 @@ app.post('/logout', server.is_authenticated, (req, res) => {
 });
 
 // ---- Task Routes ----
-const validTables = ['task_types', 'it_in_charge', 'departments', 'items', 'devices', 'applications', 'users'];
+const validTables = ['task_types', 'it_in_charge', 'items', 'devices', 'applications', 'requested_by', 'approved_by'];
 
 // API endpoint to get session user / tasks
 app.get('/api/:type/:table?', async (req, res, next) => {

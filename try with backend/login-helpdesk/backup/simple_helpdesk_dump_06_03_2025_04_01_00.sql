@@ -16,6 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `app_departments`
+--
+
+DROP TABLE IF EXISTS `app_departments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `app_departments` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_departments`
+--
+
+LOCK TABLES `app_departments` WRITE;
+/*!40000 ALTER TABLE `app_departments` DISABLE KEYS */;
+INSERT INTO `app_departments` VALUES (2,'Marketing'),(1,'Unknown');
+/*!40000 ALTER TABLE `app_departments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `applications`
 --
 
@@ -27,7 +52,7 @@ CREATE TABLE `applications` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,8 +61,37 @@ CREATE TABLE `applications` (
 
 LOCK TABLES `applications` WRITE;
 /*!40000 ALTER TABLE `applications` DISABLE KEYS */;
-INSERT INTO `applications` VALUES (3,'Google Chrome'),(2,'MS Office'),(1,'Unknown');
+INSERT INTO `applications` VALUES (3,'Google Chrome'),(2,'MS Office'),(4,'Opera GX Browser'),(1,'Unknown');
 /*!40000 ALTER TABLE `applications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `approved_by`
+--
+
+DROP TABLE IF EXISTS `approved_by`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `approved_by` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) DEFAULT NULL,
+  `full_name` varchar(200) GENERATED ALWAYS AS (trim(concat(coalesce(`first_name`,_utf8mb4''),_utf8mb4' ',coalesce(`last_name`,_utf8mb4'')))) STORED,
+  `department` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `approved` (`department`),
+  CONSTRAINT `approved` FOREIGN KEY (`department`) REFERENCES `app_departments` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `approved_by`
+--
+
+LOCK TABLES `approved_by` WRITE;
+/*!40000 ALTER TABLE `approved_by` DISABLE KEYS */;
+INSERT INTO `approved_by` (`id`, `first_name`, `last_name`, `department`) VALUES (1,'Unknown','',1),(2,'John','Doe',1),(3,'Jane','Doe',2);
+/*!40000 ALTER TABLE `approved_by` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -54,7 +108,7 @@ CREATE TABLE `departments` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `department_no` (`department_no`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,7 +117,7 @@ CREATE TABLE `departments` (
 
 LOCK TABLES `departments` WRITE;
 /*!40000 ALTER TABLE `departments` DISABLE KEYS */;
-INSERT INTO `departments` VALUES (1,'Unknown','0'),(2,'IT','123'),(3,'Marketing','321');
+INSERT INTO `departments` VALUES (1,'Unknown','0'),(2,'Marketing','1234567890');
 /*!40000 ALTER TABLE `departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,7 +133,7 @@ CREATE TABLE `devices` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -88,7 +142,7 @@ CREATE TABLE `devices` (
 
 LOCK TABLES `devices` WRITE;
 /*!40000 ALTER TABLE `devices` DISABLE KEYS */;
-INSERT INTO `devices` VALUES (2,'Acer Laptop'),(4,'Asus Laptop'),(3,'Dell Desktop'),(10,'IPad'),(6,'Lenovo Laptop'),(5,'Mac'),(9,'Printer'),(1,'Unknown');
+INSERT INTO `devices` VALUES (2,'Acer Laptop'),(4,'Asus Laptop'),(3,'Dell Desktop'),(11,'Lenovo Laptop'),(1,'Unknown');
 /*!40000 ALTER TABLE `devices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -104,12 +158,8 @@ CREATE TABLE `it_in_charge` (
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) DEFAULT NULL,
   `full_name` varchar(200) GENERATED ALWAYS AS (trim(concat(coalesce(`first_name`,_utf8mb4''),_utf8mb4' ',coalesce(`last_name`,_utf8mb4'')))) STORED,
-  `department` int NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`first_name`),
-  KEY `it_in_dept` (`department`),
-  CONSTRAINT `it_in_dept` FOREIGN KEY (`department`) REFERENCES `departments` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,7 +168,7 @@ CREATE TABLE `it_in_charge` (
 
 LOCK TABLES `it_in_charge` WRITE;
 /*!40000 ALTER TABLE `it_in_charge` DISABLE KEYS */;
-INSERT INTO `it_in_charge` (`id`, `first_name`, `last_name`, `department`) VALUES (1,'Unknown','',1),(2,'John','Doe',1),(3,'James','Bond',1);
+INSERT INTO `it_in_charge` (`id`, `first_name`, `last_name`) VALUES (1,'Unknown',''),(2,'Gavril','Coronel'),(3,'Lorraine','Castrillon'),(4,'Marcus','Pilapil'),(5,'Weng','Castrillon'),(6,'James Bond','');
 /*!40000 ALTER TABLE `it_in_charge` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,7 +184,7 @@ CREATE TABLE `items` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,8 +193,37 @@ CREATE TABLE `items` (
 
 LOCK TABLES `items` WRITE;
 /*!40000 ALTER TABLE `items` DISABLE KEYS */;
-INSERT INTO `items` VALUES (3,'Keyboard'),(2,'Monitor'),(4,'Mouse'),(1,'Unknown');
+INSERT INTO `items` VALUES (3,'Keyboard'),(5,'Laptop'),(2,'Monitor'),(4,'Mouse'),(1,'Unknown');
 /*!40000 ALTER TABLE `items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `requested_by`
+--
+
+DROP TABLE IF EXISTS `requested_by`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `requested_by` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) DEFAULT NULL,
+  `full_name` varchar(200) GENERATED ALWAYS AS (trim(concat(coalesce(`first_name`,_utf8mb4''),_utf8mb4' ',coalesce(`last_name`,_utf8mb4'')))) STORED,
+  `department` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `requested` (`department`),
+  CONSTRAINT `requested` FOREIGN KEY (`department`) REFERENCES `departments` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `requested_by`
+--
+
+LOCK TABLES `requested_by` WRITE;
+/*!40000 ALTER TABLE `requested_by` DISABLE KEYS */;
+INSERT INTO `requested_by` (`id`, `first_name`, `last_name`, `department`) VALUES (1,'Unknown','',1),(2,'John','Doe',1),(3,'Jane','Doe',2);
+/*!40000 ALTER TABLE `requested_by` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -160,7 +239,7 @@ CREATE TABLE `task_types` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,7 +248,7 @@ CREATE TABLE `task_types` (
 
 LOCK TABLES `task_types` WRITE;
 /*!40000 ALTER TABLE `task_types` DISABLE KEYS */;
-INSERT INTO `task_types` VALUES (1,'Unknown','No Description'),(2,'Bug Fix',NULL),(3,'Feature Request',NULL),(4,'Hardware Issue',NULL),(12,'Testing Add Task Type','Checking for Bugs'),(14,'Test Add','No Bugs Found.'),(15,'Trying','Delete mamaya');
+INSERT INTO `task_types` VALUES (1,'Unknown','No Description'),(2,'Bug Fix',NULL),(3,'Feature Request',NULL),(4,'Hardware Issue',NULL),(16,'Task Type','Checking For Bugs');
 /*!40000 ALTER TABLE `task_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -189,7 +268,7 @@ CREATE TABLE `tasks` (
   `taskType` int NOT NULL DEFAULT '1',
   `taskDescription` text,
   `itInCharge` int NOT NULL DEFAULT '1',
-  `department` int NOT NULL DEFAULT '1',
+  `department` varchar(100) DEFAULT NULL,
   `departmentNo` varchar(50) DEFAULT NULL,
   `requestedBy` int NOT NULL DEFAULT '1',
   `approvedBy` int NOT NULL DEFAULT '1',
@@ -213,15 +292,14 @@ CREATE TABLE `tasks` (
   KEY `fk_requested_by` (`requestedBy`),
   KEY `fk_approved_by` (`approvedBy`),
   CONSTRAINT `fk_applicationName` FOREIGN KEY (`applicationName`) REFERENCES `applications` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_approvedBy` FOREIGN KEY (`approvedBy`) REFERENCES `it_in_charge` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_department` FOREIGN KEY (`department`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_approvedBy` FOREIGN KEY (`approvedBy`) REFERENCES `approved_by` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_deviceName` FOREIGN KEY (`deviceName`) REFERENCES `devices` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_itemName` FOREIGN KEY (`itemName`) REFERENCES `items` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_itInCharge` FOREIGN KEY (`itInCharge`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_requestedBy` FOREIGN KEY (`requestedBy`) REFERENCES `it_in_charge` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_itInCharge` FOREIGN KEY (`itInCharge`) REFERENCES `it_in_charge` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_requestedBy` FOREIGN KEY (`requestedBy`) REFERENCES `requested_by` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_taskType` FOREIGN KEY (`taskType`) REFERENCES `task_types` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tasks_chk_1` CHECK ((`severity` between 1 and 5))
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -230,7 +308,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (3,'4628','2025-03-05','Pending',1,2,'--',3,3,'321',3,3,3,6,2,'2025-03-05',NULL,NULL,NULL,'gefe','gef');
+INSERT INTO `tasks` VALUES (1,'9827','2025-03-05','In Progress',1,2,'Testing Bugs',1,'Marketing','1234567890',3,2,4,2,2,'2025-03-05',NULL,'2025-03-05',NULL,'Hopefully','Okay na');
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -275,4 +353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-05 13:43:00
+-- Dump completed on 2025-03-06  4:01:01

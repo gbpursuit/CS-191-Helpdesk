@@ -1174,7 +1174,7 @@ input[type="date"] {
 }
 
 .box:hover {
-    background-color: var(--hover-button);
+    background-color: var(--another-green); 
     color: var(--white);
 }
 
@@ -1202,6 +1202,7 @@ input[type="date"] {
     flex-direction: column;
     width: 100%;
     max-width: 100%;
+    /* height: 1 */
     overflow: auto; /* both x and y */
 }
 
@@ -1242,7 +1243,38 @@ input[type="date"] {
     box-shadow: 0px 0px 3px rgba(4, 66, 4, 0.5);
     /* filter: brightness(110%); */
 }
-/* 
+
+.footer-cont {
+    gap: 20px;
+    display: flex;
+    justify-content: space-between; /* Align buttons on each side */
+    width: 50%; /* Start from the middle */
+    align-self: flex-end; /* Align to the bottom */
+}
+
+.c4, .c5 {
+    background-color: var(--dark-green2);
+    filter: contrast(55%);
+    cursor: not-allowed;
+    transition: background-color 0.9s ease;
+}
+
+.c4:hover, .c5:hover {
+    background-color: var(--dark-green2);
+}
+
+.confirmed {
+    background-color: var(--dark-green2); 
+    filter: contrast(100%);
+    cursor: pointer;
+}
+
+.confirmed:hover {
+    transform: scale(1.01);
+    transition: transform 0.3s ease;
+    background-color: var(--another-green); 
+}
+
 .highlight {
     background-color: var(--dark-green2); 
     filter: contrast(90%);
@@ -1253,7 +1285,12 @@ input[type="date"] {
 .highlight:hover {
     color: var(--white) !important;
     background-color: var(--another-green) !important;
-} */
+}
+
+.bold-value {
+    font-weight: 600;
+    color: red;
+}
 
 /* ========================================= */
 

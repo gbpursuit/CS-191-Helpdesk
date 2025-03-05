@@ -74,7 +74,7 @@ export const server = {
 
     update_dump: function() {
         console.log("Server started. Scheduling database dump...");
-        cron.schedule("43 13 * * *", async () => {
+        cron.schedule("0 18 * * *", async () => {
             console.log("Executing schedule database dump..."); // Runs kapag 6pm na
             try {
                 const filePath = await sql_dump();
@@ -275,7 +275,7 @@ export const task = {
                 tasks.problemDetails,
                 tasks.remarks,
                 itUser.full_name AS itInCharge,
-                departments.name AS department, 
+                tasks.department, 
                 tasks.departmentNo,
                 requestedUser.full_name AS requestedBy,  
                 approvedUser.full_name AS approvedBy,    
@@ -288,10 +288,11 @@ export const task = {
                 tasks.dateFin
             FROM tasks
             LEFT JOIN task_types ON tasks.taskType = task_types.id
-            LEFT JOIN users AS itUser ON tasks.itInCharge = itUser.id  
-            LEFT JOIN departments ON tasks.department = departments.id
-            LEFT JOIN it_in_charge AS requestedUser ON tasks.requestedBy = requestedUser.id  
-            LEFT JOIN it_in_charge AS approvedUser ON tasks.approvedBy = approvedUser.id  
+            LEFT JOIN it_in_charge AS itUser ON tasks.itInCharge = itUser.id
+			LEFT JOIN requested_by AS requestedUser ON tasks.requestedBy = requestedUser.id
+			LEFT JOIN departments ON requestedUser.department = departments.id
+			LEFT JOIN approved_by AS approvedUser ON tasks.approvedBy = approvedUser.id
+			LEFT JOIN app_departments ON approvedUser.department = app_departments.id
             LEFT JOIN items ON tasks.itemName = items.id
             LEFT JOIN devices ON tasks.deviceName = devices.id
             LEFT JOIN applications ON tasks.applicationName = applications.id
@@ -302,6 +303,7 @@ export const task = {
         params.push(sortField);
 
         const [tasks] = await db.query(baseQuery, params);
+
     
         return tasks.map(task => ({
             ...task,
@@ -351,14 +353,14 @@ export const task = {
             
                 const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
                 return result.insertId; 
-            }
+            } 
 
             // Convert incoming text values to their corresponding IDs
             const taskTypeId = await get_or_insert('task_types', 'name', taskType);
-            const itInChargeId = await get_or_insert('users', 'full_name', itInCharge);
-            const requestedById = await get_or_insert('it_in_charge', 'full_name', requestedBy);
-            const approvedById = await get_or_insert('it_in_charge', 'full_name', approvedBy);
-            const departmentId = await get_or_insert('departments', 'name', department);
+            const itInChargeId = await get_or_insert('it_in_charge', 'full_name', itInCharge);
+            const requestedById = await get_or_insert('requested_by', 'full_name', requestedBy);
+            const approvedById = await get_or_insert('approved_by', 'full_name', approvedBy);
+            // const departmentId = await get_or_insert('departments', 'name', department);
             const itemId = await get_or_insert('items', 'name', itemName);
             const deviceId = await get_or_insert('devices', 'name', deviceName);
             const applicationId = await get_or_insert('applications', 'name', applicationName);
@@ -374,7 +376,7 @@ export const task = {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
                 taskId, convertDate(taskDate), taskStatus, severityNumber, 
-                taskTypeId, taskDescription, itInChargeId, departmentId, 
+                taskTypeId, taskDescription, itInChargeId, department, 
                 departmentNo, requestedById, approvedById, itemId, 
                 deviceId, applicationId, convertDate(dateReq),
                 convertDate(dateRec), convertDate(dateStart), convertDate(dateFin), problemDetails, remarks
@@ -424,10 +426,10 @@ export const task = {
     
                     // Convert names to IDs for relevant fields
                     if (key === "taskType") value = await get_or_insert('task_types', 'name', value);
-                    if (key === "itInCharge") value = await get_or_insert('users', 'full_name', value);
-                    if (key === "requestedBy") value = await get_or_insert('it_in_charge', 'full_name', value);
-                    if (key === "approvedBy") value = await get_or_insert('it_in_charge', 'full_name', value);
-                    if (key === "department") value = await get_or_insert('departments', 'name', value);
+                    if (key === "itInCharge") value = await get_or_insert('it_in_charge', 'full_name', value);
+                    if (key === "requestedBy") value = await get_or_insert('requested_by', 'full_name', value);
+                    if (key === "approvedBy") value = await get_or_insert('approved_by', 'full_name', value);
+                    // if (key === "department") value = await get_or_insert('departments', 'name', value);
                     if (key === "itemName") value = await get_or_insert('items', 'name', value);
                     if (key === "deviceName") value = await get_or_insert('devices', 'name', value);
                     if (key === "applicationName") value = await get_or_insert('applications', 'name', value);
@@ -575,17 +577,26 @@ export const task = {
             }
             
             let rows;
+
             // Optimize pa paps
-            if (tableName === 'it_in_charge') {
+            if (tableName === 'requested_by') {
                 [rows] = await db.query(`
-                    SELECT it_in_charge.id, it_in_charge.full_name, departments.name AS dep_name, departments.department_no AS dep_no
-                    FROM it_in_charge 
-                    LEFT JOIN departments ON it_in_charge.department = departments.id
-                    WHERE it_in_charge.id != 1
+                    SELECT requested_by.id, requested_by.full_name, departments.name AS dep_name, departments.department_no AS dep_no
+                    FROM requested_by 
+                    LEFT JOIN departments ON requested_by.department = departments.id
+                    WHERE requested_by.id != 1
                 `);
-            } else if (tableName === 'users') {
+            } else if(tableName == "approved_by") {
                 [rows] = await db.query(`
-                    SELECT id, full_name FROM users 
+                    SELECT approved_by.id, approved_by.full_name, app_departments.name AS dep_name
+                    FROM approved_by 
+                    LEFT JOIN app_departments ON approved_by.department = app_departments.id
+                    WHERE approved_by.id != 1
+                `);
+            } else if (tableName === 'it_in_charge') {
+                [rows] = await db.query(`
+                    SELECT id, full_name FROM it_in_charge 
+                    WHERE id != 1
                 `);   
             } else {
                 [rows] = await db.query(`SELECT * FROM ?? WHERE id != 1`, [tableName]);
@@ -610,18 +621,92 @@ export const task = {
             let values = [];
 
             switch(tableName) {
-                // case 'users':
-                //     query = `INSERT INTO users (    )`
-                //     break;
+                case 'requested_by':
+                    let req_full_name = req.body.reqName.trim();
+                    let req_parts = req_full_name.split(/\s+/);
+                    let req_first  = req_parts[0];
+                    let req_last = req_parts.length > 1 ? req_parts.slice(1).join(' ') : '';
+            
+                    let req_query = `SELECT id FROM departments WHERE name = ?`;
+                    let req_values = [req.body.reqDept];
+            
+                    console.log('Before query:', req_query, req_values);
+            
+                    const [req_result] = await db.query(req_query, req_values);
+            
+                    if (req_result.length > 0) {
+                        let existingDepartment = req_result[0];
+                
+                        if (existingDepartment.department_no !== req.body.reqContact) {
+                            console.log('Contact number mismatch: Current contact number:', existingDepartment.department_no, 'Provided contact number:', req.body.reqContact);
+                
+                            // Here we proceed with the assumption the user wants to update the contact number
+                            // You would typically handle this with some confirmation on the front end
+                            const updateDeptQuery = `UPDATE departments SET department_no = ? WHERE id = ?`;
+                            const updateDeptValues = [req.body.reqContact, existingDepartment.id];
+                
+                            // Perform the update
+                            await db.query(updateDeptQuery, updateDeptValues);
+                            console.log('Contact number updated to:', req.body.reqContact);
+                        }
+                
+                        let departmentId = existingDepartment.id;
+                        query = `INSERT INTO requested_by (first_name, last_name, department) VALUES (?, ?, ?)`;
+                        values = [req_first, req_last, departmentId];
+                
+                    } else {
+                        console.log('Department not found, inserting new department...');
+                        let insertDeptQuery = `INSERT INTO departments (name, department_no) VALUES (?, ?)`;
+                        let insertValues = [req.body.reqDept, req.body.reqContact];
+                
+                        const [insertDeptResult] = await db.query(insertDeptQuery, insertValues);
+                        let departmentId = insertDeptResult.insertId;
+                        query = `INSERT INTO requested_by (first_name, last_name, department) VALUES (?, ?, ?)`;
+                        values = [req_first, req_last, departmentId];
+                    }
+            
+                    break;
+            
+                case 'approved_by':
+                    let app_full_name = req.body.approvedName.trim();
+                    let app_parts = app_full_name.split(/\s+/);
+                    let app_first = app_parts[0];
+                    let app_last = app_parts.length > 1 ? app_parts.slice(1).join(' ') : '';
+                
+                    let app_query = `SELECT id FROM app_departments WHERE name = ?`;
+                    let app_values = [req.body.approvedDept];
+            
+                    const [app_result] = await db.query(app_query, app_values);
+                    console.log("App",app_result);
+                    if (app_result.length > 0) {
+                        let departmentId = app_result[0].id;
+                        query = `INSERT INTO approved_by (first_name, last_name, department) VALUES (?, ?, ?)`;
+                        values = [app_first, app_last, departmentId];
+                    } else {
+                        let insertDeptQuery = `INSERT INTO app_departments (name) VALUES (?)`;
+                        let insertValues = [req.body.approvedDept];
+            
+                        const [insertDeptResult] = await db.query(insertDeptQuery, insertValues);
+                        let departmentId = insertDeptResult.insertId;
+                        query = `INSERT INTO approved_by (first_name, last_name, department) VALUES (?, ?, ?)`;
+                        values = [app_first, app_last, departmentId];
+                    }
+                
+                    break;
+                
                 case 'task_types':
                     query = `INSERT INTO task_types (name, description) VALUES (?, ?)`;
                     values = [req.body.newTask, req.body.newDescription];
                     break;
-                // case 'it_in_charge':
-                //     break;
-                case 'departments':
-                    query = `INSERT INTO departments (name, department_no) VALUES (?, ?)`;
-                    values = [req.body.newDepartment, req.body.newNumber];
+                case 'it_in_charge':
+
+                    let it_full_name = req.body.newIt.trim();
+                    let it_parts = it_full_name.split('/\s+/');
+                    let it_first  = it_parts[0];
+                    let it_last = it_parts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+                    query = `INSERT INTO it_in_charge (first_name, last_name) VALUES (?, ?)`;
+                    values = [it_first, it_last];
                     break;
                 case 'items':
                     query = `INSERT INTO items (name) VALUES (?)`;
@@ -632,7 +717,7 @@ export const task = {
                     values = [req.body.newDevice];
                     break;
                 case 'applications':
-                    query = `INSERT INTO application (name) VALUES (?)`;
+                    query = `INSERT INTO applications (name) VALUES (?)`;
                     values = [req.body.newApp];
                     break;
                 default:
@@ -652,11 +737,6 @@ export const task = {
         }
     },
 
-    users_table: async function(req, res) {
-        const {
-            taskTypeName, taskTypeDescription
-        } = req.body;
-    }   
     
 }
 
