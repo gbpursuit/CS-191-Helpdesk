@@ -65,10 +65,10 @@ document.addEventListener("DOMContentLoaded", async function() {
         });
 
         // Modal Functions - Ensure global availability
-        window.openAddModal = openAddModal;
-        window.openEditModal = openEditModal;
-        window.deleteEntry = deleteEntry;
-        window.closeModal = closeModal;
+        window.open_add_modal = open_add_modal;
+        window.open_edit_modal = open_edit_modal;
+        window.delete_entry = delete_entry;
+        window.close_modal = close_modal;
     
         // Layout Functions
         layout.list_navigation();
@@ -992,7 +992,7 @@ const fetch_data = {
 
     request_datalist: async function(isEdit = false) {
         try {
-            const response = await fetch('/api/ref-table/users');
+            const response = await fetch('/api/ref-table/it_in_charge');
             const data = await response.json();
     
             const container = document.getElementById('requestedByAdd');
@@ -1024,7 +1024,7 @@ const fetch_data = {
 
     approve_datalist: async function(isEdit = false) {
         try {
-            const response = await fetch('/api/ref-table/users');
+            const response = await fetch('/api/ref-table/it_in_charge');
             const data = await response.json();
     
             const container = document.getElementById('approvedByAdd');
@@ -1472,59 +1472,119 @@ const util = {
 
 
 // ================================== TASK TYPE ==================================
+
+const get_name = (id) => {
+    const lowerId = id.toLowerCase(); 
+
+    console.log(lowerId);
+
+    if (lowerId.includes("task")) return "task_types";
+    if (lowerId.includes("department")) return "departments";
+    if (lowerId.includes("item")) return "items";
+    if (lowerId.includes("device")) return "devices";
+    if (lowerId.includes("application")) return "applications";
+
+    return ""; 
+}
+
 // Function to open "Add" modal
-const openAddModal = (modalId) => {
+const open_add_modal = (modalId) => {
     const modal = document.getElementById(modalId);
     if (!modal) return console.error(`Modal with ID '${modalId}' not found.`);
     
     modal.style.display = 'flex'; // Show modal
 
     const modalBody = modal.querySelector('.modal-body');
+    const form = modal.querySelector('form');
     
     // Prevent duplicate form creation
-    if (modalBody.querySelector('form')) return;
+    // if (modalBody.querySelector('form')) return;
 
-    modalBody.innerHTML = `
-        <form id="taskTypeForm">
-            <div class="input-group">
-                <label for="taskTypeName">Task Type:</label>
-                <input type="text" id="taskTypeName" name="taskTypeName" required>
-            </div>
-            <div class="input-group">
-                <label for="taskTypeDescription">Description:</label>
-                <input type="text" id="taskTypeDescription" name="taskTypeDescription" required>
-            </div>
-            <div class="button-group">
-                <button type="submit" class="submit-btn">Save</button>
-                <button type="button" class="submit-btn" onclick="closeModal('${modalId}')">Exit</button>
-            </div>
-        </form>
-    `;
+    // modalBody.innerHTML = `
+    //     <form id="taskTypeForm">
+    //         <div class="input-group">
+    //             <label for="taskTypeName">Task Type:</label>
+    //             <input type="text" id="taskTypeName" name="taskTypeName" required>
+    //         </div>
+    //         <div class="input-group">
+    //             <label for="taskTypeDescription">Description:</label>
+    //             <input type="text" id="taskTypeDescription" name="taskTypeDescription" required>
+    //         </div>
+    //         <div class="button-group">
+    //             <button type="submit" class="submit-btn">Save</button>
+    //             <button type="button" class="submit-btn" onclick="close_modal('${modalId}')">Exit</button>
+    //         </div>
+    //     </form>
+    // `;
+    
 
     // Handle form submission
-    document.getElementById('taskTypeForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        submitTaskType(modalId);
-    });
+    if(form) {
+        form.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+            const success = await submit_task_type(modalId, form);
+            if(!success) return;
+
+            const tableName = get_name(modalId);        
+            const fetchFunctions = {
+                "task_types": fetch_data.task_datalist,
+                "departments": fetch_data.dept_datalist,
+                "items": fetch_data.item_datalist,
+                "devices": fetch_data.device_datalist,
+                "applications": fetch_data.app_datalist
+            };
+
+            if (fetchFunctions[tableName]) {
+                await fetchFunctions[tableName]();
+                console.log(`Datalist for ${tableName} updated.`);
+                modal.style.display = 'none';
+            } else {
+                alert(`Error adding to table: ${tableName}`);
+                console.warn(`No fetch function found for table: ${tableName}`);
+            }
+        })
+    }
 };
 
+// async function submit_handle(event) {
+//     event.preventDefault();
+//     await submit_task_type(modalId, form);
+
+//     const tableName = get_name(modalId);
+//     const fetchFunctions = {
+//         "task_types": fetch_data.task_datalist,
+//         "departments": fetch_data.dept_datalist,
+//         "items": fetch_data.item_datalist,
+//         "devices": fetch_data.device_datalist,
+//         "applications": fetch_data.app_datalist
+//     };
+
+//     if (fetchFunctions[tableName]) {
+//         await fetchFunctions[tableName]();
+//         console.log(`Datalist for ${tableName} updated.`);
+//         modal.style.display = 'none';
+//     } else {
+//         alert(`Error adding to table: ${tableName}`);
+//         console.warn(`No fetch function found for table: ${tableName}`);
+//     }
+// }
+
 // Function to open "Edit" modal
-const openEditModal = (modalId) => {
+const open_edit_modal = (modalId) => {
     const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
     if (!selectedRow) {
         alert("Please select a row to edit.");
         return;
     }
 
-    openAddModal(modalId);
-
-    // Populate input fields with selected row data
+    open_add_modal(modalId);
     document.getElementById('taskTypeName').value = selectedRow.cells[0].textContent;
     document.getElementById('taskTypeDescription').value = selectedRow.cells[1].textContent;
 };
 
 // Function to delete a selected row
-const deleteEntry = () => {
+const delete_entry = () => {
     const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
     if (selectedRow) {
         selectedRow.remove();
@@ -1534,41 +1594,100 @@ const deleteEntry = () => {
 };
 
 // Function to close modal
-const closeModal = (modalId) => {
+const close_modal = (modalId) => {
     const modal = document.getElementById(modalId);
     if (modal) modal.style.display = 'none';
 };
 
 // Function to submit task type and add row to table
-const submitTaskType = (modalId) => {
-    const tableBody = document.getElementById('taskTypeTable');
-    const taskTypeName = document.getElementById('taskTypeName').value.trim();
-    const taskTypeDescription = document.getElementById('taskTypeDescription').value.trim();
+const submit_task_type = async (modalId, form) => {   
+    try {
+        const formData = new FormData(form);
+        const data= Object.fromEntries(formData.entries());
 
-    if (!taskTypeName || !taskTypeDescription) {
-        alert("Both fields are required.");
-        return;
-    }
+        if (Object.values(data).some(value => value.trim() === "")) {
+            alert("Error: All fields must be filled.");
+            return false;
+        }
 
-    // Check if editing existing row
-    const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
-    if (selectedRow) {
-        selectedRow.cells[0].textContent = taskTypeName;
-        selectedRow.cells[1].textContent = taskTypeDescription;
-        selectedRow.classList.remove('selected'); // Unselect after editing
-    } else {
-        // Add a new row
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `<td>${taskTypeName}</td><td>${taskTypeDescription}</td>`;
-        
-        // Enable row selection
-        newRow.addEventListener('click', function () {
-            document.querySelectorAll('#taskTypeTable tbody tr').forEach(row => row.classList.remove('selected'));
-            this.classList.add('selected');
+        const tableName = get_name(modalId);
+        if (!tableName) {
+            console.error("Invalid modal ID:", modalId);
+            return false;
+        }
+
+        const response = await fetch(`/api/ref-table/${tableName}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)            
         });
 
-        tableBody.appendChild(newRow);
-    }
+        if (!response.ok) {
+            console.error(`Failed to submit data to ${tableName}:`, await response.text());
+            return false;
+        }
 
-    closeModal(modalId);
+        return true;
+        
+    } catch(err) {
+        console.error("Error submitting task to referenced table:", err);
+    }
 };
+
+        // const formData = new FormData(form);
+        // const data = Object.fromEntries(formData.entries());
+
+        // console.log("data:",data);
+    // try {
+    //     const formData = new FormData(form);
+    //     const data = Object.fromEntries(formData.entries());
+
+    //     // let data = {};
+    
+    //     // formData.forEach((value, key) => {
+    //     //     data[key] = value;
+    //     // });
+
+    //     // console.log('addTasktoDatabase', taskData);
+    //     const response = await fetch('/api/tasks/add', {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify(taskData)
+    //     });
+
+    //     return response.ok ? await response.json() : null;
+    // } catch (err) {
+    //     console.error('Error adding task:', err);
+    //     return null;
+    // }
+
+    // const tableBody = document.getElementById('taskTypeTable');
+    // const taskTypeName = document.getElementById('taskTypeName').value.trim();
+    // const taskTypeDescription = document.getElementById('taskTypeDescription').value.trim();
+
+    // if (!taskTypeName || !taskTypeDescription) {
+    //     alert("Both fields are required.");
+    //     return;
+    // }
+
+    // // Check if editing existing row
+    // const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
+    // if (selectedRow) {
+    //     selectedRow.cells[0].textContent = taskTypeName;
+    //     selectedRow.cells[1].textContent = taskTypeDescription;
+    //     selectedRow.classList.remove('selected'); // Unselect after editing
+    // } else {
+    //     // Add a new row
+    //     const newRow = document.createElement('tr');
+    //     newRow.innerHTML = `<td>${taskTypeName}</td><td>${taskTypeDescription}</td>`;
+        
+    //     // Enable row selection
+    //     newRow.addEventListener('click', function () {
+    //         document.querySelectorAll('#taskTypeTable tbody tr').forEach(row => row.classList.remove('selected'));
+    //         this.classList.add('selected');
+    //     });
+
+    //     tableBody.appendChild(newRow);
+    // }
+
+    // close_modal(modalId);

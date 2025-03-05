@@ -202,9 +202,9 @@
         <div class="cont-cont">
             <div id="taskTypeColOne" class="task-type col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addTaskTypeModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addTaskTypeModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry()">Delete</button>
+                    <button class="c1 box" onclick="open_add_modal('addTaskTypeModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addTaskTypeModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry()">Delete</button>
                 </div>                
             </div>
             <div id="taskTypeColTwo" class="task-type col-two">
@@ -229,17 +229,17 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Task Type</h2>
-            <span class="close-cont" onclick="closeModal('addTaskTypeModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addTaskTypeModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="taskTypeForm">
                 <div class="input-group">
-                    <label for="taskTypeName">Task Type:</label>
-                    <input type="text" id="taskTypeName" name="taskTypeName" placeholder="Enter Task Type">
+                    <label for="newTask">Task Type:</label>
+                    <input type="text" id="newTask" name="newTask" placeholder="Enter Task Type">
                 </div>
                 <div class="input-group">
-                    <label for="taskTypeDescription">Description:</label>
-                    <input type="text" id="taskTypeDescription" name="taskTypeDescription" placeholder="Enter Task Description">
+                    <label for="newDescription">Description:</label>
+                    <input type="text" id="newDescription" name="newDescription" placeholder="Enter Task Description">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>
@@ -258,9 +258,9 @@
         <div class="cont-cont">
             <div id="requestedByColOne" class="requested-by col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addRequestedByModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addRequestedByModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry('addRequestedByModal')">Delete</button>                    
+                    <button class="c1 box" onclick="open_add_modal('addRequestedByModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addRequestedByModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry('addRequestedByModal')">Delete</button>                    
                 </div>
             </div>
             <div id="requestedByColTwo" class="requested-by col-two">
@@ -286,21 +286,21 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Requested By</h2>
-            <span class="close-cont" onclick="closeModal('addRequestedByModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addRequestedByModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="requestedByForm">
                 <div class="input-group">
-                    <label for="employeeName">Employee Name:</label>
-                    <input type="text" id="employeeName" name="employeeName" placeholder="Enter Employee Name">
+                    <label for="reqName">Employee Name:</label>
+                    <input type="text" id="reqName" name="reqName" placeholder="Enter Employee Name">
                 </div>
                 <div class="input-group">
-                    <label for="department">Department:</label>
-                    <input type="text" id="department" name="department" placeholder="Enter Employee Department">
+                    <label for="reqDept">Department:</label>
+                    <input type="text" id="reqDept" name="reqDept" placeholder="Enter Employee Department">
                 </div>
                 <div class="input-group">
-                    <label for="contactNo">Contact No.:</label>
-                    <input type="tel" id="contactNo" name="contactNo" pattern="[0-9]{10}" placeholder="Enter Employee Contact No.">
+                    <label for="reqContact">Contact No.:</label>
+                    <input type="tel" id="reqContact" name="reqContact" pattern="[0-9]{10}" placeholder="Enter Employee Contact No.">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>
@@ -309,7 +309,7 @@
 </div>
 
 <!-- Approved By Pop-up -->
-<div id="approvedByAdd" class="approved-by-add outermost display">
+<div id="approvedByAdd" data="hello" class="approved-by-add outermost display">
     <div id="approvedByContent" class="approvedBy-content layout-content">
         <div class="title-cont">
             <h2 class="title">Approved By</h2>
@@ -318,9 +318,9 @@
         <div class="cont-cont">
             <div id="approvedByColOne" class="approved-by col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addApprovedByModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addApprovedByModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry('addApprovedByModal')">Delete</button>
+                    <button class="c1 box" onclick="open_add_modal('addApprovedByModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addApprovedByModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry('addApprovedByModal')">Delete</button>
                 </div>
             </div>
             <div id="approvedByColTwo" class="approved-by col-two">
@@ -345,17 +345,17 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Approved By</h2>
-            <span class="close-cont" onclick="closeModal('addApprovedByModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addApprovedByModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="approvedByForm">
                 <div class="input-group">
-                    <label for="employeeName">Employee Name:</label>
-                    <input type="text" id="employeeName" name="employeeName" placeholder="Enter Employee Name">
+                    <label for="approvedName">Employee Name:</label>
+                    <input type="text" id="approvedName" name="approvedName" placeholder="Enter Employee Name">
                 </div>
                 <div class="input-group">
-                    <label for="department">Department:</label>
-                    <input type="text" id="department" name="department" placeholder="Enter Employee Department">
+                    <label for="approvedDept">Department:</label>
+                    <input type="text" id="approvedDept" name="approvedDept" placeholder="Enter Employee Department">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>
@@ -372,9 +372,9 @@
         <div class="cont-cont">
             <div id="deviceColOne" class="device col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addDeviceModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addDeviceModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry('addDeviceModal')">Delete</button>
+                    <button class="c1 box" onclick="open_add_modal('addDeviceModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addDeviceModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry('addDeviceModal')">Delete</button>
                 </div>
             </div>
             <div id="deviceColTwo" class="device col-two">
@@ -398,13 +398,13 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Device Name</h2>
-            <span class="close-cont" onclick="closeModal('addDeviceModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addDeviceModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="deviceForm">
                 <div class="input-group">
-                    <label for="deviceName">Device Name:</label>
-                    <input type="text" id="deviceName" name="deviceName" placeholder="Enter Device Name">
+                    <label for="newDevice">Device Name:</label>
+                    <input type="text" id="newDevice" name="newDevice" placeholder="Enter Device Name">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>
@@ -421,9 +421,9 @@
         <div class="cont-cont">
             <div id="itemColOne" class="item col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addItemModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addItemModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry('addItemModal')">Delete</button>
+                    <button class="c1 box" onclick="open_add_modal('addItemModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addItemModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry('addItemModal')">Delete</button>
                 </div>
             </div>
             <div id="itemColTwo" class="item col-two">
@@ -447,13 +447,13 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Item Name</h2>
-            <span class="close-cont" onclick="closeModal('addItemModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addItemModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="itemForm">
                 <div class="input-group">
-                    <label for="itemName">Item Name:</label>
-                    <input type="text" id="itemName" name="itemName" placeholder="Enter Item Name">
+                    <label for="newItem">Item Name:</label>
+                    <input type="text" id="newItem" name="newItem" placeholder="Enter Item Name">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>
@@ -470,9 +470,9 @@
         <div class="cont-cont">
             <div id="deptColOne" class="dept col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addDepartmentModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addDepartmentModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry('addDepartmentModal')">Delete</button>
+                    <button class="c1 box" onclick="open_add_modal('addDepartmentModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addDepartmentModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry('addDepartmentModal')">Delete</button>
                 </div>
             </div>
             <div id="deptColTwo" class="dept col-two">
@@ -497,17 +497,17 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Department Name</h2>
-            <span class="close-cont" onclick="closeModal('addDepartmentModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addDepartmentModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="departmentForm">
                 <div class="input-group">
-                    <label for="departmentName">Department Name:</label>
-                    <input type="text" id="departmentName" name="departmentName" placeholder="Enter Department Name">
+                    <label for="newDepartment">Department Name:</label>
+                    <input type="text" id="newDepartment" name="newDepartment" placeholder="Enter Department Name">
                 </div>
                 <div class="input-group">
-                    <label for="departmentNo">Department No.:</label>
-                    <input type="text" id="departmentNo" name="departmentNo" placeholder="Enter Department No.">
+                    <label for="newNumber">Department No.:</label>
+                    <input type="text" id="newNumber" name="newNumber" placeholder="Enter Department No.">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>
@@ -524,9 +524,9 @@
         <div class="cont-cont">
             <div id="itColOne" class="it col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addITModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addITModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry('addITModal')">Delete</button>
+                    <button class="c1 box" onclick="open_add_modal('addITModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addITModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry('addITModal')">Delete</button>
                 </div>
             </div>
             <div id="itColTwo" class="it col-two">
@@ -550,13 +550,13 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add IT Employee Name</h2>
-            <span class="close-cont" onclick="closeModal('addITModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addITModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="itForm">
                 <div class="input-group">
-                    <label for="itName">IT Employee Name:</label>
-                    <input type="text" id="itName" name="itName" placeholder="Enter IT Employee Name">
+                    <label for="newIt">IT Employee Name:</label>
+                    <input type="text" id="newIt" name="newIt" placeholder="Enter IT Employee Name">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>
@@ -573,9 +573,9 @@
         <div class="cont-cont">
             <div id="appColOne" class="app col-one">
                 <div class="groups">
-                    <button class="c1 box" onclick="openAddModal('addApplicationModal')">Add</button>
-                    <button class="c2 box" onclick="openEditModal('addApplicationModal')">Edit</button>
-                    <button class="c3 box" onclick="deleteEntry('addApplicationModal')">Delete</button>
+                    <button class="c1 box" onclick="open_add_modal('addApplicationModal')">Add</button>
+                    <button class="c2 box" onclick="open_edit_modal('addApplicationModal')">Edit</button>
+                    <button class="c3 box" onclick="delete_entry('addApplicationModal')">Delete</button>
                 </div>
             </div>
             <div id="appColTwo" class="app col-two">
@@ -599,13 +599,13 @@
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Application Name</h2>
-            <span class="close-cont" onclick="closeModal('addApplicationModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('addApplicationModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="applicationForm">
                 <div class="input-group">
-                    <label for="applicationName">Application Name:</label>
-                    <input type="text" id="applicationName" name="applicationName" placeholder="Enter Application Name">
+                    <label for="newApp">Application Name:</label>
+                    <input type="text" id="newApp" name="newApp" placeholder="Enter Application Name">
                 </div>
                 <button type="submit" class="save-button">Save</button>
             </form>

@@ -429,6 +429,8 @@ app.post('/logout', server.is_authenticated, (req, res) => {
 });
 
 // ---- Task Routes ----
+const validTables = ['task_types', 'it_in_charge', 'departments', 'items', 'devices', 'applications', 'users'];
+
 // API endpoint to get session user / tasks
 app.get('/api/:type/:table?', async (req, res, next) => {
     const { type, table: refTable} = req.params;
@@ -439,7 +441,7 @@ app.get('/api/:type/:table?', async (req, res, next) => {
             'tasks': () => server.is_authenticated(req, res, async () => await task.get_task(db, req, res)),
             'users': async () => await task.get_user(db, req, res),
             'session-user': async () => await task.session_user(db, req, res),
-            'ref-table': async() => await task.get_reference_table(db, req, res, refTable)
+            'ref-table': async() => await task.get_reference_table(db, req, res, refTable, validTables)
         };
 
         return actions[type] ? await actions[type]() : res.status(400).json({ error: 'Invalid task type' });
@@ -537,6 +539,22 @@ app.get('/internal/:page/:view?', (req, res) => {
         return res.status(404).send('Page not found');
     });
 });
+
+// API Endpoint for Task Add, Edit, Delete
+app.post('/api/ref-table/:table', server.is_authenticated, async(req, res) => {
+    const { table: refTable} = req.params;
+    const db = app.locals.db;
+
+    try {
+        task.update_reference_table(db, req, res, refTable, validTables);
+        
+    } catch (err) {
+        console.error('Error in adding in reference table:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
 
 // Fallback route for unmatched paths
 app.use((req, res) => {

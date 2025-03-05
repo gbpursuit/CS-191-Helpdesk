@@ -48,7 +48,7 @@ export const server = {
 
     launch_server: async function(app) {
         try {
-            await restore_existing_database();
+            // await restore_existing_database();
             const db = await setup_database();
             app.locals.db = db;
     
@@ -74,7 +74,7 @@ export const server = {
 
     update_dump: function() {
         console.log("Server started. Scheduling database dump...");
-        cron.schedule("0 18 * * *", async () => {
+        cron.schedule("43 13 * * *", async () => {
             console.log("Executing schedule database dump..."); // Runs kapag 6pm na
             try {
                 const filePath = await sql_dump();
@@ -274,7 +274,7 @@ export const task = {
                 tasks.taskDescription,
                 tasks.problemDetails,
                 tasks.remarks,
-                itInCharge.full_name AS itInCharge,
+                itUser.full_name AS itInCharge,
                 departments.name AS department, 
                 tasks.departmentNo,
                 requestedUser.full_name AS requestedBy,  
@@ -288,10 +288,10 @@ export const task = {
                 tasks.dateFin
             FROM tasks
             LEFT JOIN task_types ON tasks.taskType = task_types.id
-            LEFT JOIN users AS itInCharge ON tasks.itInCharge = itInCharge.username
+            LEFT JOIN users AS itUser ON tasks.itInCharge = itUser.id  
             LEFT JOIN departments ON tasks.department = departments.id
-            LEFT JOIN users AS requestedUser ON tasks.requestedBy = requestedUser.username
-            LEFT JOIN users AS approvedUser ON tasks.approvedBy = approvedUser.username
+            LEFT JOIN it_in_charge AS requestedUser ON tasks.requestedBy = requestedUser.id  
+            LEFT JOIN it_in_charge AS approvedUser ON tasks.approvedBy = approvedUser.id  
             LEFT JOIN items ON tasks.itemName = items.id
             LEFT JOIN devices ON tasks.deviceName = devices.id
             LEFT JOIN applications ON tasks.applicationName = applications.id
@@ -337,10 +337,10 @@ export const task = {
                 if (!value) return null;
             
                 // Check if value exists
-                if (column === 'full_name') {
-                    const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
-                    return existing.length ? existing[0].username : null;
-                }
+                // if (column === 'full_name') {
+                //     const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
+                //     return existing.length ? existing[0].username : null;
+                // }
             
                 const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
                 if (existing.length) return existing[0].id;
@@ -356,8 +356,8 @@ export const task = {
             // Convert incoming text values to their corresponding IDs
             const taskTypeId = await get_or_insert('task_types', 'name', taskType);
             const itInChargeId = await get_or_insert('users', 'full_name', itInCharge);
-            const requestedById = await get_or_insert('users', 'full_name', requestedBy);
-            const approvedById = await get_or_insert('users', 'full_name', approvedBy);
+            const requestedById = await get_or_insert('it_in_charge', 'full_name', requestedBy);
+            const approvedById = await get_or_insert('it_in_charge', 'full_name', approvedBy);
             const departmentId = await get_or_insert('departments', 'name', department);
             const itemId = await get_or_insert('items', 'name', itemName);
             const deviceId = await get_or_insert('devices', 'name', deviceName);
@@ -400,18 +400,18 @@ export const task = {
                 if (!value) return null;
             
                 // Check if value exists
-                if (column === 'full_name') {
-                    const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
-                    return existing.length ? existing[0].username : null;
-                }
+                // if (column === 'full_name') {
+                //     const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
+                //     return existing.length ? existing[0].username : null;
+                // }
             
                 const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
                 if (existing.length) return existing[0].id;
             
                 // If column is full_name, we should NEVER insert it
-                if (column === 'full_name') {
-                    throw new Error("Cannot insert into a generated column: full_name");
-                }
+                // if (column === 'full_name') {
+                //     throw new Error("Cannot insert into a generated column: full_name");
+                // }
             
                 // Insert new value and return ID
                 const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
@@ -425,8 +425,8 @@ export const task = {
                     // Convert names to IDs for relevant fields
                     if (key === "taskType") value = await get_or_insert('task_types', 'name', value);
                     if (key === "itInCharge") value = await get_or_insert('users', 'full_name', value);
-                    if (key === "requestedBy") value = await get_or_insert('users', 'full_name', value);
-                    if (key === "approvedBy") value = await get_or_insert('users', 'full_name', value);
+                    if (key === "requestedBy") value = await get_or_insert('it_in_charge', 'full_name', value);
+                    if (key === "approvedBy") value = await get_or_insert('it_in_charge', 'full_name', value);
                     if (key === "department") value = await get_or_insert('departments', 'name', value);
                     if (key === "itemName") value = await get_or_insert('items', 'name', value);
                     if (key === "deviceName") value = await get_or_insert('devices', 'name', value);
@@ -566,26 +566,29 @@ export const task = {
         }
     },
 
-    get_reference_table: async function(db, req, res, tableName) {
+    get_reference_table: async function(db, req, res, tableName, validTables) {
         try {
-            const validTables = ['task_types', 'it_in_charge', 'departments', 'items', 'devices', 'applications', 'users'];
+            // const validTables = ['task_types', 'it_in_charge', 'departments', 'items', 'devices', 'applications', 'users'];
 
             if (!validTables.includes(tableName)) {
                 return res.status(400).json({ error: 'Invalid reference table' });
             }
             
             let rows;
-            
-            if (tableName === 'departments') {
-                [rows] = await db.query(`SELECT * FROM departments WHERE id != 1`);
+            // Optimize pa paps
+            if (tableName === 'it_in_charge') {
+                [rows] = await db.query(`
+                    SELECT it_in_charge.id, it_in_charge.full_name, departments.name AS dep_name, departments.department_no AS dep_no
+                    FROM it_in_charge 
+                    LEFT JOIN departments ON it_in_charge.department = departments.id
+                    WHERE it_in_charge.id != 1
+                `);
             } else if (tableName === 'users') {
                 [rows] = await db.query(`
-                    SELECT users.username, users.full_name, departments.name AS dep_name, departments.department_no AS dep_no
-                    FROM users 
-                    LEFT JOIN departments ON users.department = departments.id
-                `);
+                    SELECT id, full_name FROM users 
+                `);   
             } else {
-                [rows] = await db.query(`SELECT * FROM ??`, [tableName]);
+                [rows] = await db.query(`SELECT * FROM ?? WHERE id != 1`, [tableName]);
             }
             
             res.json(rows);
@@ -593,9 +596,67 @@ export const task = {
 
         } catch(err) {
             console.error('Error fetching referenced table:', err);
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ err: 'Internal server error' });
         }
-    }
+    },
+
+    update_reference_table: async function(db, req, res, tableName, validTables) {
+        try {
+            if (!validTables.includes(tableName)) {
+                return res.status(400).json({ error: 'Invalid reference table' });
+            }
+
+            let query = "";
+            let values = [];
+
+            switch(tableName) {
+                // case 'users':
+                //     query = `INSERT INTO users (    )`
+                //     break;
+                case 'task_types':
+                    query = `INSERT INTO task_types (name, description) VALUES (?, ?)`;
+                    values = [req.body.newTask, req.body.newDescription];
+                    break;
+                // case 'it_in_charge':
+                //     break;
+                case 'departments':
+                    query = `INSERT INTO departments (name, department_no) VALUES (?, ?)`;
+                    values = [req.body.newDepartment, req.body.newNumber];
+                    break;
+                case 'items':
+                    query = `INSERT INTO items (name) VALUES (?)`;
+                    values = [req.body.newItem];
+                    break;
+                case 'devices':
+                    query = `INSERT INTO devices (name) VALUES (?)`;
+                    values = [req.body.newDevice];
+                    break;
+                case 'applications':
+                    query = `INSERT INTO application (name) VALUES (?)`;
+                    values = [req.body.newApp];
+                    break;
+                default:
+                    return res.status(400).json({ error: 'Invalid table selection' });
+            }
+
+            const [result] = await db.query(query, values); // Execute the query
+            res.status(201).json({ message: `Record inserted into ${tableName}`, result });
+
+            // if (tableName === 'users') {
+            //     [rows] = await db.query(`INSERT INTO users VALUES`)
+            // }
+
+        } catch (err) {
+            console.error("Error adding to referenced table:", err);
+            res.status(500).json({ err: 'Internal server error'});
+        }
+    },
+
+    users_table: async function(req, res) {
+        const {
+            taskTypeName, taskTypeDescription
+        } = req.body;
+    }   
     
 }
 
