@@ -542,15 +542,18 @@ const add = {
         window.openModal = async function (event) {
             try {
 
-                Object.values(fetch_data).forEach(fn => {
-                    fn();      
-                });
+                Object.values(fetch_data)
+                .filter(fn => fn !== fetch_data.it_datalist) 
+                .forEach(fn => fn());       
+
+
 
                 const select = document.getElementById('itInCharge');
                 const newResponse = await fetch('/api/session-user');
                 const newData = await newResponse.json();
 
                 if (newData.fullName) {
+                    await fetch_data.it_datalist(false, newData.fullName)
                     select.value = newData.fullName;
                 }
 
@@ -596,6 +599,19 @@ const add = {
                 problemDetails: util.get_field_value("problemDetails"),
                 remarks: util.get_field_value("remarks")
             };
+
+            const requiredFields = Object.keys(taskData).filter(key => {
+                const field = document.getElementById(key);
+                return field && field.getAttribute("data-set") === "true";
+            });
+        
+            // Check if any required field is null
+            const missingFields = requiredFields.filter(key => !taskData[key]);
+        
+            if (missingFields.length > 0) {
+                console.error("Form contains errors. Please fill all required fields:", missingFields);
+                return; // Prevent form submission
+            }
 
             console.log(taskData);
             const newTask = await add.add_to_database(taskData);
@@ -663,10 +679,10 @@ const cancel = {
             if (!response.ok) {
                 throw new Error("Failed to fetch task details");
             }
-    
+            console.log(response);
             const taskData = await response.json();
             
-            return taskData.taskStatus === "Cancelled"; 
+            return taskData[0].taskStatus === "Cancelled"; 
         } catch (err) {
             console.error("Error checking task status:", err);
             return false; 
@@ -813,6 +829,19 @@ const update = {
             problemDetails: util.get_field_value("editProblemDetails"),
             remarks: util.get_field_value("editRemarks"),
         };
+
+        const requiredFields = Object.keys(formData).filter(key => {
+            const field = document.getElementById(key);
+            return field && field.getAttribute("data-set") === "true";
+        });
+    
+        // Check if any required field is null
+        const missingFields = requiredFields.filter(key => !formData[key]);
+    
+        if (missingFields.length > 0) {
+            console.error("Form contains errors. Please fill all required fields:", missingFields);
+            return; // Prevent form submission
+        }
 
         if (formData.taskStatus === "New") {
             formData.taskStatus = "Pending";
@@ -961,86 +990,213 @@ const load = {
 
 let deletedRows = [];
 
+const edit_button = async (table, id, val) => {
+    try {
+        const response = await fetch(`/api/edit-table/${table}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id, val })
+        });
+        const data = await response.json();
+
+        if(!response.ok) {
+            alert("Error editing task" + data.error);
+            return { success: false };
+        };
+
+        return { success: true, value: data };
+
+    } catch (err) {
+        console.error(`Error editing lookup table: ${table}`, err);
+    }
+};
+
 const fetch_data = {
     task_datalist: async function(isEdit = false) {
         try {
-            const response = await fetch('/api/ref-table/task_types');
+            const table = 'task_types';
+            const response = await fetch(`/api/ref-table/${table}`);
             const data = await response.json();
     
             const container = document.getElementById('taskTypeAdd');
+            const body = document.getElementById("taskTypeTable");
             const select = isEdit ? document.getElementById('editTaskType') : document.getElementById('taskType');
     
+            const closeButton = container.querySelector('.close-cont');
+            const editButton = container.querySelector('.c2');
             const deleteButton = container.querySelector('.c3');
-            const cancelButton = container.querySelector('.c4');
-            const applyButton = container.querySelector('.c5');
+            const confirmCancel = container.querySelector('.c4');
+            const confirmSelect = container.querySelector('.c5');
+            const confirmApply = container.querySelector('.c6');
     
-            const body = document.getElementById("taskTypeTable");
+            confirmCancel.disabled = confirmSelect.disabled = true;
             body.innerHTML = "";
     
-            let selectedRow = null; 
+            let selectedRow = null;
+            let selectedId = 0;
+            let originalRowName = null;
+
+            function update_state() {
+                confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
+                confirmCancel.classList.toggle('confirmed', !!selectedRow);
+                confirmSelect.classList.toggle('confirmed', !!selectedRow);
+            }
+
+            function remove_highlight() {
+                selectedRow = null;
+                body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+                confirmCancel.classList.remove('confirmed');
+                confirmSelect.classList.remove('confirmed');
     
+                body.querySelectorAll("td").forEach(cell => {
+                    const input = cell.querySelector("input");
+                    if (input) {
+                        cell.innerHTML = "";
+                        cell.textContent = input.value;
+                    }
+                });
+            }
+    
+            const fragment = document.createDocumentFragment();
             data.forEach((val, index) => {
-                if (deletedRows.includes(`${container.id}-${index}`)) {
-                    return;
-                }
+                if (deletedRows.includes(`${container.id}-${index}`)) return;
 
                 let row = document.createElement("tr");
                 row.id = `${container.id}-${index}`;
                 row.dataset.index = index;
                 row.innerHTML = `
-                    <td>${val.name}</td>
+                    <td data-id="${val.id}">${val.name}</td>
                     <td>${val.description}</td>
                 `;
-    
+            
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
     
-                    const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
+                    body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
                     row.classList.add("highlight");
-                    
     
-                    selectedRow = row; 
-    
-                    cancelButton.classList.add('confirmed');
-                    applyButton.classList.add('confirmed');
+                    selectedRow = row;
+                    selectedId = val.id;
+                    update_state();
                 });
-    
-                body.appendChild(row);
+
+                fragment.appendChild(row);
             });
+            body.appendChild(fragment);
+
+            closeButton.addEventListener('click', () => {
+                container.style.display = 'none';
+                remove_highlight();
+            })
+
+            editButton.addEventListener('click', async () => {
+                if (!selectedRow) return alert ('Please select a row to edit.');
+
+                const cells = selectedRow.querySelectorAll("td");
+                originalRowName = select.value;
+                const initialValues = [...cells].map(cell => cell.innerText.trim());
+
+                cells.forEach((cell, index) => {
+                    if (!cell.querySelector("input")) {
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.value = initialValues[index];
+                        input.classList.add('editable-input');
     
-            applyButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    select.value = selectedRow.cells[0].innerText; 
-                    container.style.display = 'none';
+                        input.addEventListener("input", () => {
+                            const hasChanged = [...selectedRow.querySelectorAll("input")].some(
+                                (inp, i) => inp.value.trim() !== initialValues[i]
+                            );
+                            confirmApply.disabled = !hasChanged;
+                            confirmApply.style.display = hasChanged ? 'flex' : 'none';
+                        });
+    
+                        cell.textContent = "";
+                        cell.appendChild(input);
+                    }
+                });
+
+                confirmSelect.style.display = 'none';
+                confirmApply.classList.add('confirmed');
+
+                body.querySelectorAll("tr").forEach(row => {
+                    if (row !== selectedRow) {
+                        row.style.pointerEvents = "none";
+                        row.classList.add('disabled-row');
+                    };
+                });
+            });
+   
+            confirmApply.addEventListener('click', async () => {
+                try {
+                    const updatedData = {};
+                    const names = ["name", "description"];
+    
+                    selectedRow.querySelectorAll("td").forEach((cell, index) => {
+                        const input = cell.querySelector("input");
+                        if (input) updatedData[names[index]] = input.value.trim();
+                    });
+    
+                    console.log(updatedData);
+                    const result = await edit_button(table, selectedId, updatedData);
+                    if (result.success) {
+                        selectedRow.querySelectorAll("td").forEach((cell, index) => {
+                            if (cell.querySelector("input")) {
+                                cell.textContent = updatedData[names[index]];
+                            }
+                        });
+    
+                        body.querySelectorAll("tr").forEach(row => {
+                            row.style.pointerEvents = "auto";
+                            row.classList.remove("disabled-row");
+                        });
+    
+                        confirmApply.style.display = 'none';
+                        confirmSelect.style.display = 'flex';
+    
+                        if (originalRowName && select.value === originalRowName) {
+                            console.log('enter');
+                            select.value = updatedData.name;
+                        }
+                    } else {
+                        console.error("Error updating row:", result.error);
+                    }
+                } catch (err) {
+                    console.error(`Error editing row:`, err);
                 }
             });
-    
-            cancelButton.addEventListener('click', () => {
-                selectedRow = null;
-                if(select.value) select.value = null; 
-                const rows = body.querySelectorAll("tr");
-                rows.forEach(r => r.classList.remove("highlight"));
-                cancelButton.classList.remove('confirmed');
-                applyButton.classList.remove('confirmed');
+
+            confirmSelect.addEventListener('click', () => {
+                if(!selectedRow) return;
+                select.value = selectedRow.cells[0].innerText; 
+                container.style.display = 'none';
             });
+
+            confirmCancel.addEventListener('click', () => {
+                if (select.value) select.value = null;
+                if (confirmApply.classList.contains('confirmed')) {
+                    body.querySelectorAll("tr").forEach(row => {
+                        row.style.pointerEvents = "auto";
+                        row.classList.remove('disabled-row');
+                    });
+                    confirmSelect.style.display = 'flex';
+                    confirmApply.style.display = 'none';
+                    confirmApply.classList.remove('confirmed');
+                }
+                remove_highlight();
+            });
+
     
             deleteButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    const isConfirmed = confirm('Are you sure you want to delete this row?');
-
-                    if(isConfirmed) {
-                        deletedRows.push(selectedRow);
-                        selectedRow.remove(); 
-                        selectedRow = null; 
+                if (!selectedRow) return alert('Please select a row to delete.');
     
-                        const rows = body.querySelectorAll("tr");
-                        rows.forEach(r => r.classList.remove("highlight"));
-                        cancelButton.classList.remove('confirmed');
-                        applyButton.classList.remove('confirmed');
-                    }
-                } else {
-                    alert('Please select a row to delete.');
+                if (confirm('Are you sure you want to delete this row?')) {
+                    deletedRows.push(selectedRow.id);
+                    selectedRow.remove();
+                    selectedRow = null;
+                    remove_highlight();
                 }
             });
     
@@ -1049,9 +1205,9 @@ const fetch_data = {
         }
     },
 
-
     request_datalist: async function(isEdit = false) {
         try {
+            const table = 'requested_by';
             const response = await fetch('/api/ref-table/requested_by');
             const data = await response.json();
     
@@ -1060,20 +1216,46 @@ const fetch_data = {
             const department = isEdit ? document.getElementById('editDepartment') : document.getElementById('department');
             const departmentNo = isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo');
 
+            const closeButton = container.querySelector('.close-cont');
+            const editButton = container.querySelector('.c2');
             const deleteButton = container.querySelector('.c3');
-            const cancelButton = container.querySelector('.c4');
-            const applyButton = container.querySelector('.c5');
-            // select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
+            const confirmCancel = container.querySelector('.c4');
+            const confirmSelect = container.querySelector('.c5');
+            const confirmApply = container.querySelector('.c6');
     
             const body = document.getElementById("requestTable");
             body.innerHTML = "";
 
-            let selectedRow = null; 
+            let selectedRow = null;
+            let selectedId = 0;
+            let fullName = null;
+            let depName = null;
+            let depNum = null;
+
+            function update_state() {
+                confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
+                confirmCancel.classList.toggle('confirmed', !!selectedRow);
+                confirmSelect.classList.toggle('confirmed', !!selectedRow);
+            }
+
+            function remove_highlight() {
+                selectedRow = null;
+                body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+                confirmCancel.classList.remove('confirmed');
+                confirmSelect.classList.remove('confirmed');
     
+                body.querySelectorAll("td").forEach(cell => {
+                    const input = cell.querySelector("input");
+                    if (input) {
+                        cell.innerHTML = "";
+                        cell.textContent = input.value;
+                    }
+                });
+            }
+    
+            const fragment = document.createDocumentFragment();
             data.forEach((val, index) => {
-                if (deletedRows.includes(`${container.id}-${index}`)) {
-                    return;
-                }
+                if (deletedRows.includes(`${container.id}-${index}`)) return;
 
                 let row = document.createElement("tr");
                 row.id = `${container.id}-${index}`;
@@ -1086,54 +1268,139 @@ const fetch_data = {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
 
-                    const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
+                    body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
                     row.classList.add("highlight");
 
-                    selectedRow = row; 
+                    selectedRow = row;
+                    selectedId = val.id;
+                    update_state();
+                });
 
-                    cancelButton.classList.add('confirmed');
-                    applyButton.classList.add('confirmed');
-                })
-                body.appendChild(row);
+                fragment.appendChild(row);
+            });
+            body.appendChild(fragment);
+
+            closeButton.addEventListener('click', () => {
+                container.style.display = 'none';
+                remove_highlight();
+            })
+
+            editButton.addEventListener('click', async () => {
+                if (!selectedRow) return alert ('Please select a row to edit.');
+
+                const cells = selectedRow.querySelectorAll("td");
+                fullName = select.value;
+                depName = department.value;
+                depNum = departmentNo.value;
+                const initialValues = [...cells].map(cell => cell.innerText.trim());
+
+                cells.forEach((cell, index) => {
+                    if (!cell.querySelector("input")) {
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.value = initialValues[index];
+                        input.classList.add('editable-input');
+    
+                        input.addEventListener("input", () => {
+                            const hasChanged = [...selectedRow.querySelectorAll("input")].some(
+                                (inp, i) => inp.value.trim() !== initialValues[i]
+                            );
+                            confirmApply.disabled = !hasChanged;
+                            confirmApply.style.display = hasChanged ? 'flex' : 'none';
+                        });
+    
+                        cell.textContent = "";
+                        cell.appendChild(input);
+                    }
+                });
+
+                confirmSelect.style.display = 'none';
+                confirmApply.classList.add('confirmed');
+
+                body.querySelectorAll("tr").forEach(row => {
+                    if (row !== selectedRow) {
+                        row.style.pointerEvents = "none";
+                        row.classList.add('disabled-row');
+                    };
+                });
             });
 
-            applyButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    select.value = selectedRow.cells[0].innerText; 
-                    department.value = selectedRow.cells[1].innerText; 
-                    departmentNo.value = selectedRow.cells[2].innerText; 
-                    container.style.display = 'none';
+            confirmApply.addEventListener('click', async () => {
+                try {
+                    const updatedData = {};
+                    const names = ["full_name", "dep_name", "dep_no"];
+    
+                    selectedRow.querySelectorAll("td").forEach((cell, index) => {
+                        const input = cell.querySelector("input");
+                        if (input) updatedData[names[index]] = input.value.trim();
+                    });
+    
+                    console.log(updatedData);
+                    const result = await edit_button(table, selectedId, updatedData);
+                    if (result.success) {
+                        selectedRow.querySelectorAll("td").forEach((cell, index) => {
+                            if (cell.querySelector("input")) {
+                                cell.textContent = updatedData[names[index]];
+                            }
+                        });
+    
+                        body.querySelectorAll("tr").forEach(row => {
+                            row.style.pointerEvents = "auto";
+                            row.classList.remove("disabled-row");
+                        });
+    
+                        confirmApply.style.display = 'none';
+                        confirmSelect.style.display = 'flex';
+
+                        if(fullName && select.value === fullName) {
+                            select.value = updatedData.full_name;
+                        }
+                        if (depName && department.value === depName) {
+                            department.value = updatedData.dep_name;
+                        }
+                        if (depNum && departmentNo.value === depNum) {
+                            departmentNo.value = updatedData.dep_no;
+                        }
+
+                    } else {
+                        console.error("Error updating row:", result.error);
+                    }
+                } catch (err) {
+                    console.error(`Error editing row:`, err);
                 }
             });
 
-            cancelButton.addEventListener('click', () => {
-                selectedRow = null;
+            confirmSelect.addEventListener('click', () => {
+                if(!selectedRow) return;
+                select.value = selectedRow.cells[0].innerText; 
+                department.value = selectedRow.cells[1].innerText; 
+                departmentNo.value = selectedRow.cells[2].innerText; 
+                container.style.display = 'none';
+            });
+
+            confirmCancel.addEventListener('click', () => {
                 if(select.value) select.value = null; 
                 if(department.value) department.value = null; 
                 if(departmentNo.value) departmentNo.value = null; 
-                const rows = body.querySelectorAll("tr");
-                rows.forEach(r => r.classList.remove("highlight"));
-                cancelButton.classList.remove('confirmed');
-                applyButton.classList.remove('confirmed');
+                if (confirmApply.classList.contains('confirmed')) {
+                    body.querySelectorAll("tr").forEach(row => {
+                        row.style.pointerEvents = "auto";
+                        row.classList.remove('disabled-row');
+                    });
+                    confirmSelect.style.display = 'flex';
+                    confirmApply.style.display = 'none';
+                    confirmApply.classList.remove('confirmed');
+                }
+                remove_highlight();
             });
 
             deleteButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    const isConfirmed = confirm('Are you sure you want to delete this row?');
-
-                    if(isConfirmed) {
-                        deletedRows.push(selectedRow);
-                        selectedRow.remove(); 
-                        selectedRow = null; 
-    
-                        const rows = body.querySelectorAll("tr");
-                        rows.forEach(r => r.classList.remove("highlight"));
-                        cancelButton.classList.remove('confirmed');
-                        applyButton.classList.remove('confirmed');
-                    }
-                } else {
-                    alert('Please select a row to delete.');
+                if (!selectedRow) return alert('Please select a row to delete.');
+                if (confirm('Are you sure you want to delete this row?')) {
+                    deletedRows.push(selectedRow.id);
+                    selectedRow.remove();
+                    selectedRow = null;
+                    remove_highlight();
                 }
             });
 
@@ -1149,11 +1416,12 @@ const fetch_data = {
             const data = await response.json();
     
             const container = document.getElementById('approvedByAdd');
+            const closeButton = container.querySelector('.close-cont');
             const select = isEdit ? document.getElementById('editApprovedBy') : document.getElementById('approvedBy');
 
             const deleteButton = container.querySelector('.c3');
-            const cancelButton = container.querySelector('.c4');
-            const applyButton = container.querySelector('.c5');
+            const confirmCancel = container.querySelector('.c4');
+            const confirmSelect = container.querySelector('.c5');
             // select.innerHTML = `<option selected disabled>Select Task Type</option>`; 
     
             const body = document.getElementById("approveTable");
@@ -1177,26 +1445,35 @@ const fetch_data = {
 
                     selectedRow = row; 
 
-                    cancelButton.classList.add('confirmed');
-                    applyButton.classList.add('confirmed');
+                    confirmCancel.classList.add('confirmed');
+                    confirmSelect.classList.add('confirmed');
                 })
                 body.appendChild(row);
             });
 
-            applyButton.addEventListener('click', () => {
+            function remove_highlight() {
+                selectedRow = null;
+                const rows = body.querySelectorAll("tr");
+                rows.forEach(r => r.classList.remove("highlight"));
+                confirmCancel.classList.remove('confirmed');
+                confirmSelect.classList.remove('confirmed');
+            }
+
+            closeButton.addEventListener('click', () => {
+                container.style.display = 'none';
+                remove_highlight();
+            })
+
+            confirmSelect.addEventListener('click', () => {
                 if (selectedRow) {
                     select.value = selectedRow.cells[0].innerText; 
                     container.style.display = 'none';
                 }
             });
 
-            cancelButton.addEventListener('click', () => {
-                selectedRow = null;
+            confirmCancel.addEventListener('click', () => {
                 if(select.value) select.value = null; 
-                const rows = body.querySelectorAll("tr");
-                rows.forEach(r => r.classList.remove("highlight"));
-                cancelButton.classList.remove('confirmed');
-                applyButton.classList.remove('confirmed');
+                remove_highlight();
             });
 
             deleteButton.addEventListener('click', () => {
@@ -1208,11 +1485,8 @@ const fetch_data = {
                         selectedRow.remove(); 
                         selectedRow = null; 
     
-                        const rows = body.querySelectorAll("tr");
-                        rows.forEach(r => r.classList.remove("highlight"));
-                        cancelButton.classList.remove('confirmed');
-                        applyButton.classList.remove('confirmed');
                     }
+                    remove_highlight();
                 } else {
                     alert('Please select a row to delete.');
                 }
@@ -1243,6 +1517,7 @@ const fetch_data = {
     //         const data = await response.json();
     
     //         const container = document.getElementById('departmentAdd');
+  
     //         const select = isEdit ? document.getElementById('editDepartment') : document.getElementById('department');
     //         const departmentNo = isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo');
     //         // select.innerHTML = `<option selected disabled>Select Department</option>`;    
@@ -1275,17 +1550,18 @@ const fetch_data = {
     //     }
     // },
 
-    it_datalist: async function(isEdit = false) {
+    it_datalist: async function(isEdit = false, sessionName=null) {
         try {
             const response = await fetch('/api/ref-table/it_in_charge');
             const data = await response.json();   
     
             const container = document.getElementById('itAdd');
+            const closeButton = container.querySelector('.close-cont');
             const select = isEdit ? document.getElementById('editItInCharge') : document.getElementById('itInCharge');
 
             const deleteButton = container.querySelector('.c3');
-            const cancelButton = container.querySelector('.c4');
-            const applyButton = container.querySelector('.c5');
+            const confirmCancel = container.querySelector('.c4');
+            const confirmSelect = container.querySelector('.c5');
     
             const body = document.getElementById("itTable");
             body.innerHTML = "";
@@ -1297,6 +1573,11 @@ const fetch_data = {
                 row.id = `${container.id}-${index}`;
                 row.dataset.index = index;
                 row.innerHTML = `<td>${val.full_name}</td>`;
+
+                if (sessionName && val.full_name === sessionName) {
+                    row.classList.add("highlight");
+                    selectedRow = row;
+                }
     
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
@@ -1306,27 +1587,36 @@ const fetch_data = {
 
                     selectedRow = row; 
 
-                    cancelButton.classList.add('confirmed');
-                    applyButton.classList.add('confirmed');
+                    confirmCancel.classList.add('confirmed');
+                    confirmSelect.classList.add('confirmed');
                 });
     
                 body.appendChild(row);
             });
 
-            applyButton.addEventListener('click', () => {
+            function remove_highlight() {
+                selectedRow = null;
+                const rows = body.querySelectorAll("tr");
+                rows.forEach(r => r.classList.remove("highlight"));
+                confirmCancel.classList.remove('confirmed');
+                confirmSelect.classList.remove('confirmed');
+            }
+
+            closeButton.addEventListener('click', () => {
+                container.style.display = 'none';
+                remove_highlight();
+            })
+
+            confirmSelect.addEventListener('click', () => {
                 if (selectedRow) {
                     select.value = selectedRow.cells[0].innerText; 
                     container.style.display = 'none';
                 }
             });
 
-            cancelButton.addEventListener('click', () => {
-                selectedRow = null;
+            confirmCancel.addEventListener('click', () => {
                 if(select.value) select.value = null; 
-                const rows = body.querySelectorAll("tr");
-                rows.forEach(r => r.classList.remove("highlight"));
-                cancelButton.classList.remove('confirmed');
-                applyButton.classList.remove('confirmed');
+                remove_highlight();
             });
 
             deleteButton.addEventListener('click', () => {
@@ -1338,11 +1628,8 @@ const fetch_data = {
                         selectedRow.remove(); 
                         selectedRow = null; 
     
-                        const rows = body.querySelectorAll("tr");
-                        rows.forEach(r => r.classList.remove("highlight"));
-                        cancelButton.classList.remove('confirmed');
-                        applyButton.classList.remove('confirmed');
                     }
+                    remove_highlight();
                 } else {
                     alert('Please select a row to delete.');
                 }
@@ -1357,77 +1644,15 @@ const fetch_data = {
 
     device_datalist: async function(isEdit = false) {
         try {
+            const table = 'devices';
             const response = await fetch('/api/ref-table/devices');
             const data = await response.json();
 
             const container = document.getElementById('deviceAdd');
             const select = isEdit ? document.getElementById('editDeviceName') : document.getElementById('deviceName');
-
-            const deleteButton = container.querySelector('.c3');
-            const cancelButton = container.querySelector('.c4');
-            const applyButton = container.querySelector('.c5');
-
             const body = document.getElementById("deviceTable");
-            body.innerHTML = "";
 
-            let selectedRow = null; 
-    
-            data.forEach((val, index) => {
-                let row = document.createElement("tr");
-                row.id = `${container.id}-${index}`;
-                row.dataset.index = index;
-                row.innerHTML = `
-                    <td>${val.name}</td>
-                `;
-                row.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
-                    row.classList.add("highlight");
-
-                    selectedRow = row; 
-
-                    cancelButton.classList.add('confirmed');
-                    applyButton.classList.add('confirmed');
-                })
-                body.appendChild(row);
-            });
-
-            applyButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    select.value = selectedRow.cells[0].innerText; 
-                    container.style.display = 'none';
-                }
-            });
-
-            cancelButton.addEventListener('click', () => {
-                selectedRow = null;
-                if(select.value) select.value = null; 
-                const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
-                cancelButton.classList.remove('confirmed');
-                applyButton.classList.remove('confirmed');
-            });
-
-            deleteButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    const isConfirmed = confirm('Are you sure you want to delete this row?');
-
-                    if(isConfirmed) {
-                        deletedRows.push(selectedRow);
-                        selectedRow.remove(); 
-                        selectedRow = null; 
-    
-                        const rows = body.querySelectorAll("tr");
-                        rows.forEach(r => r.classList.remove("highlight"));
-                        cancelButton.classList.remove('confirmed');
-                        applyButton.classList.remove('confirmed');
-                    }
-                } else {
-                    alert('Please select a row to delete.');
-                }
-            });
-
+            await similar_functions(table, container, body, select, data);
         } catch(err) {
             console.error("Error loading device data:", err);
         }
@@ -1435,76 +1660,15 @@ const fetch_data = {
 
     item_datalist: async function(isEdit = false) {
         try {
+            const table = 'items';
             const response = await fetch('/api/ref-table/items');
             const data = await response.json();
 
             const container = document.getElementById('itemAdd');
             const select = isEdit ? document.getElementById('editItemName') : document.getElementById('itemName');
-
-            const deleteButton = container.querySelector('.c3');
-            const cancelButton = container.querySelector('.c4');
-            const applyButton = container.querySelector('.c5');
-
             const body = document.getElementById("itemTable");
-            body.innerHTML = "";
 
-            let selectedRow = null; 
-    
-            data.forEach((val, index) => {
-                let row = document.createElement("tr");
-                row.id = `${container.id}-${index}`;
-                row.dataset.index = index;
-                row.innerHTML = `
-                    <td>${val.name}</td>
-                `;
-                row.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
-                    row.classList.add("highlight");
-
-                    selectedRow = row; 
-
-                    cancelButton.classList.add('confirmed');
-                    applyButton.classList.add('confirmed');
-                })
-                body.appendChild(row);
-            });
-
-            applyButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    select.value = selectedRow.cells[0].innerText; 
-                    container.style.display = 'none';
-                }
-            });
-
-            cancelButton.addEventListener('click', () => {
-                selectedRow = null;
-                if(select.value) select.value = null; 
-                const rows = body.querySelectorAll("tr");
-                rows.forEach(r => r.classList.remove("highlight"));
-                cancelButton.classList.remove('confirmed');
-                applyButton.classList.remove('confirmed');
-            });
-
-            deleteButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    const isConfirmed = confirm('Are you sure you want to delete this row?');
-
-                    if(isConfirmed) {
-                        deletedRows.push(selectedRow);
-                        selectedRow.remove(); 
-                        selectedRow = null; 
-    
-                        const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
-                        cancelButton.classList.remove('confirmed');
-                        applyButton.classList.remove('confirmed');
-                    }
-                } else {
-                    alert('Please select a row to delete.');
-                }
-            });
+            await similar_functions(table, container, body, select, data);
 
         } catch(err) {
             console.error("Error loading item data:", err);
@@ -1513,81 +1677,198 @@ const fetch_data = {
 
     app_datalist: async function(isEdit = false) {
         try {
+            const table = 'applications';
             const response = await fetch('/api/ref-table/applications');
             const data = await response.json();
             
             const container = document.getElementById('applicationAdd');
             const select = isEdit ? document.getElementById('editApplicationName') : document.getElementById('applicationName');
-
-            const deleteButton = container.querySelector('.c3');
-            const cancelButton = container.querySelector('.c4');
-            const applyButton = container.querySelector('.c5');
-
             const body = document.getElementById("appTable");
-            body.innerHTML = "";
 
-            let selectedRow = null; 
-    
-            data.forEach((val, index) => {
-                let row = document.createElement("tr");
-                row.id = `${container.id}-${index}`;
-                row.dataset.index = index;
-                row.innerHTML = `
-                    <td>${val.name}</td>
-                `;
-                row.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
-                    row.classList.add("highlight");
+            await similar_functions(table, container, body, select, data);
 
-                    selectedRow = row; 
-
-                    cancelButton.classList.add('confirmed');
-                    applyButton.classList.add('confirmed');
-                })
-                body.appendChild(row);
-            });
-
-            applyButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    select.value = selectedRow.cells[0].innerText; 
-                    container.style.display = 'none';
-                }
-            });
-
-            cancelButton.addEventListener('click', () => {
-                selectedRow = null;
-                if(select.value) select.value = null; 
-                const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
-                cancelButton.classList.remove('confirmed');
-                applyButton.classList.remove('confirmed');
-            });
-
-            deleteButton.addEventListener('click', () => {
-                if (selectedRow) {
-                    const isConfirmed = confirm('Are you sure you want to delete this row?');
-
-                    if(isConfirmed) {
-                        deletedRows.push(selectedRow);
-                        selectedRow.remove(); 
-                        selectedRow = null; 
-    
-                        const rows = body.querySelectorAll("tr");
-                    rows.forEach(r => r.classList.remove("highlight"));
-                        cancelButton.classList.remove('confirmed');
-                        applyButton.classList.remove('confirmed');
-                    }
-                } else {
-                    alert('Please select a row to delete.');
-                }
-            });
 
         } catch(err) {
             console.error("Error loading item data:", err);
         }
     }
+}
+
+async function similar_functions(table, container, body, select, data) {
+    const closeButton = container.querySelector('.close-cont');
+    const editButton = container.querySelector('.c2');
+    const deleteButton = container.querySelector('.c3');
+    const confirmCancel = container.querySelector('.c4');
+    const confirmSelect = container.querySelector('.c5');
+    const confirmApply = container.querySelector('.c6');
+
+    confirmCancel.disabled = confirmSelect.disabled = true;
+    body.innerHTML = "";
+
+    let selectedRow = null;
+    let selectedId = 0;
+    let originalRowName = null;
+
+    function update_state() {
+        confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
+        confirmCancel.classList.toggle('confirmed', !!selectedRow);
+        confirmSelect.classList.toggle('confirmed', !!selectedRow);
+    }
+
+    function remove_highlight() {
+        selectedRow = null;
+        body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+        confirmCancel.classList.remove('confirmed');
+        confirmSelect.classList.remove('confirmed');
+
+        body.querySelectorAll("td").forEach(cell => {
+            const input = cell.querySelector("input");
+            if (input) {
+                cell.innerHTML = "";
+                cell.textContent = input.value;
+            }
+        });
+    }
+
+    const fragment = document.createDocumentFragment();
+    data.forEach((val, index) => {
+        if (deletedRows.includes(`${container.id}-${index}`)) return;
+
+        let row = document.createElement("tr");
+        row.id = `${container.id}-${index}`;
+        row.dataset.index = index;
+        row.innerHTML = `
+            <td data-id="${val.id}">${val.name}</td>
+        `;
+    
+        row.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
+            row.classList.add("highlight");
+
+            selectedRow = row;
+            selectedId = val.id;
+            update_state();
+        });
+
+        fragment.appendChild(row);
+    });
+    body.appendChild(fragment);
+
+    closeButton.addEventListener('click', () => {
+        container.style.display = 'none';
+        remove_highlight();
+    })
+
+    editButton.addEventListener('click', async () => {
+        if (!selectedRow) return alert ('Please select a row to edit.');
+
+        const cells = selectedRow.querySelectorAll("td");
+        originalRowName = select.value;
+        const initialValues = [...cells].map(cell => cell.innerText.trim());
+
+        cells.forEach((cell, index) => {
+            if (!cell.querySelector("input")) {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.value = initialValues[index];
+                input.classList.add('editable-input');
+
+                input.addEventListener("input", () => {
+                    const hasChanged = [...selectedRow.querySelectorAll("input")].some(
+                        (inp, i) => inp.value.trim() !== initialValues[i]
+                    );
+                    confirmApply.disabled = !hasChanged;
+                    confirmApply.style.display = hasChanged ? 'flex' : 'none';
+                });
+
+                cell.textContent = "";
+                cell.appendChild(input);
+            }
+        });
+
+        confirmSelect.style.display = 'none';
+        confirmApply.classList.add('confirmed');
+
+        body.querySelectorAll("tr").forEach(row => {
+            if (row !== selectedRow) {
+                row.style.pointerEvents = "none";
+                row.classList.add('disabled-row');
+            };
+        });
+    });
+
+    confirmApply.addEventListener('click', async () => {
+        try {
+            const updatedData = {};
+            const names = ["name"];
+
+            selectedRow.querySelectorAll("td").forEach((cell, index) => {
+                const input = cell.querySelector("input");
+                if (input) updatedData[names[index]] = input.value.trim();
+            });
+
+            console.log(updatedData);
+            const result = await edit_button(table, selectedId, updatedData);
+            if (result.success) {
+                selectedRow.querySelectorAll("td").forEach((cell, index) => {
+                    if (cell.querySelector("input")) {
+                        cell.textContent = updatedData[names[index]];
+                    }
+                });
+
+                body.querySelectorAll("tr").forEach(row => {
+                    row.style.pointerEvents = "auto";
+                    row.classList.remove("disabled-row");
+                });
+
+                confirmApply.style.display = 'none';
+                confirmSelect.style.display = 'flex';
+
+                if (originalRowName && select.value === originalRowName) {
+                    console.log('enter');
+                    select.value = updatedData.name;
+                }
+            } else {
+                console.error("Error updating row:", result.error);
+            }
+        } catch (err) {
+            console.error(`Error editing row:`, err);
+        }
+    });
+
+    confirmSelect.addEventListener('click', () => {
+        if(!selectedRow) return;
+        select.value = selectedRow.cells[0].innerText; 
+        container.style.display = 'none';
+    });
+
+    confirmCancel.addEventListener('click', () => {
+        if (select.value) select.value = null;
+        if (confirmApply.classList.contains('confirmed')) {
+            body.querySelectorAll("tr").forEach(row => {
+                row.style.pointerEvents = "auto";
+                row.classList.remove('disabled-row');
+            });
+            confirmSelect.style.display = 'flex';
+            confirmApply.style.display = 'none';
+            confirmApply.classList.remove('confirmed');
+        }
+        remove_highlight();
+    });
+
+
+    deleteButton.addEventListener('click', () => {
+        if (!selectedRow) return alert('Please select a row to delete.');
+
+        if (confirm('Are you sure you want to delete this row?')) {
+            deletedRows.push(selectedRow.id);
+            selectedRow.remove();
+            selectedRow = null;
+            remove_highlight();
+        }
+    });
 }
 
 
@@ -1767,13 +2048,41 @@ const util = {
         return Array.from({ length: 4 }, () => '0123456789'[Math.floor(Math.random() * 10)]).join('');
     },
 
+    apply_error: function (inputId, label) {
+        const field = document.getElementById(inputId);
+        field.classList.add("error-input"); // Add red border or styling
+    
+        if (label) {
+            label.classList.add("shake-label"); // Make label shake
+        }
+    
+        setTimeout(() => {
+            field.classList.remove("error-input");
+            if (label) label.classList.remove("shake-label");
+        }, 1300);
+    },
+
     get_field_value: function(id) {
         const field = document.getElementById(id);
 
-        if (!field) return "--";
-        if (field.getAttribute("data-id") !== null) return field.getAttribute("data-id").trim();
-
-        return field.value.trim() || "--";  
+        if (!field) return '--'; // Return null instead of "--" if field does not exist
+    
+        let label = document.querySelector(`label[for="${id}"]`);
+        let labelText = label ? label.innerText.trim() : null;
+    
+        // If data-set="true", check if empty and apply error
+        if (field.getAttribute("data-set") === "true" && field.value.trim() === "") {
+            console.log(field);
+            util.apply_error(id, label);
+            return null; // Stop further execution and force re-input
+        }
+    
+        // If data-id exists, return it
+        if (field.getAttribute("data-id") !== null) {
+            return field.getAttribute("data-id").trim();
+        }
+    
+        return field.value.trim() || '--'; 
     },
 
     window_listeners: function() {

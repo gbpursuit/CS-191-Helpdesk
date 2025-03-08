@@ -14,7 +14,7 @@
                             <!-- <select id="taskType" class="dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Task Type</option>
                             </select> -->
-                            <input type="text" id="taskType" placeholder="Enter Task Type" required>
+                            <input type="text" id="taskType" data-set="true" placeholder="Enter Task Type" readonly>
                         </div>
                         <button type="button" id="taskTypeBtn" class="look-btn" aria-label="Open Task Type Table">
                             <i class="fa-solid fa-magnifying-glass"></i>
@@ -29,7 +29,7 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="requestedBy">Requested by<span class="required"> *</span></label>
-                            <input type="text" id="requestedBy" placeholder="Enter Requested By" required>
+                            <input type="text" id="requestedBy" data-set="true" placeholder="Enter Requested By" readonly>
                             <!-- <select id="requestedBy" class = "dropdown">
                                 <option value="" class="option-values" disabled selected>Select Requested by</option>
                             </select> -->
@@ -42,7 +42,7 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="approvedBy">Approved by</label>
-                            <input type="text" id="approvedBy" placeholder="Enter Approved By">
+                            <input type="text" id="approvedBy" placeholder="Enter Approved By" readonly>
                             <!-- <select id="approvedBy" class = "dropdown">
                                 <option value="" class="option-values" disabled selected>Select Approved by</option>
                             </select> -->
@@ -54,8 +54,8 @@
 
                     <div class="form-group container">
                         <div class="label-container">
-                            <label for="department">Department<span class="required"> *</span></label>
-                            <input type="text" id="department" placeholder="Enter Department Name">
+                            <label for="department">Department</label>
+                            <input type="text" id="department" placeholder="Enter Department Name" readonly>
                             <!-- <select id="department" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Department</option>
                                 <option value="Marketing">Marketing</option>
@@ -75,7 +75,7 @@
                     <div class="form-group container">
                         <div class="label-container">
                             <label for="itInCharge">IT in Charge<span class="required"> *</span></label>
-                            <input type="text" id="itInCharge" placeholder="Enter It In Charge" required>
+                            <input type="text" id="itInCharge" data-set="true" placeholder="Enter It In Charge" disabled>
                             <!-- <select id="itInCharge" class="dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select IT in Charge</option>
                                 <option value="Weng Castrillon">Weng Castrillon</option>
@@ -92,7 +92,7 @@
                             <!-- <select id="deviceName" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Device Name</option>
                             </select> -->
-                            <input type="text" id="deviceName" placeholder="Enter Device Name">
+                            <input type="text" id="deviceName" placeholder="Enter Device Name" readonly>
                         </div>
                         <button type="button" id="deviceBtn" class="look-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -103,7 +103,7 @@
                             <!-- <select id="itemName" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Item Name</option>
                             </select> -->
-                            <input type="text" id="itemName" placeholder="Enter Item Name">
+                            <input type="text" id="itemName" placeholder="Enter Item Name" readonly>
                         </div>
                         <button type="button" id="itemBtn" class="look-btn" aria-label="Open Item Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -114,7 +114,7 @@
                             <!-- <select id="applicationName" class = "dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Application Name</option>
                             </select> -->
-                            <input type="text" id="applicationName" placeholder="Enter Application Name">
+                            <input type="text" id="applicationName" placeholder="Enter Application Name" readonly>
                         </div>
                         <button type="button" id="appBtn" class="look-btn" aria-label="Open Application Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -180,11 +180,11 @@
             <div class="add-task-footer">
                 <div class="form-group outside">
                     <label for="problemDetails">Problem Details<span class="required"> *</span></label>
-                    <textarea id="problemDetails" class="scroll" placeholder="Enter Problem Details" required></textarea>
+                    <textarea id="problemDetails" class="scroll" data-set="true" placeholder="Enter Problem Details"></textarea>
                 </div>
                 <div class="form-group outside">
                     <label for="remarks">Remarks<span class="required"> *</span></label>
-                    <textarea id="remarks" class="scroll"  placeholder="Enter Task Remarks" required></textarea>
+                    <textarea id="remarks" class="scroll"  data-set="true" placeholder="Enter Task Remarks"></textarea>
                 </div>  
                 <button type="submit" class="button-add">Add Task</button>
             </div>
@@ -197,13 +197,13 @@
     <div id="taskTypeContent" class="taskType-content layout-content">
         <div class="title-cont">
             <h2 class="title">Task Type</h2>
-            <span class="close-cont" onclick="document.getElementById('taskTypeAdd').style.display='none'">&times;</span>
+            <span id class="close-cont">&times;</span>
         </div>
         <div class="cont-cont">
             <div id="taskTypeColOne" class="task-type col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addTaskTypeModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addTaskTypeModal')">Edit</button>
+                    <button class="c2 box" >Edit</button>
                     <button class="c3 box" >Delete</button>
                 </div>                
             </div>
@@ -221,9 +221,10 @@
                 </table>
             </div>
         </div>
-        <div class="footer-cont">
+        <div class="footer-cont initial">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -232,7 +233,7 @@
 <div id="addTaskTypeModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
-            <h2 class="title">Add Task Type</h2>
+            <h2 class="title">Add Task Type </h2>
             <span class="close-cont" onclick="close_modal('addTaskTypeModal')">&times;</span>
         </div>
         <div class="modal-body">
@@ -257,13 +258,13 @@
     <div id="requestedByContent" class="requestedBy-content layout-content">
         <div class="title-cont">
             <h2 class="title">Requested By</h2>
-            <span class="close-cont" onclick="document.getElementById('requestedByAdd').style.display='none'">&times;</span>
+            <span class="close-cont">&times;</span>
         </div>
         <div class="cont-cont">
             <div id="requestedByColOne" class="requested-by col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addRequestedByModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addRequestedByModal')">Edit</button>
+                    <button class="c2 box" >Edit</button>
                     <button class="c3 box" >Delete</button>                    
                 </div>
             </div>
@@ -284,7 +285,8 @@
         </div>
         <div class="footer-cont">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -321,13 +323,13 @@
     <div id="approvedByContent" class="approvedBy-content layout-content">
         <div class="title-cont">
             <h2 class="title">Approved By</h2>
-            <span class="close-cont" onclick="document.getElementById('approvedByAdd').style.display='none'">&times;</span>
+            <span class="close-cont" >&times;</span>
         </div>
         <div class="cont-cont">
             <div id="approvedByColOne" class="approved-by col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addApprovedByModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addApprovedByModal')">Edit</button>
+                    <button class="c2 box">Edit</button>
                     <button class="c3 box">Delete</button>
                 </div>
             </div>
@@ -347,7 +349,8 @@
         </div>
         <div class="footer-cont">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -375,17 +378,18 @@
     </div>
 </div>
 
+
 <div id="deviceAdd" class="device-add outermost display">
     <div id="deviceContent" class="device-content layout-content">
         <div class="title-cont">
             <h2 class="title">Device Name</h2>
-            <span class="close-cont" onclick="document.getElementById('deviceAdd').style.display='none'">&times;</span>
+            <span class="close-cont" >&times;</span>
         </div>
         <div class="cont-cont">
             <div id="deviceColOne" class="device col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addDeviceModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addDeviceModal')">Edit</button>
+                    <button class="c2 box" >Edit</button>
                     <button class="c3 box" >Delete</button>
                 </div>
             </div>
@@ -404,7 +408,8 @@
         </div>
         <div class="footer-cont">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -432,13 +437,13 @@
     <div id="itemContent" class="item-content layout-content">
         <div class="title-cont">
             <h2 class="title">Item Name</h2>
-            <span class="close-cont" onclick="document.getElementById('itemAdd').style.display='none'">&times;</span>
+            <span class="close-cont" >&times;</span>
         </div>
         <div class="cont-cont">
             <div id="itemColOne" class="item col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addItemModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addItemModal')">Edit</button>
+                    <button class="c2 box" >Edit</button>
                     <button class="c3 box">Delete</button>
                 </div>
             </div>
@@ -457,7 +462,8 @@
         </div>
         <div class="footer-cont">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -485,13 +491,13 @@
     <div id="deptContent" class="dept-content layout-content">
         <div class="title-cont">
             <h2 class="title">Department</h2>
-            <span class="close-cont" onclick="document.getElementById('departmentAdd').style.display='none'">&times;</span>
+            <span class="close-cont" >&times;</span>
         </div>
         <div class="cont-cont">
             <div id="deptColOne" class="dept col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addDepartmentModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addDepartmentModal')">Edit</button>
+                    <button class="c2 box" >Edit</button>
                     <button class="c3 box">Delete</button>
                 </div>
             </div>
@@ -511,7 +517,8 @@
         </div>
         <div class="footer-cont">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -543,13 +550,13 @@
     <div id="itContent" class="it-content layout-content">
         <div class="title-cont">
             <h2 class="title">IT in Charge</h2>
-            <span class="close-cont" onclick="document.getElementById('itAdd').style.display='none'">&times;</span>
+            <span class="close-cont" >&times;</span>
         </div>
         <div class="cont-cont">
             <div id="itColOne" class="it col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addITModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addITModal')">Edit</button>
+                    <button class="c2 box" >Edit</button>
                     <button class="c3 box">Delete</button>
                 </div>
             </div>
@@ -568,7 +575,8 @@
         </div>
         <div class="footer-cont">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -596,13 +604,13 @@
     <div id="appContent" class="app-content layout-content">
         <div class="title-cont">
             <h2 class="title">Application Name</h2>
-            <span class="close-cont" onclick="document.getElementById('applicationAdd').style.display='none'">&times;</span>
+            <span class="close-cont" >&times;</span>
         </div>
         <div class="cont-cont">
             <div id="appColOne" class="app col-one">
                 <div class="groups">
                     <button class="c1 box" onclick="open_add_modal('addApplicationModal')">Add</button>
-                    <button class="c2 box" onclick="open_edit_modal('addApplicationModal')">Edit</button>
+                    <button class="c2 box" >Edit</button>
                     <button class="c3 box" >Delete</button>
                 </div>
             </div>
@@ -621,7 +629,8 @@
         </div>
         <div class="footer-cont">
             <button type = "button" class="c4 box" >Cancel</button>
-            <button type = "button" class="c5 box" >Apply</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
         </div>
     </div>
 </div>
@@ -644,3 +653,5 @@
         </div>
     </div>
 </div>
+
+

@@ -546,13 +546,25 @@ app.post('/api/ref-table/:table', server.is_authenticated, async(req, res) => {
     const db = app.locals.db;
 
     try {
-        task.update_reference_table(db, req, res, refTable, validTables);
-        
+        await task.add_reference(db, req, res, refTable, validTables);
     } catch (err) {
         console.error('Error in adding in reference table:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+app.put('/api/edit-table/:table', server.is_authenticated, async(req, res) => {
+    const { table: refTable } = req.params;
+    const db = app.locals.db;
+
+    try {
+        await task.update_reference(db, req, res, refTable, validTables);
+    } catch(err) {
+        console.error('Error in adding in reference table:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 
 

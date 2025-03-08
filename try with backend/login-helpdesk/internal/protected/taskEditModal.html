@@ -33,7 +33,7 @@
                             <!-- <select id="editTaskType" class = "edit-dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Task Type</option>
                             </select> -->
-                            <input type="text" id="editTaskType" data-select="true" placeholder="Enter Task Type">
+                            <input type="text" id="editTaskType" data-select="true" placeholder="Enter Task Type" readonly>
                         </div>
                         <button type="button" id="editTaskBtn" class="look-btn" aria-label="Open Task Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -49,7 +49,7 @@
                             <!-- <select id="editRequestedBy" class = "edit-dropdown">
                                 <option value="" class="option-values" disabled selected>Select Requested by</option>
                             </select> -->
-                            <input type="text" id="editRequestedBy" data-select="true" placeholder="Enter Task Type">
+                            <input type="text" id="editRequestedBy" data-select="true" placeholder="Enter Task Type" readonly>
                         </div>
                         <button type="button" id="requestedByBtn" class="look-btn" aria-label="Open Requested By Table">
                             <i class="fa-solid fa-magnifying-glass"></i>
@@ -62,7 +62,7 @@
                             <!-- <select id="editApprovedBy" class = "edit-dropdown">
                                 <option value="" class="option-values" disabled selected>Select Approved by</option>
                             </select> -->
-                            <input type="text" id="editApprovedBy" data-select="true" placeholder="Enter Task Type">
+                            <input type="text" id="editApprovedBy" data-select="true" placeholder="Enter Task Type" readonly>
                         </div>
                         <button type="button" id="approvedByBtn" class="look-btn" aria-label="Open Approved By Table">
                             <i class="fa-solid fa-magnifying-glass"></i>
@@ -72,7 +72,7 @@
                     <div class="edit-form-group container">
                         <div class="label-container">
                             <label for="editDepartment">Department<span class="required"> *</span></label>
-                            <input type="text" id="editDepartment"  data-select="true" placeholder="Enter Task Type">
+                            <input type="text" id="editDepartment"  data-select="true" placeholder="Enter Task Type" readonly>
                             <!-- <select id="editDepartment" class="edit-dropdown">
                                 <option value="" class="option-values" disabled selected>Select Department</option>
                                 <option value="Marketing" class="update-values">Marketing</option>
@@ -92,7 +92,7 @@
                     <div class="edit-form-group container">
                         <div class="label-container">
                             <label for="editItInCharge">IT in Charge<span class="required"> *</span></label>
-                            <input type="text" id="editItInCharge" data-select="true" placeholder="Enter Task Type">
+                            <input type="text" id="editItInCharge" data-select="true" placeholder="Enter Task Type" readonly>
                             <!-- <select id="editItInCharge" class="edit-dropdown">
                                 <option value="" class="option-values" disabled selected>Select IT in Charge</option>
                                 <option value="Weng Castrillon">Weng Castrillon</option>
@@ -124,7 +124,7 @@
                             <!-- <select id="editDeviceName" class = "edit-dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Task Type</option>
                             </select> -->
-                            <input type="text" id="editDeviceName" data-select="true" placeholder="Enter Device Name">
+                            <input type="text" id="editDeviceName" data-select="true" placeholder="Enter Device Name" readonly>
                         </div>
                         <button type="button" id="editDeviceBtn" class="look-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -135,7 +135,7 @@
                             <!-- <select id="editItemName" class = "edit-dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Task Type</option>
                             </select> -->
-                            <input type="text" id="editItemName" data-select="true" placeholder="Enter Item Name">
+                            <input type="text" id="editItemName" data-select="true" placeholder="Enter Item Name" readonly>
                         </div>
                         <button type="button" id="editItemBtn" class="look-btn" aria-label="Open Item Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -146,7 +146,7 @@
                             <!-- <select id="editApplicationName" class = "edit-dropdown" required>
                                 <option value="" class="option-values" disabled selected>Select Task Type</option>
                             </select> -->
-                            <input type="text" id="editApplicationName" data-select="true" placeholder="Enter Application Name">
+                            <input type="text" id="editApplicationName" data-select="true" placeholder="Enter Application Name" readonly>
                         </div>
                         <button type="button" id="editAppBtn" class="look-btn" aria-label="Open Application Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
@@ -211,12 +211,12 @@
             </div>
             <div class="edit-task-footer">
                 <div class="edit-form-group outside">
-                    <label for="editProblemDetails">Problem Details</label>
-                    <textarea id="editProblemDetails" class="scroll" placeholder="Enter Problem Details" required></textarea>
+                    <label for="editProblemDetails">Problem Details<span class="required"> *</span></label>
+                    <textarea id="editProblemDetails" class="scroll" data-set="true" placeholder="Enter Problem Details"></textarea>
                 </div>
                 <div class="edit-form-group outside">
-                    <label for="editRemarks">Remarks</label>
-                    <textarea id="editRemarks" class="scroll"  placeholder="Enter Task Remarks" required></textarea>
+                    <label for="editRemarks">Remarks<span class="required"> *</span></label>
+                    <textarea id="editRemarks" class="scroll"  data-set="true" placeholder="Enter Task Remarks"></textarea>
                 </div>   
                 <button type="submit" class="button-update">Update Task</button>
             </div>

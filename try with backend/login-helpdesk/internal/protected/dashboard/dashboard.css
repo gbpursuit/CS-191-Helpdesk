@@ -1244,23 +1244,29 @@ input[type="date"] {
     /* filter: brightness(110%); */
 }
 
+
 .footer-cont {
-    gap: 20px;
     display: flex;
+    gap: 20px;
     justify-content: space-between; /* Align buttons on each side */
     width: 50%; /* Start from the middle */
     align-self: flex-end; /* Align to the bottom */
 }
 
-.c4, .c5 {
+
+.c4, .c5, .c6 {
     background-color: var(--dark-green2);
     filter: contrast(55%);
     cursor: not-allowed;
     transition: background-color 0.9s ease;
 }
 
-.c4:hover, .c5:hover {
+.c4:hover, .c5:hover, .c6:hover {
     background-color: var(--dark-green2);
+}
+
+.c6 {
+    display: none;
 }
 
 .confirmed {
@@ -1287,10 +1293,72 @@ input[type="date"] {
     background-color: var(--another-green) !important;
 }
 
-.bold-value {
-    font-weight: 600;
-    color: red;
+.error-input {
+    transition: border-color 0.3s ease;
+    border: 2px solid var(--hot-pink) !important;
 }
+
+/* Shake animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 80% { transform: translateX(0px); }
+    40%, 60% { transform: translateX(6px); }
+}
+
+.shake-label {
+    animation: shake 0.4s ease-in-out infinite;
+    color: var(--hot-pink);
+}
+
+.editable-input {
+    border: none;
+    background: transparent;
+    font: inherit;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    text-align: inherit;
+    color: var(--white);
+}
+
+.disabled-row {
+    opacity: 0.8;
+    background-color: var(--v1-gray);
+}
+
+
+
+
+/* .approve-confirm {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-dark);
+
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    z-index: 15;
+}
+
+.approve-content {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    width: min(60%, 700px); 
+    max-height: 80vh;
+    height: fit-content; 
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px var(--shadow);
+    gap: 10px;
+    overflow-y: auto;
+    align-items: center;
+}    */
 
 /* ========================================= */
 

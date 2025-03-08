@@ -236,10 +236,16 @@ export const task = {
 
         if(bool && type && query) {
             if (Array.isArray(type)) {
-                let typeConditions = type.map(() => `?? LIKE ?`).join(' OR ');
+                let typeConditions = type.map(t => {
+                    return t === "taskType" ? 'task_types.name LIKE ?' : '?? LIKE ?';
+                }).join (' OR ');
                 conditions.push(`(${typeConditions})`);
                 type.forEach(t => {
-                    params.push(t, `%${query}%`);
+                    if (t === 'taskType') {
+                        params.push(`%${query}%`);
+                    } else {
+                        params.push(t, `%${query}%`);
+                    }
                 });
             }
             else {
@@ -260,6 +266,7 @@ export const task = {
         let whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
         let sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC'
         let sortField = ['taskDate', 'department'].includes(filterBy) ? filterBy : 'tasks.id';
+        
         // let baseQuery = `SELECT * FROM tasks ${whereClause} ORDER BY ?? ${sortOrder}`;
 
         // Replace the id values with actual names in their respective tables
@@ -343,12 +350,37 @@ export const task = {
                 //     const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
                 //     return existing.length ? existing[0].username : null;
                 // }
+
+                if (table === "approved_by" && value === '--') {
+                    const [existing] = await db.query(`SELECT id FROM approved_by WHERE ${column} = ?`, ['Unknown']);
+                    if (existing.length) return existing[0].id;
+                }
+
+                // if (table === "it_in_charge") {
+                //     const [existing] = await db.query(`SELECT id FROM approved_by WHERE ${column} = ?`, [value]);
+                //     if (existing.length) {
+                //         return existing[0].id;
+                //     } else {
+
+                //     }
+                // }
+
+                // if (table === "approved_by") console.log (value);
             
                 const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
                 if (existing.length) return existing[0].id;
+
+                let req_full_name, req_parts, req_first, req_last;
             
                 if (column === 'full_name') {
-                    throw new Error("Cannot insert into a generated column: full_name");
+                    req_full_name = value.trim();
+                    req_parts = req_full_name.split(/\s+/);
+                    req_first = req_parts[0];
+                    req_last = req_parts.length > 1 ? req_parts.slice(1).join(' ') : '';
+
+                    const [result] = await db.query(`INSERT INTO ${table} (first_name, last_name) VALUES (?, ?)`, [req_first, req_last]);
+                    return result.insertId; 
+                    // throw new Error("Cannot insert into a generated column: full_name");
                 }
             
                 const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
@@ -611,7 +643,7 @@ export const task = {
         }
     },
 
-    update_reference_table: async function(db, req, res, tableName, validTables) {
+    add_reference: async function(db, req, res, tableName, validTables) {
         try {
             if (!validTables.includes(tableName)) {
                 return res.status(400).json({ error: 'Invalid reference table' });
@@ -630,8 +662,6 @@ export const task = {
                     let req_query = `SELECT id FROM departments WHERE name = ?`;
                     let req_values = [req.body.reqDept];
             
-                    console.log('Before query:', req_query, req_values);
-            
                     const [req_result] = await db.query(req_query, req_values);
             
                     if (req_result.length > 0) {
@@ -640,8 +670,6 @@ export const task = {
                         if (existingDepartment.department_no !== req.body.reqContact) {
                             console.log('Contact number mismatch: Current contact number:', existingDepartment.department_no, 'Provided contact number:', req.body.reqContact);
                 
-                            // Here we proceed with the assumption the user wants to update the contact number
-                            // You would typically handle this with some confirmation on the front end
                             const updateDeptQuery = `UPDATE departments SET department_no = ? WHERE id = ?`;
                             const updateDeptValues = [req.body.reqContact, existingDepartment.id];
                 
@@ -736,6 +764,87 @@ export const task = {
             res.status(500).json({ err: 'Internal server error'});
         }
     },
+
+    update_reference: async function(db, req, res, tableName, validTables) {
+         try {
+            if (!validTables.includes(tableName)) {
+                return res.status(400).json({ error: 'Invalid reference table' });
+            }
+
+            let query = "";
+            let values = [];
+    
+            switch(tableName) {
+                case 'task_types':
+                    query = `UPDATE task_types SET name = ?, description = ? WHERE id = ?`;
+                    values = [req.body.val.name, req.body.val.description, req.body.id];
+                    break;
+                case 'requested_by':
+                    let req_full_name = req.body.val.full_name.trim();
+                    let req_parts = req_full_name.split(/\s+/);
+                    let req_first  = req_parts[0];
+                    let req_last = req_parts.length > 1 ? req_parts.slice(1).join(' ') : '';
+
+                    let req_query = `SELECT id FROM departments WHERE name = ?`;
+                    let req_values = [req.body.val.dep_name];
+
+                    const [req_result] = await db.query(req_query, req_values);
+
+                    if (req_result.length > 0) {
+                        let existingDepartment = req_result[0];
+                
+                        const updateDeptQuery = `UPDATE departments SET department_no = ? WHERE id = ?`;
+                        const updateDeptValues = [req.body.val.dep_no, existingDepartment.id];
+            
+                        // Perform the update
+                        await db.query(updateDeptQuery, updateDeptValues);
+                        console.log('Contact number updated to:', req.body.val.dep_no);
+                
+                        let departmentId = existingDepartment.id;
+                        query = `UPDATE requested_by SET first_name = ?, last_name = ?, department = ? WHERE id = ?`;
+                        values = [req_first, req_last, departmentId, req.body.id];
+                
+                    } else {
+                        console.log('Department not found, inserting new department...');
+                        let insertDeptQuery = `INSERT INTO departments (name, department_no) VALUES (?, ?)`;
+                        let insertValues = [req.body.val.dep_name, req.body.val.dep_no];
+                
+                        const [insertDeptResult] = await db.query(insertDeptQuery, insertValues);
+                        let departmentId = insertDeptResult.insertId;
+                        query = `INSERT INTO requested_by (first_name, last_name, department) VALUES (?, ?, ?) WHERE id = ?`;
+                        values = [req_first, req_last, departmentId, req.body.id];
+                    }
+                    break;
+                case 'approved_by':
+                    break;
+                case 'it_in_charge':
+                    break;
+                case 'items':
+                    query = `UPDATE items SET name = ? WHERE id = ?`;
+                    values = [req.body.val.name, req.body.id];
+                    break;
+                case 'devices':
+                    query = `UPDATE devices SET name = ? WHERE id = ?`;
+                    values = [req.body.val.name, req.body.id];
+                    break;
+                case 'applications':
+                    query = `UPDATE applications SET name = ? WHERE id = ?`;
+                    values = [req.body.val.name, req.body.id];
+                    break;
+            
+
+                default: 
+                    return res.status(400).json({ error: 'Invalid table selection' });
+            }
+
+            const [result] = await db.query(query, values);
+            res.status(201).json({ message: `Updated ${tableName} Record:`, result });
+            // res.status(201).json({ success: true });
+         } catch(err) {
+            console.error("Error updating referenced table:", err);
+            res.status(500).json({ err: 'Internal server error'});
+         }
+    }
 
     
 }

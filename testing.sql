@@ -485,7 +485,24 @@ AND kcu.REFERENCED_TABLE_NAME IS NOT NULL;
 -- ('Marcus', 'Pilapil'), 
 -- ('Weng', 'Castrillon');
 
+-- CREATE TABLE 'delete' {
+--   `id` int NOT NULL AUTO_INCREMENT,
+--   `deleted_value` varchar(50) NOT NULL,
+--   PRIMARY KEY (`id`),
+--   UNIQUE KEY `name` (`deleted_value`)
+-- };
 
+CREATE TABLE 'deleted_values' {
+  `id` int NOT NULL AUTO_INCREMENT,
+  `deleted_value` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`deleted_value`)
+};
+
+
+
+DESCRIBE 'delete';
+SELECT * FROM 'delete';
 
 -- Select all records from the users table
 SELECT * FROM users;
