@@ -1220,17 +1220,46 @@ const fetch_data = {
             });
 
     
-            deleteButton.addEventListener('click', () => {
+            deleteButton.addEventListener('click', async () => {
                 if (!selectedRow) return alert('Please select a row to delete.');
-    
+            
                 if (confirm('Are you sure you want to delete this row?')) {
-                    deletedRows.push(selectedRow.id);
-                    selectedRow.remove();
-                    selectedRow = null;
-                    remove_highlight();
+                    const rowId = selectedRow.querySelector("td").dataset.id; // Ensure the first column has the row ID
+                    const tableMap = {
+                        "taskTypeAdd": "task_types",
+                        "requestedByAdd": "requested_by",
+                        "approvedByAdd": "approved_by",
+                        "itChargeAdd": "it_in_charge",
+                        "deviceAdd": "devices",
+                        "itemAdd": "items",
+                        "appAdd": "applications"
+                    };
+                    
+                    const tableName = tableMap[container.id] || "";
+                    if (!tableName) {
+                        console.error("Invalid table name:", container.id);
+                        alert("Error: Unable to determine the correct table name.");
+                        return;
+                    }
+                                
+                    try {
+                        const response = await fetch(`/api/delete-table/${tableName}/${rowId}`, { method: "DELETE" });
+            
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || "Failed to delete row.");
+                        }
+            
+                        selectedRow.remove(); // Remove from frontend only if backend deletion is successful
+                        selectedRow = null;
+                        remove_highlight();
+                    } catch (err) {
+                        console.error('Error deleting row:', err);
+                        alert("Failed to delete row. Please try again.");
+                    }
                 }
             });
-    
+            
         } catch (err) {
             console.error("Error loading task data:", err);
         }

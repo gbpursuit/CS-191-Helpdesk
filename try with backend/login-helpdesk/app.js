@@ -565,7 +565,28 @@ app.put('/api/edit-table/:table', server.is_authenticated, async(req, res) => {
     }
 });
 
+app.delete('/api/delete-table/:table/:id', server.is_authenticated, async (req, res) => {
+    const { table: refTable, id } = req.params;
+    const db = app.locals.db;
 
+    if (!validTables.includes(refTable)) {
+        console.error("Received invalid table name:", refTable);
+        return res.status(400).json({ error: `Invalid table name: ${refTable}` });
+    }
+
+    try {
+        const [result] = await db.query(`DELETE FROM ?? WHERE id = ?`, [refTable, id]);
+
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: `Row deleted successfully` });
+        } else {
+            res.status(404).json({ error: "Row not found" });
+        }
+    } catch (err) {
+        console.error('Error deleting row:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 
 // Fallback route for unmatched paths
@@ -576,11 +597,6 @@ app.use((req, res) => {
 // ---- Start Server ----
 server.update_dump();
 server.launch_server(app);
-
-
-
-
-
 
 // Delete Tasks -- for admin only (future implement)
 // app.delete('/api/tasks/:taskId', server.is_authenticated, limiter.delete_limit, async (req, res) => {
