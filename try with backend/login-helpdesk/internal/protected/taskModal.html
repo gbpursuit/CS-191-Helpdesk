@@ -1,4 +1,4 @@
-<div id="taskModal" class="modal">
+x<div id="taskModal" class="modal">
     <div id = "modalContent" class="modal-content" onclick = "event.stopPropagation()">   
         <div class="add-task-header">
             <span class="close">&times;</span>
@@ -16,10 +16,12 @@
                             </select> -->
                             <input type="text" id="taskType" data-set="true" placeholder="Enter Task Type" readonly>
                         </div>
-                        <button type="button" id="taskTypeBtn" class="look-btn" aria-label="Open Task Type Table">
+                        <button type="button" id="taskTypeBtn" class="look-btn"  aria-label="Open Task Type Table">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </div>
+
+                    <!-- onclick="open_container('taskTypeAdd', 'taskTypeTable')" -->
 
                     <div class="form-group">
                         <label for="taskDescription">Task Description</label>
@@ -251,7 +253,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Requested By Pop-up -->
 <div id="requestedByAdd" class="requested-by-add outermost display">
