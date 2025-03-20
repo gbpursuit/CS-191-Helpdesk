@@ -48,7 +48,7 @@ export const server = {
 
     launch_server: async function(app) {
         try {
-            await restore_existing_database();
+            // await restore_existing_database();
             const db = await setup_database();
             app.locals.db = db;
     

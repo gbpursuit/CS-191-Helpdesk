@@ -1182,7 +1182,8 @@ const fetch_data = {
         openBtnId: 'TaskTypeBtn',
         isEdit,
         columns: ['name', 'description'],
-        tableMap: { taskTypeAdd: 'task_types' }
+        tableMap: { taskTypeAdd: 'task_types' },
+        description: true
     }),
     request_datalist: (isEdit = false) => fetchRefTableFull({
         table: 'requested_by',
@@ -1194,6 +1195,7 @@ const fetch_data = {
         isEdit,
         columns: ['full_name', 'dep_name', 'dep_no'],
         tableMap: { requestedByAdd: 'requested_by' },
+        description: false,
         departmentFields: true
     }),
     approve_datalist: (isEdit = false) => fetchRefTableFull({
@@ -1217,6 +1219,8 @@ const fetch_data = {
         isEdit,
         columns: ['full_name'],
         tableMap: { itAdd: 'it_in_charge' },
+        description: false,
+        departmentFields: false,
         sessionName
     }),
     device_datalist: (isEdit = false) => fetchRefTableFull({
@@ -1254,7 +1258,7 @@ const fetch_data = {
     })
 };
 
-async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtnId, isEdit = false, columns = [], tableMap, departmentFields = false, sessionName = null }) {
+async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtnId, isEdit = false, columns = [], tableMap, description = false, departmentFields = false, sessionName = null }) {
     try {
         console.log(containerId);
         const response = await fetch(`/api/ref-table/${table}`);
@@ -1263,6 +1267,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         const container = document.getElementById(containerId);
         const body = document.getElementById(bodyId);
         const select = isEdit ? document.getElementById(`edit${selectId}`) : document.getElementById(selectId);
+        const taskDescription = description ? (isEdit ? document.getElementById('editTaskDescription'): document.getElementById('taskDescription')) : null;
         const department = departmentFields ? (isEdit ? document.getElementById('editDepartment') : document.getElementById('department')) : null;
         const departmentNo = departmentFields ? (isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo')) : null;
 
@@ -1277,11 +1282,16 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         confirmCancel.disabled = confirmSelect.disabled = true;
         body.innerHTML = "";
 
-        let selectedRow = container.dataset.selectedRow;
+        let selectedRow = null;
         let selectedId = 0;
 
         let originalRowName = null;
         let alertTriggered = false;
+
+        let des = null;
+        let depName = null;
+        let depNum = null;
+
 
         function update_state() {
             confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
@@ -1395,6 +1405,13 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
 
             const cells = selectedRow.querySelectorAll("td");
             originalRowName = select.value;
+
+            if (description) des = taskDescription.value;
+            if (departmentFields) {
+                depName = department.value;
+                depNum = departmentNo.value;
+            }
+
             // may ilalagay here for others
             const initialValues = [...cells].map(cell => cell.innerText.trim());
 
@@ -1467,6 +1484,18 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                         select.value = updatedData[columns[0]];
                         // select.value = updatedData.name;
                     }
+
+                    if (description && des && taskDescription.value === des) {
+                        taskDescription.value = updatedData.description;
+                    }
+
+                    if (departmentFields && depName && department.value === depName) {
+                        department.value = updatedData.dep_name;
+                    }
+                    if (departmentFields &&depNum && departmentNo.value === depNum) {
+                        departmentNo.value = updatedData.dep_no;
+                    }
+
                 } else {
                     console.error("Error updating row:", result.error);
                 }
@@ -1479,6 +1508,11 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         confirmSelect.addEventListener('click', () => {
             if (!selectedRow) return;
             select.value = selectedRow.cells[0].innerText;
+
+            if (description) {
+                taskDescription.value = selectedRow.cells[1]?.innerText || '';
+            }
+
             if (departmentFields) {
                 department.value = selectedRow.cells[1]?.innerText || '';
                 departmentNo.value = selectedRow.cells[2]?.innerText || '';
@@ -1497,6 +1531,9 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                 confirmSelect.style.display = 'flex';
                 confirmApply.style.display = 'none';
                 confirmApply.classList.remove('confirmed');
+            }
+            if(description) {
+                taskDescription.value = '';
             }
             if (departmentFields) {
                 department.value = '';
