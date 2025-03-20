@@ -27,7 +27,7 @@ CREATE TABLE `app_departments` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +36,7 @@ CREATE TABLE `app_departments` (
 
 LOCK TABLES `app_departments` WRITE;
 /*!40000 ALTER TABLE `app_departments` DISABLE KEYS */;
-INSERT INTO `app_departments` VALUES (2,'Marketing'),(1,'Unknown');
+INSERT INTO `app_departments` VALUES (3,'IT'),(2,'Marketing'),(1,'Unknown');
 /*!40000 ALTER TABLE `app_departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -52,7 +52,7 @@ CREATE TABLE `applications` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -61,9 +61,28 @@ CREATE TABLE `applications` (
 
 LOCK TABLES `applications` WRITE;
 /*!40000 ALTER TABLE `applications` DISABLE KEYS */;
-INSERT INTO `applications` VALUES (5,'--'),(3,'Google Chrome'),(2,'MS Office'),(4,'Opera GX Browser'),(1,'Unknown');
+INSERT INTO `applications` VALUES (3,'Google Chrome'),(2,'MS Office'),(1,'Unknown');
 /*!40000 ALTER TABLE `applications` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_applications` AFTER DELETE ON `applications` FOR EACH ROW BEGIN
+                UPDATE tasks
+                SET applicationName = (SELECT id FROM applications WHERE name = 'Unknown' LIMIT 1)
+                WHERE applicationName IS NULL;
+            END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `approved_by`
@@ -90,9 +109,28 @@ CREATE TABLE `approved_by` (
 
 LOCK TABLES `approved_by` WRITE;
 /*!40000 ALTER TABLE `approved_by` DISABLE KEYS */;
-INSERT INTO `approved_by` (`id`, `first_name`, `last_name`, `department`) VALUES (1,'Unknown','',1),(2,'John','Doe',1),(3,'Jane','Doe',2);
+INSERT INTO `approved_by` (`id`, `first_name`, `last_name`, `department`) VALUES (1,'Unknown','',1),(2,'John','Doe',3),(3,'Jane','Doe',2);
 /*!40000 ALTER TABLE `approved_by` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_approved_by` AFTER DELETE ON `approved_by` FOR EACH ROW BEGIN
+                UPDATE tasks
+                SET approvedBy = (SELECT id FROM approved_by WHERE full_name = 'Unknown' LIMIT 1)
+                WHERE approvedBy IS NULL;
+            END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `delete`
@@ -141,7 +179,7 @@ CREATE TABLE `departments` (
 
 LOCK TABLES `departments` WRITE;
 /*!40000 ALTER TABLE `departments` DISABLE KEYS */;
-INSERT INTO `departments` VALUES (1,'Unknown','0'),(2,'Marketing','1234567890'),(5,'Amazing','1234567888');
+INSERT INTO `departments` VALUES (1,'Unknown','0'),(2,'Marketing','1234467890'),(5,'Amazing','1234567888');
 /*!40000 ALTER TABLE `departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -157,7 +195,7 @@ CREATE TABLE `devices` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,9 +204,28 @@ CREATE TABLE `devices` (
 
 LOCK TABLES `devices` WRITE;
 /*!40000 ALTER TABLE `devices` DISABLE KEYS */;
-INSERT INTO `devices` VALUES (12,'--'),(2,'Acer Laptop'),(4,'Asus Laptop'),(3,'Dell Desktop'),(11,'Lenovo Laptop'),(1,'Unknown');
+INSERT INTO `devices` VALUES (4,'Asus Laptop'),(3,'Dell Desktop'),(11,'Lenovo Laptop'),(1,'Unknown');
 /*!40000 ALTER TABLE `devices` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_devices` AFTER DELETE ON `devices` FOR EACH ROW BEGIN
+                UPDATE tasks
+                SET deviceName = (SELECT id FROM devices WHERE name = 'Unknown' LIMIT 1)
+                WHERE deviceName IS NULL;
+            END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `it_in_charge`
@@ -183,7 +240,7 @@ CREATE TABLE `it_in_charge` (
   `last_name` varchar(50) DEFAULT NULL,
   `full_name` varchar(200) GENERATED ALWAYS AS (trim(concat(coalesce(`first_name`,_utf8mb4''),_utf8mb4' ',coalesce(`last_name`,_utf8mb4'')))) STORED,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -195,6 +252,25 @@ LOCK TABLES `it_in_charge` WRITE;
 INSERT INTO `it_in_charge` (`id`, `first_name`, `last_name`) VALUES (1,'Unknown',''),(2,'Gavril','Coronel'),(3,'Lorraine','Castrillon'),(4,'Marcus','Pilapil'),(5,'Weng','Castrillon'),(6,'James Bond',''),(7,'testing','');
 /*!40000 ALTER TABLE `it_in_charge` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_it_in_charge` AFTER DELETE ON `it_in_charge` FOR EACH ROW BEGIN
+                UPDATE tasks
+                SET itInCharge = (SELECT id FROM it_in_charge WHERE full_name = 'Unknown' LIMIT 1)
+                WHERE itInCharge IS NULL;
+            END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `items`
@@ -208,7 +284,7 @@ CREATE TABLE `items` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -217,9 +293,28 @@ CREATE TABLE `items` (
 
 LOCK TABLES `items` WRITE;
 /*!40000 ALTER TABLE `items` DISABLE KEYS */;
-INSERT INTO `items` VALUES (6,'--'),(3,'Keyboard'),(5,'Laptop'),(2,'Monitor'),(4,'Mouse'),(1,'Unknown');
+INSERT INTO `items` VALUES (3,'Keyboard'),(5,'Laptop'),(1,'Unknown');
 /*!40000 ALTER TABLE `items` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_items` AFTER DELETE ON `items` FOR EACH ROW BEGIN
+                UPDATE tasks
+                SET itemName = (SELECT id FROM items WHERE name = 'Unknown' LIMIT 1)
+                WHERE itemName IS NULL;
+            END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `requested_by`
@@ -246,9 +341,28 @@ CREATE TABLE `requested_by` (
 
 LOCK TABLES `requested_by` WRITE;
 /*!40000 ALTER TABLE `requested_by` DISABLE KEYS */;
-INSERT INTO `requested_by` (`id`, `first_name`, `last_name`, `department`) VALUES (1,'Unknown','',1),(2,'John','Doe',1),(3,'Jane','Doe',2),(4,'Nora','Aunor',5);
+INSERT INTO `requested_by` (`id`, `first_name`, `last_name`, `department`) VALUES (1,'Unknown','',1),(2,'John','Doe',2),(3,'Jane','Doe',2),(4,'Nora','Aunor',5);
 /*!40000 ALTER TABLE `requested_by` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_requested_by` AFTER DELETE ON `requested_by` FOR EACH ROW BEGIN
+                UPDATE tasks
+                SET requestedBy = (SELECT id FROM requested_by WHERE full_name = 'Unknown' LIMIT 1)
+                WHERE requestedBy IS NULL;
+            END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `task_types`
@@ -263,7 +377,7 @@ CREATE TABLE `task_types` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -272,9 +386,28 @@ CREATE TABLE `task_types` (
 
 LOCK TABLES `task_types` WRITE;
 /*!40000 ALTER TABLE `task_types` DISABLE KEYS */;
-INSERT INTO `task_types` VALUES (1,'Unknown','No Description'),(2,'Bug Fix',NULL),(3,'Feature Request',NULL),(4,'Hardware Issue',NULL),(16,'Task Type','Checking For Bugs'),(17,'test adding','new test task type'),(18,'--',NULL);
+INSERT INTO `task_types` VALUES (1,'Unknown','No Description'),(2,'Bug Fix','null');
 /*!40000 ALTER TABLE `task_types` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_task_types` AFTER DELETE ON `task_types` FOR EACH ROW BEGIN
+                UPDATE tasks
+                SET taskTypes = (SELECT id FROM task_types WHERE name = 'Unknown' LIMIT 1)
+                WHERE taskTypes IS NULL;
+            END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `tasks`
@@ -289,16 +422,16 @@ CREATE TABLE `tasks` (
   `taskDate` date DEFAULT NULL,
   `taskStatus` varchar(50) DEFAULT NULL,
   `severity` tinyint NOT NULL,
-  `taskType` int NOT NULL DEFAULT '1',
+  `taskType` int DEFAULT NULL,
   `taskDescription` text,
-  `itInCharge` int NOT NULL DEFAULT '1',
+  `itInCharge` int DEFAULT NULL,
   `department` varchar(100) DEFAULT NULL,
   `departmentNo` varchar(50) DEFAULT NULL,
-  `requestedBy` int NOT NULL DEFAULT '1',
-  `approvedBy` int NOT NULL DEFAULT '1',
-  `itemName` int NOT NULL DEFAULT '1',
-  `deviceName` int NOT NULL DEFAULT '1',
-  `applicationName` int NOT NULL DEFAULT '1',
+  `requestedBy` int DEFAULT NULL,
+  `approvedBy` int DEFAULT NULL,
+  `itemName` int DEFAULT NULL,
+  `deviceName` int DEFAULT NULL,
+  `applicationName` int DEFAULT NULL,
   `dateReq` date DEFAULT NULL,
   `dateRec` date DEFAULT NULL,
   `dateStart` date DEFAULT NULL,
@@ -315,15 +448,15 @@ CREATE TABLE `tasks` (
   KEY `fk_it_in_users` (`itInCharge`),
   KEY `fk_requested_by` (`requestedBy`),
   KEY `fk_approved_by` (`approvedBy`),
-  CONSTRAINT `fk_applicationName` FOREIGN KEY (`applicationName`) REFERENCES `applications` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_approvedBy` FOREIGN KEY (`approvedBy`) REFERENCES `approved_by` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_deviceName` FOREIGN KEY (`deviceName`) REFERENCES `devices` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_itemName` FOREIGN KEY (`itemName`) REFERENCES `items` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_itInCharge` FOREIGN KEY (`itInCharge`) REFERENCES `it_in_charge` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_requestedBy` FOREIGN KEY (`requestedBy`) REFERENCES `requested_by` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_taskType` FOREIGN KEY (`taskType`) REFERENCES `task_types` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_applicationName` FOREIGN KEY (`applicationName`) REFERENCES `applications` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_approvedBy` FOREIGN KEY (`approvedBy`) REFERENCES `approved_by` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_deviceName` FOREIGN KEY (`deviceName`) REFERENCES `devices` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_itemName` FOREIGN KEY (`itemName`) REFERENCES `items` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_itInCharge` FOREIGN KEY (`itInCharge`) REFERENCES `it_in_charge` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_requestedBy` FOREIGN KEY (`requestedBy`) REFERENCES `requested_by` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_taskType` FOREIGN KEY (`taskType`) REFERENCES `task_types` (`id`) ON DELETE SET NULL,
   CONSTRAINT `tasks_chk_1` CHECK ((`severity` between 1 and 5))
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -332,7 +465,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,'9827','2025-03-05','Pending',1,4,'Testing Bugs',1,'Marketing','1234567890',3,2,4,2,2,'2025-03-05',NULL,'2025-03-05',NULL,'Hopefully','Okay na'),(2,'9309','2025-03-06','Completed',1,2,'--',3,'Amazing','1234567888',4,2,4,2,2,'2025-03-06',NULL,'2025-03-06','2025-03-06','asd','sdf'),(3,'7733','2025-03-06','In Progress',1,2,'--',3,'Unknown','0',2,2,6,12,5,'2025-03-06',NULL,'2025-03-06',NULL,'asddd','asddd'),(4,'2685','2025-03-06','New',1,3,'--',3,'Unknown','0',2,2,6,12,5,'2025-03-06',NULL,NULL,NULL,'asd','asd'),(5,'7441','2025-03-06','New',1,17,'--',2,'Marketing','1234567890',3,1,6,12,5,'2025-03-06',NULL,NULL,NULL,'fff','fff'),(6,'3866','2025-03-06','Pending',1,3,'--',2,'Marketing','1234567890',3,1,6,3,5,'2025-03-06',NULL,NULL,NULL,'gg','g'),(7,'7140','2025-03-07','New',1,4,'--',7,'Amazing','1234567888',4,1,6,12,5,'2025-03-07',NULL,NULL,NULL,'ggg','ggg');
+INSERT INTO `tasks` VALUES (1,'9333','2025-03-20','New',1,2,'--',7,'Amazing','1234567888',4,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'g','hg'),(2,'2995','2025-03-20','New',1,2,'--',2,'Amazing','1234567888',4,1,1,3,1,'2025-03-20',NULL,NULL,NULL,'dfd','dfdf'),(3,'5790','2025-03-20','New',1,2,'--',7,'Marketing','0123456789',3,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'hh','gg');
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -377,4 +510,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-07 18:00:01
+-- Dump completed on 2025-03-20 16:58:01
