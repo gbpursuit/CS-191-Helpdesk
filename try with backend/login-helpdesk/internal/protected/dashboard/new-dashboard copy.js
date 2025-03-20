@@ -5,14 +5,6 @@ document.addEventListener("DOMContentLoaded", async function() {
         await load.load_html("/internal/protected/taskModal.html", "dashboardContainer"); // dashboardContainer instead of dashElements
         await load.load_html("/internal/protected/taskEditModal.html", "dashboardContainer"); //since position is absolute
 
-        // await fetch_data.task_datalist();
-        // await fetch_data.request_datalist();
-        // await fetch_data.approve_datalist();
-        // await fetch_data.it_datalist();
-        // await fetch_data.device_datalist();
-        // await fetch_data.item_datalist();
-        // await fetch_data.app_datalist();
-
         document.getElementById('containerTable').addEventListener('wheel', (event) => {
             event.preventDefault();
             event.currentTarget.scrollLeft += event.deltaY; 
@@ -77,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         window.open_edit_modal = open_edit_modal;
         // window.delete_entry = delete_entry;
         window.close_modal = close_modal;
-        // window.open_container = open_container;
+        window.open_container = open_container;
     
         // Layout Functions
         layout.list_navigation();
@@ -557,7 +549,7 @@ const add = {
 
 
 
-                const select = document.getElementById('itInCharge');
+                const select = document.getElementById('ItInCharge');
                 const newResponse = await fetch('/api/session-user');
                 const newData = await newResponse.json();
 
@@ -591,16 +583,16 @@ const add = {
                 taskDate: currentDate,
                 taskStatus: util.get_field_value("taskStatus"),
                 severity: util.get_field_value("severity"),
-                taskType: util.get_field_value("taskType"),
+                taskType: util.get_field_value("TaskType"),
                 taskDescription: util.get_field_value("taskDescription"),
-                itInCharge: util.get_field_value("itInCharge"),
+                itInCharge: util.get_field_value("ItInCharge"),
                 department: util.get_field_value("department"),
                 departmentNo: util.get_field_value("departmentNo"),
-                requestedBy: util.get_field_value("requestedBy"),
-                approvedBy: util.get_field_value("approvedBy"),
-                itemName: util.get_field_value("itemName"),
-                deviceName: util.get_field_value("deviceName"),
-                applicationName: util.get_field_value("applicationName"),
+                requestedBy: util.get_field_value("RequestedBy"),
+                approvedBy: util.get_field_value("ApprovedBy"),
+                itemName: util.get_field_value("Item"),
+                deviceName: util.get_field_value("Device"),
+                applicationName: util.get_field_value("Application"),
                 dateReq: util.get_field_value("dateReq"),
                 dateRec: util.get_field_value("dateRec"),
                 dateStart: util.get_field_value("dateStart"),
@@ -769,8 +761,8 @@ const update = {
             taskId: "editTaskId", taskStatus: "editTaskStatus", taskDate: "editTaskDate",
             itInCharge: "editItInCharge", department: "editDepartment", departmentNo: "editDepartmentNo",
             taskType: "editTaskType", taskDescription: "editTaskDescription", severity: "editSeverity",
-            requestedBy: "editRequestedBy", approvedBy: "editApprovedBy", itemName: "editItemName",
-            deviceName: "editDeviceName", applicationName: "editApplicationName", dateReq: "editDateReq",
+            requestedBy: "editRequestedBy", approvedBy: "editApprovedBy", itemName: "editItem",
+            deviceName: "editDevice", applicationName: "editApplication", dateReq: "editDateReq",
             dateRec: "editDateRec", dateStart: "editDateStart", dateFin: "editDateFin", problemDetails: "editProblemDetails", remarks: "editRemarks"
         };
     
@@ -828,9 +820,9 @@ const update = {
             departmentNo: util.get_field_value("editDepartmentNo"),
             requestedBy: util.get_field_value("editRequestedBy"),
             approvedBy: util.get_field_value("editApprovedBy"),
-            itemName: util.get_field_value("editItemName"),
-            deviceName: util.get_field_value("editDeviceName"),
-            applicationName: util.get_field_value("editApplicationName"),
+            itemName: util.get_field_value("editItem"),
+            deviceName: util.get_field_value("editDevice"),
+            applicationName: util.get_field_value("editApplication"),
             dateReq: util.get_field_value("editDateReq"),
             dateRec: util.get_field_value("editDateRec"),
             dateStart: util.get_field_value("editDateStart"),
@@ -1022,156 +1014,28 @@ const edit_button = async (table, id, val) => {
     }
 };
 
-// const open_container = async (id, bodyId, isEdit = false) => {
+// const delete_button = async (table, id, val) => {
 //     try {
-//         let selectedRow = null;
-//         let selectedId = 0;
-//         let originalRowName = null;
-//         let alertTriggered = false;
-
-//         const response = await fetch(`/api/ref-table/task_types`);
+//         const response = await fetch(`/api/edit-table/${table}`, {
+//             method: "PUT",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({ id, val })
+//         });
 //         const data = await response.json();
 
-//         let field =  null
-//         let editField = null;
-//         let btn = null
-//         let editBtn = null;
-//         let dpt = null
-//         let dptNo = null;
+//         if(!response.ok) {
+//             alert("Error editing task" + data.error);
+//             return { success: false };
+//         };
 
-
-//         switch(id) {
-//             case "taskTypeAdd":
-//                 field = "taskType";
-//                 editField = "editTaskType";
-//                 btn = "taskTypeBtn";
-//                 editBtn = "editTaskBtn";
-//                 break;
-//             default:
-//                 console.warn(`No function assigned for this button: ${buttonId}`);
-//                 return;
-//         }
-
-//         const container = document.getElementById(id);
-//         const body = document.getElementById(bodyId);
-
-//         const select = isEdit ? document.getElementById(editField) : document.getElementById(field);
-//         const openButton = isEdit? document.getElementById(editBtn) : document.getElementById(btn);
-
-//         const closeButton = container.querySelector('.close-cont');
-//         const editButton = container.querySelector('.c2');
-//         const deleteButton = container.querySelector('.c3');
-//         const confirmCancel = container.querySelector('.c4');
-//         const confirmSelect = container.querySelector('.c5');
-//         const confirmApply = container.querySelector('.c6');
-
-//         body.innerHTML = "";
-
-//         function update_state() {
-//             confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
-//             confirmCancel.classList.toggle('confirmed', !!selectedRow);
-//             confirmSelect.classList.toggle('confirmed', !!selectedRow);
-//         }
-
-//         function remove_highlight() {
-//             selectedRow = null;
-//             body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-//             confirmCancel.classList.remove('confirmed');
-//             confirmSelect.classList.remove('confirmed');
-
-//             body.querySelectorAll("td").forEach(cell => {
-//                 const input = cell.querySelector("input");
-//                 if (input) {
-//                     cell.innerHTML = "";
-//                     cell.textContent = input.value;
-//                 }
-//             });
-//         }
-
-//         const fragment = document.createDocumentFragment();
-//         data.forEach((val, index) => {
-//             if (deletedRows.includes(`${container.id}-${index}`)) return;
-
-//             let row = document.createElement("tr");
-//             row.id = `${container.id}-${index}`;
-//             row.dataset.index = index;
-//             row.innerHTML = `
-//                 <td data-id="${val.id}">${val.name}</td>
-//                 <td>${val.description}</td>
-//             `;
-        
-//             row.addEventListener('click', function(event) {
-//                 event.preventDefault();
-
-//                 body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-//                 row.classList.add("highlight");
-
-//                 selectedRow = row;
-//                 selectedId = val.id;
-//                 update_state();
-//             });
-
-//             fragment.appendChild(row);
-//         });
-//         body.appendChild(fragment);
-
-//         closeButton.addEventListener('click', () => {
-//             container.style.display = 'none';
-//             alertTriggered = false;
-//             if ((select.value  === '' && selectedRow !== null)) {
-//                 selectedRow.classList.remove("highlight");
-//                 // selectedRow.classList.remove("highlight");
-//                 selectedRow = null;
-//                 confirmCancel.classList.remove('confirmed');
-//                 confirmSelect.classList.remove('confirmed');
-//             }
-
-//             if (confirmApply.classList.contains('confirmed')) {
-//                 console.log('heloooooooo');
-//                 body.querySelectorAll("tr").forEach(row => {
-//                     row.style.pointerEvents = "auto";
-//                     row.classList.remove('disabled-row');
-//                 });
-//                 confirmSelect.style.display = 'flex';
-//                 confirmApply.style.display = 'none';
-//                 confirmApply.classList.remove('confirmed');
-//                 remove_highlight();
-//             }
-        
-//         });
-
-//         openButton.addEventListener('click', () => {
-//             container.style.display = 'flex';
-        
-//             body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-        
-//             let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-//                 row.cells[0].innerText === select.value
-//             );
-        
-//             if (matchingRow) {
-//                 matchingRow.classList.add("highlight");
-//                 selectedRow = matchingRow; 
-//             } else {
-//                 selectedRow = null; 
-//             }
-//         });
+//         return { success: true, value: data };
 
 //     } catch (err) {
-//         console.error("Error loading data:", err);
+//         console.error(`Error editing lookup table: ${table}`, err);
 //     }
-// }
-
-// const fetch_data = {
-//     task_button: async function(isEdit = false) {
-//         const container 
-//     },
-
-//     request_button: async function(isEdit = false) {
-
-//     }
-// }
-
+// };
 
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠂⠠⣦⢶⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -1216,16 +1080,106 @@ const edit_button = async (table, id, val) => {
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣳⢯⣿⣿⢏⣾⣿⣿⣿⣾⣼⡿⠁⡿⠏⢻⡸⣇⣶⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢤⣀⣀⣀⠀⣐⣶⣾⣹⣯⣷⣚⠿⣷⣿⣿⣿⣿⡟⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠇⣾⣿⣿⣿⣿⣿⣿⣿⣿⡟⣁⣼⠟⣐⣬⡷⣠⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⢰⣤⣴⣶⣶⠾⣷⣦⣽⡿⢩⣌⠻⣿⣷⣯⣟⡿⣿⣿⣿⣿⣿⣿⠇⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡟⢀⣼⣿⣿⣿⣿⣿⣿⡿⣋⣴⠟⣡⣶⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠿⣿⣷⣹⣿⡷⣿⣦⣻⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⡿⡏⣯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢘⡇⠸⣿⢋⣿⠟⠋⢁⡿⢠⠛⠠⠌⠉⣿⡿⣿⣿⡿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣷⢿⣿⣿⣿⣿⡟⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢷⣧⣼⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢘⡇⠸⣿⢋⣿⠟⠋⢁⡿⢠⠛⠠⠌⠉⣿⡿⣿⣿⡿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣷⢿⣿⣿⣿⣿⡟⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢷⣧⣼⡀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀
+
+
+const open_container = (elementId, isEdit=false) => {
+    const elementMap = {
+        "TaskTypeBtn": ["taskTypeAdd", fetch_data.task_datalist],
+        "RequestedByBtn": ["requestedByAdd", fetch_data.request_datalist],
+        "ApprovedByBtn": ["approvedByAdd", fetch_data.approve_datalist],
+        "ItInChargeBtn": ["itAdd", fetch_data.it_datalist],
+        "DeviceBtn": ["deviceAdd", fetch_data.device_datalist],
+        "ItemBtn": ["itemAdd", fetch_data.item_datalist],
+        "ApplicationBtn": ["applicationAdd", fetch_data.app_datalist]
+    };
+
+    const entry = elementMap[elementId.replace("edit", "")];
+    if (!entry) return;
+
+    const [containerId, fetchFunction] = entry;
+
+    const container = document.getElementById(containerId);
+    if(!container) return;
+
+    const body = container.querySelector("tbody");
+    const selectId = elementId.replace("Btn", "");
+    const select = document.getElementById(selectId);
+
+    if (fetchFunction) fetchFunction(isEdit, selectId);
+    
+    container.dataset.selectedRow = null;
+    container.style.display = 'flex';
+
+    if (body && select) {
+        body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+
+        const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
+            row.cells[0].innerText === select.value
+        );
+
+        console.log(matchingRow);
+
+        if (matchingRow) {
+            matchingRow.classList.add("highlight");
+            container.dataset.selectedRow = matchingRow;
+        } 
+    }
+
+};
+
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⠀⠀⠀⠀⢀⣠⣀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⡇⠀⠀⣴⣿⠿⣿⠃⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⠀⠀⣸⡿⠈⣼⡏⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⠿⠀⠀⣿⠃⣸⡟⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣠⣶⣶⣿⣶⣶⣤⣾⣠⡿⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⢀⣀⣠⣤⣴⠶⠒⠛⠻⢿⣿⡏⠉⠉⠉⠉⠙⠻⢿⣿⣿⣥⡀⠀⠀⠀⠀⠀⠀⠁
+// ⠀⠀⣾⣿⣿⣿⣿⣿⣷⡴⠀⠐⠒⠠⣿⠷⠂⠐⠒⠒⠴⣤⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⢼⣿⣿⣿⣿⣿⣿⣧⠰⡆⠀⠀⡿⣷⡤⣶⠀⠀⡀⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀
+// ⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣷⣯⣴⣾⣾⣿⣷⣾⣦⣶⣷⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀
+// ⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀
+// ⠀⠀⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀
+// ⠀⠀⣺⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀
+// ⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢯⣟⣿⣿⣿⣿⠀⠀⠀⠀⢀⣀
+// ⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣟⡾⣯⣿⣿⣿⠀⠀⠀⠀⠀⠀
+// ⠀⠀⣼⣿⣿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠈⠙⢳⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠪⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⠛⠉⣁⣠⣴⣷⣾⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠸⠟⢿⣿⣿⣿⣿⣿⣿⣥⣤⣔⣲⣾⡽⢳⣿⣿⣿⣿⣿⣿⣿⣿⣿⡃⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣷⣌⣉⣠⣤⣾⣿⣿⣿⣿⣿⣿⠿⠛⠉⠀⠀⠀⠀⠀⠀⠀
+// ⡀⠀⠀⠀⢀⠈⢙⠛⠛⠿⠿⠿⠿⠿⠿⠿⠿⠿⠛⠛⠛⢋⡁⠄⠐⣀⣴⣶⣶⣄⠀⠀⠀⠀
+// ⠀⠀⠀⢀⡞⣿⣶⣤⣅⣐⠂⠲⠂⠶⠆⠆⠲⠶⠘⠃⣉⣀⣥⣶⣾⣿⡿⣿⣿⣿⣧⠀⠀⠀
+// ⠀⠀⠀⣾⢹⣿⣿⣿⣿⣿⣿⣿⣷⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⠙⢁⣾⣿⣿⣿⣧⠀⠀
+// ⠀⠀⢰⣿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠰⣾⣿⣿⣿⣿⣿⣆⠀
+// ⠀⠀⣾⠟⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⢻⣿⣿⡿⣿⣿⣿⠀
+// ⠀⠀⣷⣤⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡷⢈⣻⠠⢴⣿⣿⣿⡇
+// ⠀⠀⢸⣿⡄⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢠⣾⣿⣶⣿⣿⣿⣿⠁
+// ⠀⠀⠀⠻⡗⠀⠙⠛⠛⠿⠿⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠿⠃⢺⣿⣿⣿⣿⣿⣿⠃⠀
+// ⠀⠀⠀⠀⠀⢸⣷⣦⣄⣀⠒⠐⠄⠠⡀⣄⠠⡀⠄⠄⠀⢀⣂⣤⣆⠀⡙⢿⣿⣿⡟⠃⠀⠀
+// ⠀⠀⠀⠀⠀⠈⢻⣿⣿⣄⢈⠤⢤⠐⠒⠀⣖⡶⡶⢾⢿⣿⣿⣿⣿⣷⣤⣀⣠⡅⡖⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣶⣭⣐⣂⠀⠁⠉⠙⠛⣛⣹⣿⣿⣿⣷⣍⡳⢯⣽⡇⣿⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⢀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⣿⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⡏⡜⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⡿⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠸⣿⣧⣑⢝⡛⢿⣿⣷⢡⢹⣿⣿⡛⠻⣿⣿⣿⣿⣿⣿⣿⠀⡗⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣷⣿⣿⣿⣿⡆⡆⣿⣿⣷⣝⢮⣙⣿⣿⣿⣿⣿⠀⡇⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠠⣌⣛⠻⠿⠿⠿⠿⠿⠿⠀⠙⠻⠿⢿⣿⣿⣿⣿⣿⣿⣿⠀⠇⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣶⣶⣶⣶⣾⣿⡈⣷⣶⣤⣤⣄⣀⣁⣨⣤⣤⣴⢰⡆⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠈⠿⣿⡿⢿⣿⣿⣿⣿⣿⡇⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡎⡃⠀⠀
+// ⠀⠀⠀⠀⠀⢀⣀⣤⣤⣀⠃⠠⡄⢀⡈⠈⠛⠙⠙⠘⠯⠛⠛⠛⠻⠛⠟⠙⡛⠉⠁⠁⠀⠀
+// ⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣷⣄⠹⠀⢠⢤⠲⡜⠯⠁⠀⠀⠀⠤⠀⠀⢀⢀⡈⢙⠧⠀⠀⠀
+// ⠀⠀⠀⠀⢸⣿⣿⣯⣷⣿⣿⣿⣧⢀⡜⠎⠳⢀⣤⣾⣿⣿⣿⣶⣄⠀⠀⠆⡹⡌⠫⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠙⠛⠛⠛⠛⠛⠛⠛⣂⠹⠀⠁⢸⣿⣿⣿⣻⣥⣿⣿⣷⡄⠶⠁⡀⠂⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠈⢮⣽⣛⣛⣛⣛⣛⣯⣥⣶⠞⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⡉⢉⠉⠉⠀⠀⠀⠀⠀⠀⠀
 
 const fetch_data = {
     task_datalist: (isEdit = false) => fetchRefTableFull({
         table: 'task_types',
         containerId: 'taskTypeAdd',
         bodyId: 'taskTypeTable',
+        // selectId,
         selectId: 'TaskType',
-        openEditBtnId: 'TaskBtn',
-        openBtnId: 'taskTypeBtn',
+        openBtnId: 'TaskTypeBtn',
         isEdit,
         columns: ['name', 'description'],
         tableMap: { taskTypeAdd: 'task_types' }
@@ -1234,9 +1188,9 @@ const fetch_data = {
         table: 'requested_by',
         containerId: 'requestedByAdd',
         bodyId: 'requestTable',
+        // selectId,
         selectId: 'RequestedBy',
-        openEditBtnId: 'RequestedByBtn',
-        openBtnId: 'requestedByBtn',
+        openBtnId: 'RequestedByBtn',
         isEdit,
         columns: ['full_name', 'dep_name', 'dep_no'],
         tableMap: { requestedByAdd: 'requested_by' },
@@ -1246,9 +1200,9 @@ const fetch_data = {
         table: 'approved_by',
         containerId: 'approvedByAdd',
         bodyId: 'approveTable',
+        // selectId,
         selectId: 'ApprovedBy',
-        openEditBtnId: 'ApprovedByBtn',
-        openBtnId: 'approvedByBtn',
+        openBtnId: 'ApprovedByBtn',
         isEdit,
         columns: ['full_name', 'dep_name'],
         tableMap: { approvedByAdd: 'approved_by' }
@@ -1257,9 +1211,9 @@ const fetch_data = {
         table: 'it_in_charge',
         containerId: 'itAdd',
         bodyId: 'itTable',
+        // selectId,
         selectId: 'ItInCharge',
-        openEditBtnId: 'ItChargeBtn',
-        openBtnId: 'itChargeBtn',
+        openBtnId: 'ItInChargeBtn',
         isEdit,
         columns: ['full_name'],
         tableMap: { itAdd: 'it_in_charge' },
@@ -1269,40 +1223,40 @@ const fetch_data = {
         table: 'devices',
         containerId: 'deviceAdd',
         bodyId: 'deviceTable',
-        selectId: 'DeviceName',
-        openEditBtnId: 'DeviceBtn',
-        openBtnId: 'deviceBtn',
+        // selectId,
+        selectId: 'Device',
+        openBtnId: 'DeviceBtn',
         isEdit,
-        columns: ['name', 'description'],
+        columns: ['name'],
         tableMap: { deviceAdd: 'devices' }
     }),
     item_datalist: (isEdit = false) => fetchRefTableFull({
         table: 'items',
         containerId: 'itemAdd',
         bodyId: 'itemTable',
-        selectId: 'ItemName',
-        openEditBtnId: 'ItemBtn',
-        openBtnId: 'itemBtn',
+        // selectId,
+        selectId: 'Item',
+        openBtnId: 'ItemBtn',
         isEdit,
-        columns: ['name', 'description'],
+        columns: ['name'],
         tableMap: { itemAdd: 'items' }
     }),
     app_datalist: (isEdit = false) => fetchRefTableFull({
         table: 'applications',
         containerId: 'applicationAdd',
         bodyId: 'appTable',
-        selectId: 'ApplicationName',
-        openEditBtnId: 'AppBtn',
-        openBtnId: 'appBtn',
+        // selectId,
+        selectId: 'Application',
+        openBtnId: 'ApplicationBtn',
         isEdit,
-        columns: ['name', 'description'],
-        tableMap: { appAdd: 'applications' }
+        columns: ['name'],
+        tableMap: { applicationAdd: 'applications' }
     })
 };
 
-
-async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEditBtnId, openBtnId, isEdit = false, columns = [], tableMap, departmentFields = false, sessionName = null }) {
+async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtnId, isEdit = false, columns = [], tableMap, departmentFields = false, sessionName = null }) {
     try {
+        console.log(containerId);
         const response = await fetch(`/api/ref-table/${table}`);
         const data = await response.json();
 
@@ -1312,7 +1266,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
         const department = departmentFields ? (isEdit ? document.getElementById('editDepartment') : document.getElementById('department')) : null;
         const departmentNo = departmentFields ? (isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo')) : null;
 
-        const openButton = isEdit ? document.getElementById(`edit${openEditBtnId}`) : document.getElementById(openBtnId);
+        const openButton = isEdit ? document.getElementById(`edit${openBtnId}`) : document.getElementById(openBtnId);
         const closeButton = container.querySelector('.close-cont');
         const editButton = container.querySelector('.c2');
         const deleteButton = container.querySelector('.c3');
@@ -1323,7 +1277,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
         confirmCancel.disabled = confirmSelect.disabled = true;
         body.innerHTML = "";
 
-        let selectedRow = null;
+        let selectedRow = container.dataset.selectedRow;
         let selectedId = 0;
 
         let originalRowName = null;
@@ -1351,7 +1305,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
         }
 
         const fragment = document.createDocumentFragment();
-
         data.forEach((val, index) => {
             if (deletedRows.includes(`${container.id}-${index}`)) return;
 
@@ -1365,8 +1318,8 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
             if (sessionName && val.full_name === sessionName) {
                 row.classList.add("highlight");
                 selectedRow = row;
+                
             }
-            
             // changes
             row.addEventListener('click', function () {
                 // event.preventDefault();
@@ -1374,6 +1327,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                 row.classList.add("highlight");
 
                 selectedRow = row;
+                
                 selectedId = val.id;
                 update_state();
             });
@@ -1383,13 +1337,17 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
         body.appendChild(fragment);
 
         closeButton.addEventListener('click', () => {
+            console.log(selectedRow);
+
             container.style.display = 'none';
             alertTriggered = false;
-            if ((select.value === '' && selectedRow !== null)) {
-                selectedRow.classList.remove("highlight");
-                selectedRow = null;
-                confirmCancel.classList.remove('confirmed');
-                confirmSelect.classList.remove('confirmed');
+            if (select) {
+                if ((select.value === '' && selectedRow !== null)) {
+                    selectedRow.classList.remove("highlight");
+                    selectedRow = null;
+                    confirmCancel.classList.remove('confirmed');
+                    confirmSelect.classList.remove('confirmed');
+                }
             }
             if (confirmApply.classList.contains('confirmed')) {
                 body.querySelectorAll("tr").forEach(row => {
@@ -1401,6 +1359,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                 confirmApply.classList.remove('confirmed');
                 remove_highlight();
             }
+            
         });
 
         openButton.addEventListener('click', () => {
@@ -1409,18 +1368,20 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
             body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
 
             // changes
-            const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => row.cells[0].innerText === select.value);
+            if(select) {
+                const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => row.cells[0].innerText === select.value);
+                if (matchingRow) {
+                    matchingRow.classList.add("highlight");
+                    selectedRow = matchingRow;
+                } else {
+                    selectedRow = null;
+                }
+            }
             
             // let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
             //     row.cells[0].innerText === select.value
             // );
-            
-            if (matchingRow) {
-                matchingRow.classList.add("highlight");
-                selectedRow = matchingRow;
-            } else {
-                selectedRow = null;
-            }
+    
         });
 
         editButton.addEventListener('click', async (event) => {
@@ -1466,12 +1427,12 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                     row.classList.add('disabled-row');
                 };
             });
+            
         });
 
         confirmApply.addEventListener('click', async () => {
             try {
                 const updatedData = {};
-                // const names = ["name", "description"];
 
                 columns.forEach((col, idx) => {
                     //changes
@@ -1484,7 +1445,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                 //     if (input) updatedData[names[index]] = input.value.trim();
                 // });
 
-                console.log(updatedData);
                 const result = await edit_button(table, selectedId, updatedData);
                 if (result.success) {
                     selectedRow.querySelectorAll("td").forEach((cell, index) => {
@@ -1510,6 +1470,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                 } else {
                     console.error("Error updating row:", result.error);
                 }
+                
             } catch (err) {
                 console.error(`Error editing row:`, err);
             }
@@ -1523,6 +1484,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                 departmentNo.value = selectedRow.cells[2]?.innerText || '';
             }
             container.style.display = 'none';
+            
         });
 
         confirmCancel.addEventListener('click', () => {
@@ -1540,6 +1502,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                 department.value = '';
                 departmentNo.value = '';
             }
+            
             remove_highlight();
         });
 
@@ -1570,11 +1533,13 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
                     alert("Failed to delete row. Please try again.");
                 }
             }
+            
         });
     } catch (err) {
         console.error(`Error loading ${table}:`, err);
     }
 }
+
 
 // const fetch_data = {
 //     task_datalist: async function(isEdit = false) {
@@ -2610,7 +2575,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
 //             const data = await response.json();
 
 //             const container = document.getElementById('deviceAdd');
-//             const select = isEdit ? document.getElementById('editDeviceName') : document.getElementById('deviceName');
+//             const select = isEdit ? document.getElementById('editDevice') : document.getElementById('deviceName');
 //             const body = document.getElementById("deviceTable");
 
 //             await similar_functions(isEdit, 'editDeviceBtn', 'deviceBtn', table, container, body, select, data);
@@ -2626,7 +2591,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
 //             const data = await response.json();
 
 //             const container = document.getElementById('itemAdd');
-//             const select = isEdit ? document.getElementById('editItemName') : document.getElementById('itemName');
+//             const select = isEdit ? document.getElementById('editItem') : document.getElementById('itemName');
 //             const body = document.getElementById("itemTable");
 
 //             await similar_functions(isEdit, 'editItemBtn', 'itemBtn', table, container, body, select, data);
@@ -2643,7 +2608,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openEdi
 //             const data = await response.json();
             
 //             const container = document.getElementById('applicationAdd');
-//             const select = isEdit ? document.getElementById('editApplicationName') : document.getElementById('applicationName');
+//             const select = isEdit ? document.getElementById('editApplication') : document.getElementById('applicationName');
 //             const body = document.getElementById("appTable");
 
 //             await similar_functions(isEdit, 'editAppBtn', 'appBtn', table, container, body, select, data);
@@ -3023,7 +2988,6 @@ const util = {
     },
 
     populate_form_fields: function(fieldMap, taskData, oldMap) {
-        console.log(taskData);
         Object.entries(fieldMap).forEach(([key, id]) => {
             const field = document.getElementById(id);
             if (!field) return;

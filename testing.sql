@@ -492,17 +492,15 @@ AND kcu.REFERENCED_TABLE_NAME IS NOT NULL;
 --   UNIQUE KEY `name` (`deleted_value`)
 -- };
 
-CREATE TABLE 'deleted_values' {
-  `id` int NOT NULL AUTO_INCREMENT,
-  `deleted_value` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`deleted_value`)
-};
+-- CREATE TABLE `delete` {
+--   `id` int NOT NULL AUTO_INCREMENT,
+--   `deleted_value` varchar(50) NOT NULL,
+--   PRIMARY KEY (`id`),
+--   UNIQUE KEY `name` (`deleted_value`)
+-- };
 
-
-
-DESCRIBE 'delete';
-SELECT * FROM 'delete';
+-- DESCRIBE `delete`;
+-- SELECT * FROM `delete`;
 
 -- Select all records from the users table
 SELECT * FROM users;
@@ -510,7 +508,10 @@ SELECT * FROM users;
 -- Select all records from the tasks table
 SELECT * FROM tasks;
 
+SELECT * FROM task_types;
+
 -- Select all records from the requested_by table
+
 SELECT * FROM requested_by;
 
 -- Select all records from the departments table
@@ -520,10 +521,13 @@ SELECT * FROM departments;
 SELECT * FROM approved_by;
 
 -- Select all records from the app_departments table
-SELECT * FROM app_departments;
+SELECT * FROM app_departments;	
 
 -- Select all records from the it_in_charge table
 SELECT * FROM it_in_charge;
+SELECT * FROM devices;
+SELECT * FROM items;
+SELECT * FROM applications;
 
 
 

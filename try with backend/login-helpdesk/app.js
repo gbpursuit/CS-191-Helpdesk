@@ -331,7 +331,7 @@ import connectLivereload from 'connect-livereload';
 import session from 'express-session';
 import multer from 'multer';
 import { fileURLToPath } from 'url';
-import { server, account, task, limiter } from './functions-app.js';
+import { server, account, task, limiter, createTrigger } from './functions-app.js';
 import fs from "fs";
 
 dotenv.config();
@@ -458,7 +458,7 @@ app.post('/api/tasks/:type', server.is_authenticated, limiter.task_limit, async 
 
     try {
         const actions = {
-            'add': async () => await task.add_task(db, req, res)
+            'add': async () => await task.add_task(db, req, res, validTables)
         };
 
         return actions[type] ? await actions[type]() : res.status(400).json({ error: 'Invalid task type' });
@@ -575,7 +575,7 @@ app.delete('/api/delete-table/:table/:id', server.is_authenticated, async (req, 
     }
 
     try {
-        const [result] = await db.query(`DELETE FROM ?? WHERE id = ?`, [refTable, id]);
+        const [result] = await db.query(`DELETE FROM ?? WHERE id = ?`, [refTable, parseInt(id)]);
 
         if (result.affectedRows > 0) {
             res.json({ success: true, message: `Row deleted successfully` });

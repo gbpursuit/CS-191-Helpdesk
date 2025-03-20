@@ -53,6 +53,7 @@ export const server = {
             app.locals.db = db;
     
             // Start livereload and the server
+            // await createTrigger(db);
             await server.start_live_reload();
             await server.start_server(app);
         } catch (err) {
@@ -322,7 +323,7 @@ export const task = {
         }));
     },
 
-    add_task: async function (db, req, res) {
+    add_task: async function (db, req, res, validTables) {
         try {
             const {
                 taskId, taskDate, taskStatus, severity, taskType, taskDescription,
@@ -351,8 +352,8 @@ export const task = {
                 //     return existing.length ? existing[0].username : null;
                 // }
 
-                if (table === "approved_by" && value === '--') {
-                    const [existing] = await db.query(`SELECT id FROM approved_by WHERE ${column} = ?`, ['Unknown']);
+                if (validTables.includes(table) && value === '--') {
+                    const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, ['Unknown']);
                     if (existing.length) return existing[0].id;
                 }
 
@@ -889,3 +890,51 @@ export const limiter = {
     }),
 
 };
+
+const referencedTables = ["applications", "approved_by", "requested_by", "it_in_charge", "devices", "items", "task_types"];
+
+const checkTable = (tableName) => {
+    switch (tableName) {
+        case "applications": return { columnName: "applicationName", identifier: "name" };
+        case "approved_by": return { columnName: "approvedBy", identifier: "full_name" };
+        case "requested_by": return { columnName: "requestedBy", identifier: "full_name" };
+        case "it_in_charge": return { columnName: "itInCharge", identifier: "full_name" };
+        case "devices": return { columnName: "deviceName", identifier: "name" };
+        case "items": return { columnName: "itemName", identifier: "name" };
+        case "task_types": return { columnName: "taskTypes", identifier: "name" };
+        default: return { columnName: "", identifier: "" };
+    }
+};
+
+
+export const createTrigger = async (db) => {
+    for (const table of referencedTables) {
+        const { columnName, identifier } = checkTable(table);
+        if (!columnName || !identifier) continue; // Skip if table isn't properly mapped
+
+        const name = `after_delete_${table}`;
+        const query = `
+            CREATE TRIGGER ${name}
+            AFTER DELETE ON ${table}
+            FOR EACH ROW
+            BEGIN
+                UPDATE tasks
+                SET ${columnName} = (SELECT id FROM ${table} WHERE ${identifier} = 'Unknown' LIMIT 1)
+                WHERE ${columnName} IS NULL;
+            END;
+        `;
+
+        try {
+            await db.query(`DROP TRIGGER IF EXISTS ${name}`);
+            await db.query(query);
+            console.log(`Trigger ${name} created successfully!`);
+        } catch (err) {
+            if (err.code === 'ER_TRG_ALREADY_EXISTS') {
+                console.log(`Trigger ${name} already exists.`);
+            } else {
+                console.error(`Error creating trigger ${name}:`, err);
+            }
+        }
+    }
+};
+
