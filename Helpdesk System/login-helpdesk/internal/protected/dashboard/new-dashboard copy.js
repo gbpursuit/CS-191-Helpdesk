@@ -18,58 +18,14 @@ document.addEventListener("DOMContentLoaded", async function() {
             if (generatedPDF) {
                 generatedPDF.save("summary_report.pdf");
             }
-        });
-
-        // document.querySelectorAll(".look-btn").forEach(button => {
-        //     button.addEventListener("click", function () {
-        //         const buttonId = this.id;
-        
-        //         switch (buttonId) {
-        //             // case "taskBtn":
-        //             // case "editTaskBtn":
-        //             //     btn.open_table("taskTypeAdd");
-        //             //     break;
-        //             case "dprtBtn":
-        //             case "editDprtBtn":
-        //                 btn.open_table("departmentAdd");
-        //                 break;
-        //             case "itChargeBtn":
-        //             case "editItChargeBtn":
-        //                 btn.open_table("itAdd");
-        //                 break;
-        //             case "deviceBtn":
-        //             case "editDeviceBtn":
-        //                 btn.open_table("deviceAdd"); 
-        //                 break;
-        //             case "itemBtn":
-        //             case "editItemBtn":
-        //                 btn.open_table("itemAdd"); 
-        //                 break;
-        //             case "appBtn":
-        //             case "editAppBtn":
-        //                 btn.open_table("applicationAdd");
-        //                 break;
-        //             // case "taskTypeBtn": 
-        //             //     btn.open_table("taskTypeAdd");
-        //             //     break;
-        //             case "requestedByBtn":
-        //                 btn.open_table("requestedByAdd");
-        //                 break;
-        //             case "approvedByBtn": 
-        //                 btn.open_table("approvedByAdd");
-        //                 break;
-        //             default:
-        //                 console.warn(`No function assigned for this button: ${buttonId}`);
-        //         }
-        //     });
-        // });
+        }); 
 
         // Modal Functions - Ensure global availability
         window.open_add_modal = open_add_modal;
-        window.open_edit_modal = open_edit_modal;
+        // window.open_edit_modal = open_edit_modal;
         // window.delete_entry = delete_entry;
         window.close_modal = close_modal;
-        window.open_container = open_container;
+        // window.open_container = open_container;
     
         // Layout Functions
         layout.list_navigation();
@@ -79,16 +35,14 @@ document.addEventListener("DOMContentLoaded", async function() {
         add.modal_handling();
     
         // Load Functions
-        await load.load_tasks();
+        // await load.load_tasks();
     
         // Filter Functions
         search.search_filter();
         search.filter_dropdown();
     
         // Period Functions
-        period.setup_updates();
-
-        // Fetch Functions
+        // period.setup_updates();
 
         // Util Functions
         util.window_listeners();
@@ -105,12 +59,28 @@ document.addEventListener("DOMContentLoaded", async function() {
     });
 })
 
+
+// function lookButtonHandler(event) {
+//     console.log('helloooooo');
+//     const button = event.target;
+//     const key = button.dataset.key; 
+//     const isEdit = button.dataset.edit === "true";      
+
+//     console.log(key);
+//     if (fetch_data[key]) {
+//         fetch_data[key](isEdit); 
+//     } else {
+//         console.error(`Function ${key} not found in fetch_data`);
+//     }
+// }
+
+
 // Layout Page Logic
 const layout = {
     dashboard_open: async function() {
        layout.setup_elem(1);
        generatedPDF = null;
-       await page.update_tasks_per_page();
+    //    await page.update_tasks_per_page();
     }, 
 
     summary_open: async function() {
@@ -523,9 +493,9 @@ const add = {
 
         const editTaskButton = document.getElementById('editTaskButton');
         editTaskButton.onclick = async () => {
-            Object.values(fetch_data).forEach(fn => {
-                fn(true);      
-            });
+            // Object.values(fetch_data).forEach(fn => {
+            //     fn(true);      
+            // });
             taskInfoModal.style.display = 'none';
             await update.open_edit_modal(taskData);
         };
@@ -543,11 +513,28 @@ const add = {
         window.openModal = async function (event) {
             try {
 
+                // document.querySelectorAll(".look-btn").forEach(button => {
+                //     button.removeEventListener("click", lookButtonHandler);
+                //     button.addEventListener("click", lookButtonHandler);
+                // });
+
+                // document.querySelectorAll(".look-btn").forEach(button => {
+                //     button.addEventListener("click", () => {
+                //         console.log('helloooooo');
+                //         const key = button.dataset.key; 
+                //         const isEdit = button.dataset.edit === "true";      
+                
+                //         if (fetch_data[key]) {
+                //             fetch_data[key](isEdit); // Call the function dynamically
+                //         } else {
+                //             console.error(Function ${key} not found in fetch_data);
+                //         }
+                //     });
+                // });
+
                 Object.values(fetch_data)
                 .filter(fn => fn !== fetch_data.it_datalist) 
                 .forEach(fn => fn());       
-
-
 
                 const select = document.getElementById('ItInCharge');
                 const newResponse = await fetch('/api/session-user');
@@ -917,7 +904,7 @@ const load = {
             if (params.toString()) {
                 url += `&${params.toString()}`;
             }
-    
+                
             const response = await fetch(url);
             if (!response.ok) {
                 console.error("Error fetching tasks:", response.status);
@@ -985,6 +972,30 @@ const load = {
 
         } catch(err) {
             console.error(`Error loading content from ${url}:`, err);
+        }
+    },
+
+    load_reference: async function (table, query = 'hello world', check = 'false') {
+        try {    
+            // const response = await fetch(`/api/search-table/${table}/${query}/${check}`);
+            const url = `/api/search-table/${encodeURIComponent(table)}/${encodeURIComponent(query)}/${encodeURIComponent(check)}`;
+            const  response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+            }
+
+            let data;
+            if (check === 'false') {
+                data = await response.json();
+            } else {
+                data = await response.json();
+            }
+            console.log(response, data);
+            return data;
+        } catch (err) {
+            console.error("Error loading reference tasks:", err);
+            return null;
         }
     }
 }
@@ -1084,6 +1095,7 @@ const edit_button = async (table, id, val) => {
 // ⠀⠀⠀⠀⠀⠀⠀
 
 
+
 const open_container = (elementId, isEdit=false) => {
     const elementMap = {
         "TaskTypeBtn": ["taskTypeAdd", fetch_data.task_datalist],
@@ -1095,7 +1107,9 @@ const open_container = (elementId, isEdit=false) => {
         "ApplicationBtn": ["applicationAdd", fetch_data.app_datalist]
     };
 
-    const entry = elementMap[elementId.replace("edit", "")];
+    let itemSelect = (isEdit) ? elementId.replace('edit', '') : elementId;
+
+    const entry = elementMap[itemSelect];
     if (!entry) return;
 
     const [containerId, fetchFunction] = entry;
@@ -1106,12 +1120,10 @@ const open_container = (elementId, isEdit=false) => {
     const body = container.querySelector("tbody");
     const selectId = elementId.replace("Btn", "");
     const select = document.getElementById(selectId);
-
-    if (fetchFunction) fetchFunction(isEdit, selectId);
-    
-    container.dataset.selectedRow = null;
+   
     container.style.display = 'flex';
 
+    // If a row is already selected and we open the contaienr
     if (body && select) {
         body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
 
@@ -1122,10 +1134,14 @@ const open_container = (elementId, isEdit=false) => {
         console.log(matchingRow);
 
         if (matchingRow) {
-            matchingRow.classList.add("highlight");
-            container.dataset.selectedRow = matchingRow;
+            selectedRowMap[itemSelect] = matchingRow;
+            selectedRowMap[itemSelect].classList.add('highlight');
+            console.log(selectedRowMap, selectedRowMap[itemSelect])
+            console.log('hellooo');
         } 
     }
+
+    if (fetchFunction) fetchFunction(isEdit, selectId);
 
 };
 
@@ -1193,7 +1209,7 @@ const fetch_data = {
         selectId: 'RequestedBy',
         openBtnId: 'RequestedByBtn',
         isEdit,
-        columns: ['full_name', 'dep_name', 'dep_no'],
+        columns: ['full_name', 'name', 'department_no'],
         tableMap: { requestedByAdd: 'requested_by' },
         description: false,
         departmentFields: true
@@ -1206,7 +1222,7 @@ const fetch_data = {
         selectId: 'ApprovedBy',
         openBtnId: 'ApprovedByBtn',
         isEdit,
-        columns: ['full_name', 'dep_name'],
+        columns: ['full_name', 'name'],
         tableMap: { approvedByAdd: 'approved_by' }
     }),
     it_datalist: (isEdit = false, sessionName = null) => fetchRefTableFull({
@@ -1258,11 +1274,9 @@ const fetch_data = {
     })
 };
 
+
 async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtnId, isEdit = false, columns = [], tableMap, description = false, departmentFields = false, sessionName = null }) {
     try {
-        console.log(containerId);
-        const response = await fetch(`/api/ref-table/${table}`);
-        const data = await response.json();
 
         const container = document.getElementById(containerId);
         const body = document.getElementById(bodyId);
@@ -1273,14 +1287,18 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
 
         const openButton = isEdit ? document.getElementById(`edit${openBtnId}`) : document.getElementById(openBtnId);
         const closeButton = container.querySelector('.close-cont');
+
+        const addButton = container.querySelector('.c1');
         const editButton = container.querySelector('.c2');
         const deleteButton = container.querySelector('.c3');
         const confirmCancel = container.querySelector('.c4');
         const confirmSelect = container.querySelector('.c5');
         const confirmApply = container.querySelector('.c6');
 
+        const searchInput = container.querySelector('.look-input');
+        const searchButton = container.querySelector('.search-btn');      
+
         confirmCancel.disabled = confirmSelect.disabled = true;
-        body.innerHTML = "";
 
         let selectedRow = null;
         let selectedId = 0;
@@ -1291,7 +1309,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         let des = null;
         let depName = null;
         let depNum = null;
-
 
         function update_state() {
             confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
@@ -1314,47 +1331,107 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             });
         }
 
-        const fragment = document.createDocumentFragment();
-        data.forEach((val, index) => {
-            if (deletedRows.includes(`${container.id}-${index}`)) return;
+        function render_table(data) {
+            body.innerHTML = "";
+    
+            const fragment = document.createDocumentFragment();
+            data.forEach((val, index) => {
+                if (deletedRows.includes(`${container.id}-${index}`)) return;
 
-            const row = document.createElement("tr");
-            row.id = `${container.id}-${index}`;
-            row.dataset.index = index;
-            // changes
-            row.innerHTML = columns.map(col => `<td data-id="${val.id}">${val[col] ?? ''}</td>`).join('');
+                const row = document.createElement("tr");
+                row.id = `${container.id}-${index}`;
+                row.dataset.index = index;
+                row.innerHTML = columns.map(col => `<td data-id="${val.id}">${val[col] ?? ''}</td>`).join('');
 
-            // Auto-select if session match (for IT Charge)
-            if (sessionName && val.full_name === sessionName) {
-                row.classList.add("highlight");
-                selectedRow = row;
-                
-            }
-            // changes
-            row.addEventListener('click', function () {
-                // event.preventDefault();
-                body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-                row.classList.add("highlight");
+                // Auto-select if session matches (for IT In Charge)
+                if (sessionName && val.full_name === sessionName) {
+                    row.classList.add("highlight");
+                    selectedRow =  row;
+                }
 
-                selectedRow = row;
-                
-                selectedId = val.id;
-                update_state();
+                row.addEventListener('click', function () {
+                    body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
+                    row.classList.add("highlight");
+
+                    selectedRow = row;
+                    selectedId = val.id;
+                    update_state();
+                });
+
+                fragment.appendChild(row);
             });
 
-            fragment.appendChild(row);
-        });
-        body.appendChild(fragment);
+            body.appendChild(fragment);
+            body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+        
+            if (select) {
+                const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => row.cells[0].innerText === select.value);
+                if (matchingRow) {
+                    matchingRow.classList.add("highlight");
+                    selectedRow = matchingRow;
+                } else {
+                    selectedRow = null;
+                }
+            }
+        }
+
+        let timeout;
+        let originalData = [];
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(async() => {
+                const query = searchInput.value.trim(); 
+                if(!query) {
+                    render_table(originalData);
+                    return
+                }
+
+                const data = await load.load_reference(table, query, 'true');
+                render_table(data); // Render search results
+
+            }, 500);
+        })
+
+        addButton.addEventListener('click', () => {
+            let modalId = containerId + "Modal";
+            const modal = document.getElementById(modalId);
+            if (!modal) return console.error(`Modal with ID '${containerId}' not found.`);
+
+            modal.style.display = 'flex'; // Show modal
+            const modalBody = modal.querySelector('.modal-body');
+            const form = modal.querySelector('form');
+
+            if(form) {
+                form.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    const success = await submit_task_type(modalId, form);
+                    if(!success) return;
+
+                    const data = await load.load_reference(table);
+
+                    originalData = [...data];
+                    render_table(data);
+                    
+                    modal.style.display = 'none';
+                    form.reset();   
+                });
+            }
+        })
 
         closeButton.addEventListener('click', () => {
             console.log(selectedRow);
 
             container.style.display = 'none';
+            searchInput.value = "";
+            body.innerHTML = "";
             alertTriggered = false;
+
             if (select) {
                 if ((select.value === '' && selectedRow !== null)) {
                     selectedRow.classList.remove("highlight");
                     selectedRow = null;
+
                     confirmCancel.classList.remove('confirmed');
                     confirmSelect.classList.remove('confirmed');
                 }
@@ -1372,27 +1449,26 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             
         });
 
-        openButton.addEventListener('click', () => {
-            container.style.display = 'flex';
+        if (openButton) {
+            const openContainerFunction = async () => {
+                try {
+                    const data = await load.load_reference(table);
+                    if(data === null) return alert('Error retrieving data.');
+        
+                    originalData = [...data];
 
-            body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+                    render_table(data);
+                    container.style.display = 'flex';
 
-            // changes
-            if(select) {
-                const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => row.cells[0].innerText === select.value);
-                if (matchingRow) {
-                    matchingRow.classList.add("highlight");
-                    selectedRow = matchingRow;
-                } else {
-                    selectedRow = null;
+                } catch (error) {
+                    console.error("Error fetching data:", error);
                 }
-            }
-            
-            // let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-            //     row.cells[0].innerText === select.value
-            // );
-    
-        });
+            };
+        
+            openButton.removeEventListener('click', openContainerFunction);
+            openButton.addEventListener('click', openContainerFunction);
+        }
+        
 
         editButton.addEventListener('click', async (event) => {
             event.preventDefault();
@@ -1457,11 +1533,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                     if (input) updatedData[col] = input.value.trim();
                 });
 
-                // selectedRow.querySelectorAll("td").forEach((cell, index) => {
-                //     const input = cell.querySelector("input");
-                //     if (input) updatedData[names[index]] = input.value.trim();
-                // });
-
                 const result = await edit_button(table, selectedId, updatedData);
                 if (result.success) {
                     selectedRow.querySelectorAll("td").forEach((cell, index) => {
@@ -1469,6 +1540,10 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                             cell.textContent = updatedData[columns[index]];
                         }
                     });
+
+                    originalData = originalData.map(item => 
+                        item.id === selectedId ? { ...item, ...updatedData } : item
+                    );
 
                     body.querySelectorAll("tr").forEach(row => {
                         row.style.pointerEvents = "auto";
@@ -1479,8 +1554,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                     confirmSelect.style.display = 'flex';
 
                     if (originalRowName && select.value === originalRowName) {
-                        // console.log('enter');
-                        // changes??
                         select.value = updatedData[columns[0]];
                         // select.value = updatedData.name;
                     }
@@ -1564,6 +1637,9 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                     }
                     selectedRow.remove();
                     selectedRow = null;
+                    
+                    originalData = originalData.filter(item => item.id !== selectedId);
+
                     remove_highlight();
                 } catch (err) {
                     console.error('Error deleting row:', err);
@@ -1577,1085 +1653,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
     }
 }
 
-
-// const fetch_data = {
-//     task_datalist: async function(isEdit = false) {
-//         try {
-//             const table = 'task_types';
-//             const response = await fetch(`/api/ref-table/${table}`);
-//             const data = await response.json();
-    
-//             const container = document.getElementById('taskTypeAdd');
-//             const body = document.getElementById("taskTypeTable");
-//             const select = isEdit ? document.getElementById('editTaskType') : document.getElementById('taskType');
-    
-//             const openButton = isEdit? document.getElementById('editTaskBtn') : document.getElementById('taskTypeBtn');
-//             const closeButton = container.querySelector('.close-cont');
-//             const editButton = container.querySelector('.c2');
-//             const deleteButton = container.querySelector('.c3');
-//             const confirmCancel = container.querySelector('.c4');
-//             const confirmSelect = container.querySelector('.c5');
-//             const confirmApply = container.querySelector('.c6');
-    
-//             confirmCancel.disabled = confirmSelect.disabled = true;
-//             body.innerHTML = "";
-    
-//             let selectedRow = null;
-//             let selectedId = 0;
-//             let originalRowName = null;
-//             let alertTriggered = false;
-
-//             function update_state() {
-//                 confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
-//                 confirmCancel.classList.toggle('confirmed', !!selectedRow);
-//                 confirmSelect.classList.toggle('confirmed', !!selectedRow);
-//             }
-
-//             function remove_highlight() {
-//                 selectedRow = null;
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-//                 confirmCancel.classList.remove('confirmed');
-//                 confirmSelect.classList.remove('confirmed');
-    
-//                 body.querySelectorAll("td").forEach(cell => {
-//                     const input = cell.querySelector("input");
-//                     if (input) {
-//                         cell.innerHTML = "";
-//                         cell.textContent = input.value;
-//                     }
-//                 });
-//             }
-    
-//             const fragment = document.createDocumentFragment();
-//             data.forEach((val, index) => {
-//                 if (deletedRows.includes(`${container.id}-${index}`)) return;
-
-//                 let row = document.createElement("tr");
-//                 row.id = `${container.id}-${index}`;
-//                 row.dataset.index = index;
-//                 row.innerHTML = `
-//                     <td data-id="${val.id}">${val.name}</td>
-//                     <td>${val.description}</td>
-//                 `;
-            
-//                 row.addEventListener('click', function(event) {
-//                     event.preventDefault();
-    
-//                     body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-//                     row.classList.add("highlight");
-    
-//                     selectedRow = row;
-//                     selectedId = val.id;
-//                     update_state();
-//                 });
-
-//                 fragment.appendChild(row);
-//             });
-//             body.appendChild(fragment);
-
-//             closeButton.addEventListener('click', () => {
-//                 container.style.display = 'none';
-//                 alertTriggered = false;
-//                 if ((select.value  === '' && selectedRow !== null)) {
-//                     selectedRow.classList.remove("highlight");
-//                     // selectedRow.classList.remove("highlight");
-//                     selectedRow = null;
-//                     confirmCancel.classList.remove('confirmed');
-//                     confirmSelect.classList.remove('confirmed');
-//                 }
-
-//                 if (confirmApply.classList.contains('confirmed')) {
-//                     console.log('heloooooooo');
-//                     body.querySelectorAll("tr").forEach(row => {
-//                         row.style.pointerEvents = "auto";
-//                         row.classList.remove('disabled-row');
-//                     });
-//                     confirmSelect.style.display = 'flex';
-//                     confirmApply.style.display = 'none';
-//                     confirmApply.classList.remove('confirmed');
-//                     remove_highlight();
-//                 }
-            
-//             });
-
-//             openButton.addEventListener('click', () => {
-//                 container.style.display = 'flex';
-            
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-            
-//                 let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-//                     row.cells[0].innerText === select.value
-//                 );
-            
-//                 if (matchingRow) {
-//                     matchingRow.classList.add("highlight");
-//                     selectedRow = matchingRow; 
-//                 } else {
-//                     selectedRow = null; 
-//                 }
-//             });
-
-//             editButton.addEventListener('click', async (event) => {
-//                 event.preventDefault();
-//                 if (!selectedRow) {
-//                     if(!alertTriggered) {
-//                         alertTriggered = true;
-//                         return alert ('Please select a row to edit.');
-//                     }
-//                 }
-
-//                 const cells = selectedRow.querySelectorAll("td");
-//                 originalRowName = select.value;
-//                 const initialValues = [...cells].map(cell => cell.innerText.trim());
-
-//                 cells.forEach((cell, index) => {
-//                     if (!cell.querySelector("input")) {
-//                         const input = document.createElement("input");
-//                         input.type = "text";
-//                         input.value = initialValues[index];
-//                         input.classList.add('editable-input');
-    
-//                         input.addEventListener("input", () => {
-//                             const hasChanged = [...selectedRow.querySelectorAll("input")].some(
-//                                 (inp, i) => inp.value.trim() !== initialValues[i]
-//                             );
-//                             confirmApply.disabled = !hasChanged;
-//                             confirmApply.style.display = hasChanged ? 'flex' : 'none';
-//                         });
-    
-//                         cell.textContent = "";
-//                         cell.appendChild(input);
-//                     }
-//                 });
-
-//                 confirmSelect.style.display = 'none';
-//                 confirmApply.classList.add('confirmed');
-
-//                 body.querySelectorAll("tr").forEach(row => {
-//                     if (row !== selectedRow) {
-//                         row.style.pointerEvents = "none";
-//                         row.classList.add('disabled-row');
-//                     };
-//                 });
-//             });
-   
-//             confirmApply.addEventListener('click', async () => {
-//                 try {
-//                     const updatedData = {};
-//                     const names = ["name", "description"];
-    
-//                     selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                         const input = cell.querySelector("input");
-//                         if (input) updatedData[names[index]] = input.value.trim();
-//                     });
-    
-//                     console.log(updatedData);
-//                     const result = await edit_button(table, selectedId, updatedData);
-//                     if (result.success) {
-//                         selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                             if (cell.querySelector("input")) {
-//                                 cell.textContent = updatedData[names[index]];
-//                             }
-//                         });
-    
-//                         body.querySelectorAll("tr").forEach(row => {
-//                             row.style.pointerEvents = "auto";
-//                             row.classList.remove("disabled-row");
-//                         });
-    
-//                         confirmApply.style.display = 'none';
-//                         confirmSelect.style.display = 'flex';
-    
-//                         if (originalRowName && select.value === originalRowName) {
-//                             console.log('enter');
-//                             select.value = updatedData.name;
-//                         }
-//                     } else {
-//                         console.error("Error updating row:", result.error);
-//                     }
-//                 } catch (err) {
-//                     console.error(`Error editing row:`, err);
-//                 }
-//             });
-
-//             confirmSelect.addEventListener('click', () => {
-//                 if(!selectedRow) return;
-//                 select.value = selectedRow.cells[0].innerText; 
-//                 container.style.display = 'none';
-//             });
-
-//             confirmCancel.addEventListener('click', () => {
-//                 if (select.value) select.value = null;
-//                 if (confirmApply.classList.contains('confirmed')) {
-//                     console.log('hellooo');
-//                     body.querySelectorAll("tr").forEach(row => {
-//                         row.style.pointerEvents = "auto";
-//                         row.classList.remove('disabled-row');
-//                     });
-//                     confirmSelect.style.display = 'flex';
-//                     confirmApply.style.display = 'none';
-//                     confirmApply.classList.remove('confirmed');
-//                 }
-//                 remove_highlight();
-//             });
-
-    
-//             deleteButton.addEventListener('click', async () => {
-//                 if (!selectedRow) return alert('Please select a row to delete.');
-            
-//                 if (confirm('Are you sure you want to delete this row?')) {
-//                     const rowId = selectedRow.querySelector("td").dataset.id; // Ensure the first column has the row ID
-//                     const tableMap = {
-//                         "taskTypeAdd": "task_types",
-//                         "requestedByAdd": "requested_by",
-//                         "approvedByAdd": "approved_by",
-//                         "itChargeAdd": "it_in_charge",
-//                         "deviceAdd": "devices",
-//                         "itemAdd": "items",
-//                         "appAdd": "applications"
-//                     };
-                    
-//                     const tableName = tableMap[container.id] || "";
-//                     if (!tableName) {
-//                         console.error("Invalid table name:", container.id);
-//                         alert("Error: Unable to determine the correct table name.");
-//                         return;
-//                     }
-                                
-//                     try {
-//                         const response = await fetch(`/api/delete-table/${tableName}/${rowId}`, { method: "DELETE" });
-            
-//                         if (!response.ok) {
-//                             const errorData = await response.json();
-//                             throw new Error(errorData.error || "Failed to delete row.");
-//                         }
-            
-//                         selectedRow.remove(); // Remove from frontend only if backend deletion is successful
-//                         selectedRow = null;
-//                         remove_highlight();
-//                     } catch (err) {
-//                         console.error('Error deleting row:', err);
-//                         alert("Failed to delete row. Please try again.");
-//                     }
-//                 }
-//             });
-            
-//         } catch (err) {
-//             console.error("Error loading task data:", err);
-//         }
-//     },
-
-//     request_datalist: async function(isEdit = false) {
-//         try {
-//             const table = 'requested_by';
-//             const response = await fetch('/api/ref-table/requested_by');
-//             const data = await response.json();
-    
-//             const container = document.getElementById('requestedByAdd');
-//             const select = isEdit ? document.getElementById('editRequestedBy') : document.getElementById('requestedBy');
-//             const department = isEdit ? document.getElementById('editDepartment') : document.getElementById('department');
-//             const departmentNo = isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo');
-
-//             const openButton = isEdit? document.getElementById('editRequestedByBtn') : document.getElementById('requestedByBtn');
-//             const closeButton = container.querySelector('.close-cont');
-//             const editButton = container.querySelector('.c2');
-//             const deleteButton = container.querySelector('.c3');
-//             const confirmCancel = container.querySelector('.c4');
-//             const confirmSelect = container.querySelector('.c5');
-//             const confirmApply = container.querySelector('.c6');
-    
-//             const body = document.getElementById("requestTable");
-//             body.innerHTML = "";
-
-//             let selectedRow = null;
-//             let selectedId = 0;
-
-//             let fullName = null;
-//             let depName = null;
-//             let depNum = null;
-
-//             function update_state() {
-//                 confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
-//                 confirmCancel.classList.toggle('confirmed', !!selectedRow);
-//                 confirmSelect.classList.toggle('confirmed', !!selectedRow);
-//             }
-
-//             function remove_highlight() {
-//                 selectedRow = null;
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-//                 confirmCancel.classList.remove('confirmed');
-//                 confirmSelect.classList.remove('confirmed');
-    
-//                 body.querySelectorAll("td").forEach(cell => {
-//                     const input = cell.querySelector("input");
-//                     if (input) {
-//                         cell.innerHTML = "";
-//                         cell.textContent = input.value;
-//                     }
-//                 });
-//             }
-    
-//             const fragment = document.createDocumentFragment();
-//             data.forEach((val, index) => {
-//                 if (deletedRows.includes(`${container.id}-${index}`)) return;
-
-//                 let row = document.createElement("tr");
-//                 row.id = `${container.id}-${index}`;
-//                 row.dataset.index = index;
-//                 row.innerHTML = `
-//                     <td>${val.full_name}</td>
-//                     <td>${val.dep_name}</td>
-//                     <td>${val.dep_no}</td>
-//                 `;
-//                 row.addEventListener('click', function(event) {
-//                     event.preventDefault();
-
-//                     body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-//                     row.classList.add("highlight");
-
-//                     selectedRow = row;
-//                     selectedId = val.id;
-//                     update_state();
-//                 });
-
-//                 fragment.appendChild(row);
-//             });
-//             body.appendChild(fragment);
-
-//             closeButton.addEventListener('click', () => {
-//                 container.style.display = 'none';
-//                 if (select.value  === '' && selectedRow !== null) {
-//                     selectedRow.classList.remove("highlight");
-//                     selectedRow = null;
-//                     confirmCancel.classList.remove('confirmed');
-//                     confirmSelect.classList.remove('confirmed');
-//                 }
-//             })
-
-//             openButton.addEventListener('click', () => {
-//                 container.style.display = 'flex';
-            
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-            
-//                 let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-//                     row.cells[0].innerText === select.value
-//                 );
-            
-//                 if (matchingRow) {
-//                     matchingRow.classList.add("highlight");
-//                     selectedRow = matchingRow; 
-//                 } else {
-//                     selectedRow = null; 
-//                 }
-//             });
-
-//             editButton.addEventListener('click', async (event) => {
-//                 event.preventDefault();
-//                 if (!selectedRow) return alert ('Please select a row to edit.');
-
-//                 const cells = selectedRow.querySelectorAll("td");
-//                 fullName = select.value;
-//                 depName = department.value;
-//                 depNum = departmentNo.value;
-//                 const initialValues = [...cells].map(cell => cell.innerText.trim());
-
-//                 cells.forEach((cell, index) => {
-//                     if (!cell.querySelector("input")) {
-//                         const input = document.createElement("input");
-//                         input.type = "text";
-//                         input.value = initialValues[index];
-//                         input.classList.add('editable-input');
-    
-//                         input.addEventListener("input", () => {
-//                             const hasChanged = [...selectedRow.querySelectorAll("input")].some(
-//                                 (inp, i) => inp.value.trim() !== initialValues[i]
-//                             );
-//                             confirmApply.disabled = !hasChanged;
-//                             confirmApply.style.display = hasChanged ? 'flex' : 'none';
-//                         });
-    
-//                         cell.textContent = "";
-//                         cell.appendChild(input);
-//                     }
-//                 });
-
-//                 confirmSelect.style.display = 'none';
-//                 confirmApply.classList.add('confirmed');
-
-//                 body.querySelectorAll("tr").forEach(row => {
-//                     if (row !== selectedRow) {
-//                         row.style.pointerEvents = "none";
-//                         row.classList.add('disabled-row');
-//                     };
-//                 });
-//             });
-
-//             confirmApply.addEventListener('click', async () => {
-//                 try {
-//                     const updatedData = {};
-//                     const names = ["full_name", "dep_name", "dep_no"];
-    
-//                     selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                         const input = cell.querySelector("input");
-//                         if (input) updatedData[names[index]] = input.value.trim();
-//                     });
-    
-//                     console.log(updatedData);
-//                     const result = await edit_button(table, selectedId, updatedData);
-//                     if (result.success) {
-//                         selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                             if (cell.querySelector("input")) {
-//                                 cell.textContent = updatedData[names[index]];
-//                             }
-//                         });
-    
-//                         body.querySelectorAll("tr").forEach(row => {
-//                             row.style.pointerEvents = "auto";
-//                             row.classList.remove("disabled-row");
-//                         });
-    
-//                         confirmApply.style.display = 'none';
-//                         confirmSelect.style.display = 'flex';
-
-//                         if(fullName && select.value === fullName) {
-//                             select.value = updatedData.full_name;
-//                         }
-//                         if (depName && department.value === depName) {
-//                             department.value = updatedData.dep_name;
-//                         }
-//                         if (depNum && departmentNo.value === depNum) {
-//                             departmentNo.value = updatedData.dep_no;
-//                         }
-
-//                     } else {
-//                         console.error("Error updating row:", result.error);
-//                     }
-//                 } catch (err) {
-//                     console.error(`Error editing row:`, err);
-//                 }
-//             });
-
-//             confirmSelect.addEventListener('click', () => {
-//                 if(!selectedRow) return;
-//                 select.value = selectedRow.cells[0].innerText; 
-//                 department.value = selectedRow.cells[1].innerText; 
-//                 departmentNo.value = selectedRow.cells[2].innerText; 
-//                 container.style.display = 'none';
-//             });
-
-//             confirmCancel.addEventListener('click', () => {
-//                 if(select.value) select.value = null; 
-//                 if(department.value) department.value = null; 
-//                 if(departmentNo.value) departmentNo.value = null; 
-//                 if (confirmApply.classList.contains('confirmed')) {
-//                     body.querySelectorAll("tr").forEach(row => {
-//                         row.style.pointerEvents = "auto";
-//                         row.classList.remove('disabled-row');
-//                     });
-//                     confirmSelect.style.display = 'flex';
-//                     confirmApply.style.display = 'none';
-//                     confirmApply.classList.remove('confirmed');
-//                 }
-//                 remove_highlight();
-//             });
-
-//             deleteButton.addEventListener('click', () => {
-//                 if (!selectedRow) return alert('Please select a row to delete.');
-//                 if (confirm('Are you sure you want to delete this row?')) {
-//                     deletedRows.push(selectedRow.id);
-//                     selectedRow.remove();
-//                     selectedRow = null;
-//                     remove_highlight();
-//                 }
-//             });
-
-
-//         } catch (err) {
-//             console.error("Error loading task data:", err);
-//         }
-//     },
-
-//     approve_datalist: async function(isEdit = false) {
-//         try {
-//             const table = "approved_by";
-//             const response = await fetch('/api/ref-table/approved_by');
-//             const data = await response.json();
-    
-//             const container = document.getElementById('approvedByAdd');
-//             const select = isEdit ? document.getElementById('editApprovedBy') : document.getElementById('approvedBy');
-
-//             const openButton = isEdit? document.getElementById('editApprovedByBtn') : document.getElementById('approvedByBtn');
-//             const closeButton = container.querySelector('.close-cont');
-//             const editButton = container.querySelector('.c2');
-//             const deleteButton = container.querySelector('.c3');
-//             const confirmCancel = container.querySelector('.c4');
-//             const confirmSelect = container.querySelector('.c5');
-//             const confirmApply = container.querySelector('.c6');
-    
-//             const body = document.getElementById("approveTable");
-//             body.innerHTML = "";
-
-//             let selectedRow = null;
-//             let selectedId = 0;
-//             let fullName = null;
-
-//             function update_state() {
-//                 confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
-//                 confirmCancel.classList.toggle('confirmed', !!selectedRow);
-//                 confirmSelect.classList.toggle('confirmed', !!selectedRow);
-//             }
-    
-//             function remove_highlight() {
-//                 selectedRow = null;
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-//                 confirmCancel.classList.remove('confirmed');
-//                 confirmSelect.classList.remove('confirmed');
-    
-//                 body.querySelectorAll("td").forEach(cell => {
-//                     const input = cell.querySelector("input");
-//                     if (input) {
-//                         cell.innerHTML = "";
-//                         cell.textContent = input.value;
-//                     }
-//                 });
-//             }
-
-//             const fragment = document.createDocumentFragment();
-//             data.forEach((val, index) => {
-//                 if (deletedRows.includes(`${container.id}-${index}`)) return;
-
-//                 let row = document.createElement("tr");
-//                 row.id = `${container.id}-${index}`;
-//                 row.dataset.index = index;
-//                 row.innerHTML = `
-//                     <td>${val.full_name}</td>
-//                     <td>${val.dep_name}</td>
-//                 `;
-//                 row.addEventListener('click', function(event) {
-//                     event.preventDefault();
-
-//                     body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-//                     row.classList.add("highlight");
-
-//                     selectedRow = row;
-//                     selectedId = val.id;
-//                     update_state();
-//                 });
-
-//                 fragment.appendChild(row);
-//             });
-//             body.appendChild(fragment);
-
-//             closeButton.addEventListener('click', () => {
-//                 container.style.display = 'none';
-//                 if (select.value  === '' && selectedRow !== null) {
-//                     selectedRow.classList.remove("highlight");
-//                     selectedRow = null;
-//                     confirmCancel.classList.remove('confirmed');
-//                     confirmSelect.classList.remove('confirmed');
-//                 }
-//             })
-
-//             openButton.addEventListener('click', () => {
-//                 container.style.display = 'flex';
-            
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-            
-//                 let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-//                     row.cells[0].innerText === select.value
-//                 );
-            
-//                 if (matchingRow) {
-//                     matchingRow.classList.add("highlight");
-//                     selectedRow = matchingRow; 
-//                 } else {
-//                     selectedRow = null; 
-//                 }
-//             });
-
-//             editButton.addEventListener('click', async (event) => {
-//                 event.preventDefault();
-//                 if (!selectedRow) return alert ('Please select a row to edit.');
-
-//                 const cells = selectedRow.querySelectorAll("td");
-//                 fullName = select.value;
-//                 const initialValues = [...cells].map(cell => cell.innerText.trim());
-
-//                 cells.forEach((cell, index) => {
-//                     if (!cell.querySelector("input")) {
-//                         const input = document.createElement("input");
-//                         input.type = "text";
-//                         input.value = initialValues[index];
-//                         input.classList.add('editable-input');
-    
-//                         input.addEventListener("input", () => {
-//                             const hasChanged = [...selectedRow.querySelectorAll("input")].some(
-//                                 (inp, i) => inp.value.trim() !== initialValues[i]
-//                             );
-//                             confirmApply.disabled = !hasChanged;
-//                             confirmApply.style.display = hasChanged ? 'flex' : 'none';
-//                         });
-    
-//                         cell.textContent = "";
-//                         cell.appendChild(input);
-//                     }
-//                 });
-
-//                 confirmSelect.style.display = 'none';
-//                 confirmApply.classList.add('confirmed');
-
-//                 body.querySelectorAll("tr").forEach(row => {
-//                     if (row !== selectedRow) {
-//                         row.style.pointerEvents = "none";
-//                         row.classList.add('disabled-row');
-//                     };
-//                 });
-//             });
-
-//             confirmApply.addEventListener('click', async () => {
-//                 try {
-//                     const updatedData = {};
-//                     const names = ["full_name", "dep_name"];
-    
-//                     selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                         const input = cell.querySelector("input");
-//                         if (input) updatedData[names[index]] = input.value.trim();
-//                     });
-    
-//                     console.log(updatedData);
-//                     const result = await edit_button(table, selectedId, updatedData);
-//                     if (result.success) {
-//                         selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                             if (cell.querySelector("input")) {
-//                                 cell.textContent = updatedData[names[index]];
-//                             }
-//                         });
-    
-//                         body.querySelectorAll("tr").forEach(row => {
-//                             row.style.pointerEvents = "auto";
-//                             row.classList.remove("disabled-row");
-//                         });
-    
-//                         confirmApply.style.display = 'none';
-//                         confirmSelect.style.display = 'flex';
-
-//                         if(fullName && select.value === fullName) {
-//                             select.value = updatedData.full_name;
-//                         }
-//                     } else {
-//                         console.error("Error updating row:", result.error);
-//                     }
-//                 } catch (err) {
-//                     console.error(`Error editing row:`, err);
-//                 }
-//             });
-
-//             confirmSelect.addEventListener('click', () => {
-//                 if(!selectedRow) return;
-//                 select.value = selectedRow.cells[0].innerText; 
-//                 container.style.display = 'none';
-//             });
-
-//             confirmCancel.addEventListener('click', () => {
-//                 if(select.value) select.value = null; 
-//                 if (confirmApply.classList.contains('confirmed')) {
-//                     body.querySelectorAll("tr").forEach(row => {
-//                         row.style.pointerEvents = "auto";
-//                         row.classList.remove('disabled-row');
-//                     });
-//                     confirmSelect.style.display = 'flex';
-//                     confirmApply.style.display = 'none';
-//                     confirmApply.classList.remove('confirmed');
-//                 }
-//                 remove_highlight();
-//             });
-
-//             deleteButton.addEventListener('click', () => {
-//                 if (!selectedRow) return alert('Please select a row to delete.');
-//                 if (confirm('Are you sure you want to delete this row?')) {
-//                     deletedRows.push(selectedRow.id);
-//                     selectedRow.remove();
-//                     selectedRow = null;
-//                     remove_highlight();
-//                 }
-//             });
-
-//         } catch (err) {
-//             console.error("Error loading task data:", err);
-//         }
-//     },
-//             // data.forEach(dept => {
-//         //     const option = document.createElement("option");
-//         //     option.value = dept.id;
-//         //     option.textContent = dept.name;
-//         //     option.setAttribute("dept-no", dept.department_no);
-//         //     select.appendChild(option);
-//         // });
-
-//         // // Automatically update departmentNo input when selecting a department
-//         // select.addEventListener("change", function() {
-//         //     const selectedOption = select.options[select.selectedIndex]; 
-//         //     const deptNo = selectedOption.getAttribute("dept-no"); 
-//         //     departmentNo.value = deptNo || ""; 
-//         // });
-    
-//     // dept_datalist: async function(isEdit = false) {
-//     //     try {
-//     //         const response = await fetch('/api/ref-table/departments');
-//     //         const data = await response.json();
-    
-//     //         const container = document.getElementById('departmentAdd');
-  
-//     //         const select = isEdit ? document.getElementById('editDepartment') : document.getElementById('department');
-//     //         const departmentNo = isEdit ? document.getElementById('editDepartmentNo') : document.getElementById('departmentNo');
-//     //         // select.innerHTML = `<option selected disabled>Select Department</option>`;    
-            
-//     //         const body = document.getElementById("deptTable");
-//     //         body.innerHTM
-//     // L = "";
-//     // let selectedRow = null; 
-    
-//     //         data.forEach((val, index) => {
-//     //             let row = document.createElement("tr");
-//     // row.id = `${container.id}-${index}`;
-//     //             row.innerHTML = `
-//     //                 <td>${val.name}</td>
-//     //                 <td>${val.department_no}</td>
-//     //             `;
-//     //             row.addEventListener('click', function(event) {
-//     //                 event.preventDefault();
-
-//     //                 select.value = val.name;                    
-//     //                 departmentNo.value = val.department_no;
-  
-//    //                 container.style.display = 'none';
-//     //             })
-//     //             body.appendChild(row);
-//     //         });
-            
-//     //     } catch(err) {
-//     //         console.error("Error loading dept data:", err);
-//     //     }
-//     // },
-    
-
-//     it_datalist: async function(isEdit = false, sessionName=null) {
-//         try {
-//             const table = 'it_in_charge';
-//             const response = await fetch('/api/ref-table/it_in_charge');
-//             const data = await response.json();   
-    
-//             const container = document.getElementById('itAdd');
-//             const select = isEdit ? document.getElementById('editItInCharge') : document.getElementById('itInCharge');   
-
-//             const openButton = isEdit? document.getElementById('editItChargeBtn') : document.getElementById('itChargeBtn');
-//             const closeButton = container.querySelector('.close-cont');
-//             const editButton = container.querySelector('.c2');
-//             const deleteButton = container.querySelector('.c3');
-//             const confirmCancel = container.querySelector('.c4');
-//             const confirmSelect = container.querySelector('.c5');
-//             const confirmApply = container.querySelector('.c6');
-
-//             const body = document.getElementById("itTable");
-//             body.innerHTML = "";
-
-//             let selectedRow = null;
-//             let selectedId = 0;
-//             let fullName = null;
-//             let alertTriggered = false;
-
-//             function update_state() {
-//                 confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
-//                 confirmCancel.classList.toggle('confirmed', !!selectedRow);
-//                 confirmSelect.classList.toggle('confirmed', !!selectedRow);
-//             }
-
-//             function remove_highlight() {
-//                 selectedRow = null;
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-//                 confirmCancel.classList.remove('confirmed');
-//                 confirmSelect.classList.remove('confirmed');
-    
-//                 body.querySelectorAll("td").forEach(cell => {
-//                     const input = cell.querySelector("input");
-//                     if (input) {
-//                         cell.innerHTML = "";
-//                         cell.textContent = input.value;
-//                     }
-//                 });
-//             }
-
-//             const fragment = document.createDocumentFragment();
-//             data.forEach((val, index) => {
-//                 if (deletedRows.includes(`${container.id}-${index}`)) return;
-
-//                 let row = document.createElement("tr");
-//                 row.id = `${container.id}-${index}`;
-//                 row.dataset.index = index;
-//                 row.innerHTML = `<td>${val.full_name}</td>`;
-
-//                 if (sessionName && val.full_name === sessionName) {
-//                     row.classList.add("highlight");
-//                     selectedRow = row;
-//                 }
-
-//                 row.addEventListener('click', function(event) {
-//                     event.preventDefault();
-
-//                     body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-//                     row.classList.add("highlight");
-
-//                     selectedRow = row;
-//                     selectedId = val.id;
-//                     update_state();
-//                 });
-
-//                 fragment.appendChild(row);
-//             });
-//             body.appendChild(fragment);
-       
-//             closeButton.addEventListener('click', () => {
-//                 container.style.display = 'none';
-//                 alertTriggered = false;
-//                 if ((select.value  === '' && selectedRow !== null)) {
-//                     selectedRow.classList.remove("highlight");
-//                     // selectedRow.classList.remove("highlight");
-//                     selectedRow = null;
-//                     confirmCancel.classList.remove('confirmed');
-//                     confirmSelect.classList.remove('confirmed');
-//                 }
-
-//                 if (confirmApply.classList.contains('confirmed')) {
-//                     body.querySelectorAll("tr").forEach(row => {
-//                         row.style.pointerEvents = "auto";
-//                         row.classList.remove('disabled-row');
-//                     });
-//                     confirmSelect.style.display = 'flex';
-//                     confirmApply.style.display = 'none';
-//                     confirmApply.classList.remove('confirmed');
-//                     selectedRow.classList.remove("highlight");
-//                 }
-            
-//             });
-
-//             openButton.addEventListener('click', () => {
-//                 container.style.display = 'flex';
-            
-//                 body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-            
-//                 let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-//                     row.cells[0].innerText === select.value
-//                 );
-            
-//                 if (matchingRow) {
-//                     matchingRow.classList.add("highlight");
-//                     selectedRow = matchingRow; 
-//                 } else {
-//                     selectedRow = null; 
-//                 }
-//             });
-
-//             editButton.addEventListener('click', async (event) => {
-//                 event.preventDefault();
-//                 if (!selectedRow) {
-//                     if(!alertTriggered) {
-//                         alertTriggered = true;
-//                         return alert ('Please select a row to edit.');
-//                     }
-//                 }
-
-//                 const cells = selectedRow.querySelectorAll("td");
-//                 originalRowName = select.value;
-//                 const initialValues = [...cells].map(cell => cell.innerText.trim());
-
-//                 cells.forEach((cell, index) => {
-//                     if (!cell.querySelector("input")) {
-//                         const input = document.createElement("input");
-//                         input.type = "text";
-//                         input.value = initialValues[index];
-//                         input.classList.add('editable-input');
-    
-//                         input.addEventListener("input", () => {
-//                             const hasChanged = [...selectedRow.querySelectorAll("input")].some(
-//                                 (inp, i) => inp.value.trim() !== initialValues[i]
-//                             );
-//                             confirmApply.disabled = !hasChanged;
-//                             confirmApply.style.display = hasChanged ? 'flex' : 'none';
-//                         });
-    
-//                         cell.textContent = "";
-//                         cell.appendChild(input);
-//                     }
-//                 });
-
-//                 confirmSelect.style.display = 'none';
-//                 confirmApply.classList.add('confirmed');
-
-//                 body.querySelectorAll("tr").forEach(row => {
-//                     if (row !== selectedRow) {
-//                         row.style.pointerEvents = "none";
-//                         row.classList.add('disabled-row');
-//                     };
-//                 });
-//             });
-   
-//             confirmApply.addEventListener('click', async () => {
-//                 try {
-//                     const updatedData = {};
-//                     const names = ["name", "description"];
-    
-//                     selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                         const input = cell.querySelector("input");
-//                         if (input) updatedData[names[index]] = input.value.trim();
-//                     });
-    
-//                     console.log(updatedData);
-//                     const result = await edit_button(table, selectedId, updatedData);
-//                     if (result.success) {
-//                         selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                             if (cell.querySelector("input")) {
-//                                 cell.textContent = updatedData[names[index]];
-//                             }
-//                         });
-    
-//                         body.querySelectorAll("tr").forEach(row => {
-//                             row.style.pointerEvents = "auto";
-//                             row.classList.remove("disabled-row");
-//                         });
-    
-//                         confirmApply.style.display = 'none';
-//                         confirmSelect.style.display = 'flex';
-    
-//                         if (originalRowName && select.value === originalRowName) {
-//                             console.log('enter');
-//                             select.value = updatedData.name;
-//                         }
-//                     } else {
-//                         console.error("Error updating row:", result.error);
-//                     }
-//                 } catch (err) {
-//                     console.error(`Error editing row:`, err);
-//                 }
-//             });
-
-//             confirmSelect.addEventListener('click', () => {
-//                 if(!selectedRow) return;
-//                 select.value = selectedRow.cells[0].innerText; 
-//                 container.style.display = 'none';
-//             });
-
-//             confirmCancel.addEventListener('click', () => {
-//                 if (select.value) select.value = null;
-//                 if (confirmApply.classList.contains('confirmed')) {
-//                     body.querySelectorAll("tr").forEach(row => {
-//                         row.style.pointerEvents = "auto";
-//                         row.classList.remove('disabled-row');
-//                     });
-//                     confirmSelect.style.display = 'flex';
-//                     confirmApply.style.display = 'none';
-//                     confirmApply.classList.remove('confirmed');
-//                 }
-//                 remove_highlight();
-//             });
-
-    
-//             deleteButton.addEventListener('click', async () => {
-//                 if (!selectedRow) return alert('Please select a row to delete.');
-            
-//                 if (confirm('Are you sure you want to delete this row?')) {
-//                     const rowId = selectedRow.querySelector("td").dataset.id; // Ensure the first column has the row ID
-//                     const tableMap = {
-//                         "taskTypeAdd": "task_types",
-//                         "requestedByAdd": "requested_by",
-//                         "approvedByAdd": "approved_by",
-//                         "itChargeAdd": "it_in_charge",
-//                         "deviceAdd": "devices",
-//                         "itemAdd": "items",
-//                         "appAdd": "applications"
-//                     };
-                    
-//                     const tableName = tableMap[container.id] || "";
-//                     if (!tableName) {
-//                         console.error("Invalid table name:", container.id);
-//                         alert("Error: Unable to determine the correct table name.");
-//                         return;
-//                     }
-                                
-//                     try {
-//                         const response = await fetch(`/api/delete-table/${tableName}/${rowId}`, { method: "DELETE" });
-            
-//                         if (!response.ok) {
-//                             const errorData = await response.json();
-//                             throw new Error(errorData.error || "Failed to delete row.");
-//                         }
-            
-//                         selectedRow.remove(); // Remove from frontend only if backend deletion is successful
-//                         selectedRow = null;
-//                         remove_highlight();
-//                     } catch (err) {
-//                         console.error('Error deleting row:', err);
-//                         alert("Failed to delete row. Please try again.");
-//                     }
-//                 }
-//             });            
-    
-//         } catch (err) {
-//             console.error("Error loading IT data:", err);
-//         }
-//     },
-    
-
-//     device_datalist: async function(isEdit = false) {
-//         try {
-//             const table = 'devices';
-//             const response = await fetch('/api/ref-table/devices');
-//             const data = await response.json();
-
-//             const container = document.getElementById('deviceAdd');
-//             const select = isEdit ? document.getElementById('editDevice') : document.getElementById('deviceName');
-//             const body = document.getElementById("deviceTable");
-
-//             await similar_functions(isEdit, 'editDeviceBtn', 'deviceBtn', table, container, body, select, data);
-//         } catch(err) {
-//             console.error("Error loading device data:", err);
-//         }
-//     },
-
-//     item_datalist: async function(isEdit = false) {
-//         try {
-//             const table = 'items';
-//             const response = await fetch('/api/ref-table/items');
-//             const data = await response.json();
-
-//             const container = document.getElementById('itemAdd');
-//             const select = isEdit ? document.getElementById('editItem') : document.getElementById('itemName');
-//             const body = document.getElementById("itemTable");
-
-//             await similar_functions(isEdit, 'editItemBtn', 'itemBtn', table, container, body, select, data);
-
-//         } catch(err) {
-//             console.error("Error loading item data:", err);
-//         }
-//     },
-
-//     app_datalist: async function(isEdit = false) {
-//         try {
-//             const table = 'applications';
-//             const response = await fetch('/api/ref-table/applications');
-//             const data = await response.json();
-            
-//             const container = document.getElementById('applicationAdd');
-//             const select = isEdit ? document.getElementById('editApplication') : document.getElementById('applicationName');
-//             const body = document.getElementById("appTable");
-
-//             await similar_functions(isEdit, 'editAppBtn', 'appBtn', table, container, body, select, data);
-
-
-//         } catch(err) {
-//             console.error("Error loading item data:", err);
-//         }
-//     }
-// }
 
 // ⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⣼⣆⠀⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⢠⠹⣆⠀⠀⠀⠀⡸⡇⠘⣦⠀⠀⠀⠀⠀⠀⠀
@@ -2674,216 +1671,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
 // ⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⡏⠀⡇⢰⠃⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀⠀⡆⠰⡇⠀⡏⢸⠀⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠉⠚⠀⠀⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀
-
-// async function similar_functions(isEdit, editId, id, table, container, body, select, data) {
-//     const openButton = isEdit? document.getElementById(editId) : document.getElementById(id);
-//     const closeButton = container.querySelector('.close-cont');
-//     const editButton = container.querySelector('.c2');
-//     const deleteButton = container.querySelector('.c3');
-//     const confirmCancel = container.querySelector('.c4');
-//     const confirmSelect = container.querySelector('.c5');
-//     const confirmApply = container.querySelector('.c6');
-
-//     confirmCancel.disabled = confirmSelect.disabled = true;
-//     body.innerHTML = "";
-
-//     let selectedRow = null;
-//     let selectedId = 0;
-//     let originalRowName = null;
-//     let alertTriggered = false;
-
-//     function update_state() {
-//         confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
-//         confirmCancel.classList.toggle('confirmed', !!selectedRow);
-//         confirmSelect.classList.toggle('confirmed', !!selectedRow);
-//     }
-
-//     function remove_highlight() {
-//         selectedRow = null;
-//         body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-//         confirmCancel.classList.remove('confirmed');
-//         confirmSelect.classList.remove('confirmed');
-
-//         body.querySelectorAll("td").forEach(cell => {
-//             const input = cell.querySelector("input");
-//             if (input) {
-//                 cell.innerHTML = "";
-//                 cell.textContent = input.value;
-//             }
-//         });
-//     }
-
-//     const fragment = document.createDocumentFragment();
-//     data.forEach((val, index) => {
-//         if (deletedRows.includes(`${container.id}-${index}`)) return;
-
-//         let row = document.createElement("tr");
-//         row.id = `${container.id}-${index}`;
-//         row.dataset.index = index;
-//         row.innerHTML = `
-//             <td data-id="${val.id}">${val.name}</td>
-//         `;
-    
-//         row.addEventListener('click', function(event) {
-//             event.preventDefault();
-
-//             body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-//             row.classList.add("highlight");
-
-//             selectedRow = row;
-//             selectedId = val.id;
-//             update_state();
-//         });
-
-//         fragment.appendChild(row);
-//     });
-//     body.appendChild(fragment);
-
-//     closeButton.addEventListener('click', () => {
-//         container.style.display = 'none';
-//         alertTriggered = false;
-//         if (select.value  === '' && selectedRow !== null) {
-//             selectedRow.classList.remove("highlight");
-//             selectedRow = null;
-//             confirmCancel.classList.remove('confirmed');
-//             confirmSelect.classList.remove('confirmed');
-//         }
-//     })
-
-//     openButton.addEventListener('click', () => {
-//         container.style.display = 'flex';
-    
-//         body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-    
-//         let matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-//             row.cells[0].innerText === select.value
-//         );
-    
-//         if (matchingRow) {
-//             matchingRow.classList.add("highlight");
-//             selectedRow = matchingRow; 
-//         } else {
-//             selectedRow = null; 
-//         }
-//     });
-
-//     editButton.addEventListener('click', async (event) => {
-//         event.preventDefault();
-//         if (!selectedRow) {
-//             if(!alertTriggered) {
-//                 alertTriggered = true;
-//                 return alert ('Please select a row to edit.');
-//             }
-//         }
-
-//         const cells = selectedRow.querySelectorAll("td");
-//         originalRowName = select.value;
-//         const initialValues = [...cells].map(cell => cell.innerText.trim());
-
-//         cells.forEach((cell, index) => {
-//             if (!cell.querySelector("input")) {
-//                 const input = document.createElement("input");
-//                 input.type = "text";
-//                 input.value = initialValues[index];
-//                 input.classList.add('editable-input');
-
-//                 input.addEventListener("input", () => {
-//                     const hasChanged = [...selectedRow.querySelectorAll("input")].some(
-//                         (inp, i) => inp.value.trim() !== initialValues[i]
-//                     );
-//                     confirmApply.disabled = !hasChanged;
-//                     confirmApply.style.display = hasChanged ? 'flex' : 'none';
-//                 });
-
-//                 cell.textContent = "";
-//                 cell.appendChild(input);
-//             }
-//         });
-
-//         confirmSelect.style.display = 'none';
-//         confirmApply.classList.add('confirmed');
-
-//         body.querySelectorAll("tr").forEach(row => {
-//             if (row !== selectedRow) {
-//                 row.style.pointerEvents = "none";
-//                 row.classList.add('disabled-row');
-//             };
-//         });
-//     });
-
-//     confirmApply.addEventListener('click', async () => {
-//         try {
-//             const updatedData = {};
-//             const names = ["name"];
-
-//             selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                 const input = cell.querySelector("input");
-//                 if (input) updatedData[names[index]] = input.value.trim();
-//             });
-
-//             console.log(updatedData);
-//             const result = await edit_button(table, selectedId, updatedData);
-//             if (result.success) {
-//                 selectedRow.querySelectorAll("td").forEach((cell, index) => {
-//                     if (cell.querySelector("input")) {
-//                         cell.textContent = updatedData[names[index]];
-//                     }
-//                 });
-
-//                 body.querySelectorAll("tr").forEach(row => {
-//                     row.style.pointerEvents = "auto";
-//                     row.classList.remove("disabled-row");
-//                 });
-
-//                 confirmApply.style.display = 'none';
-//                 confirmSelect.style.display = 'flex';
-
-//                 if (originalRowName && select.value === originalRowName) {
-//                     console.log('enter');
-//                     select.value = updatedData.name;
-//                 }
-//             } else {
-//                 console.error("Error updating row:", result.error);
-//             }
-//         } catch (err) {
-//             console.error(`Error editing row:`, err);
-//         }
-//     });
-
-//     confirmSelect.addEventListener('click', () => {
-//         if(!selectedRow) return;
-//         select.value = selectedRow.cells[0].innerText; 
-//         container.style.display = 'none';
-//     });
-
-//     confirmCancel.addEventListener('click', () => {
-//         if (select.value) select.value = null;
-//         if (confirmApply.classList.contains('confirmed')) {
-//             body.querySelectorAll("tr").forEach(row => {
-//                 row.style.pointerEvents = "auto";
-//                 row.classList.remove('disabled-row');
-//             });
-//             confirmSelect.style.display = 'flex';
-//             confirmApply.style.display = 'none';
-//             confirmApply.classList.remove('confirmed');
-//         }
-//         remove_highlight();
-//     });
-
-//     deleteButton.addEventListener('click', (event) => {
-//         event.preventDefault();
-//         if (!selectedRow) return alert('Please select a row to delete.');
-//         console.log(selectedRow);
-
-//         if (confirm('Are you sure you want to delete this row?')) {
-//             deletedRows.push(selectedRow.id);
-//             selectedRow.remove();
-//             selectedRow = null;
-//             remove_highlight();
-//         }
-//     });
-// }
-
 
 // Database Logic -- Page
 const prevButton = document.getElementById("prevPage");
@@ -2958,42 +1745,42 @@ if (prevButton && nextButton) {
 // Periodic task update Functions --- baguhin pa using Websockets para mas efficient and mas mabilis
 let updateInterval; 
 
-const period = {
-    check_user: async function() {
-        try {
-            const response = await fetch('/api/session-user');
-            if(!response.ok) return false;
+// const period = {
+//     check_user: async function() {
+//         try {
+//             const response = await fetch('/api/session-user');
+//             if(!response.ok) return false;
 
-            const data = await response.json();
-            return !!data.username;
-        } catch (err) {
-            console.error("Error checking login status:", err);
-            return false;
-        } 
-    },
+//             const data = await response.json();
+//             return !!data.username;
+//         } catch (err) {
+//             console.error("Error checking login status:", err);
+//             return false;
+//         } 
+//     },
 
-    periodic_updates: function() {
-        if (!updateInterval) {
-            updateInterval = setInterval( async () => {
-                if(!document.hidden && await period.check_user()) {
-                    await load.load_tasks();
-                }
-            }, 30000)
-        } 
-    },
+//     periodic_updates: function() {
+//         if (!updateInterval) {
+//             updateInterval = setInterval( async () => {
+//                 if(!document.hidden && await period.check_user()) {
+//                     await load.load_tasks();
+//                 }
+//             }, 30000)
+//         } 
+//     },
 
-    setup_updates: function() {
-        document.addEventListener("visibilitychange", async () => {
-            if (document.hidden) {
-                clearInterval(updateInterval);
-                updateInterval = null;
-            } else if (await period.check_user()){
-                period.periodic_updates();
-            }
-        });
-        period.periodic_updates();
-    }
-}
+//     setup_updates: function() {
+//         document.addEventListener("visibilitychange", async () => {
+//             if (document.hidden) {
+//                 clearInterval(updateInterval);
+//                 updateInterval = null;
+//             } else if (await period.check_user()){
+//                 period.periodic_updates();
+//             }
+//         });
+//         period.periodic_updates();
+//     }
+// }
 
 const btn = {
     open_table: function(id) {
@@ -3187,28 +1974,6 @@ const open_add_modal = (modalId) => {
     const modalBody = modal.querySelector('.modal-body');
     const form = modal.querySelector('form');
     
-    // Prevent duplicate form creation
-    // if (modalBody.querySelector('form')) return;
-
-    // modalBody.innerHTML = `
-    //     <form id="taskTypeForm">
-    //         <div class="input-group">
-    //             <label for="taskTypeName">Task Type:</label>
-    //             <input type="text" id="taskTypeName" name="taskTypeName" required>
-    //         </div>
-    //         <div class="input-group">
-    //             <label for="taskTypeDescription">Description:</label>
-    //             <input type="text" id="taskTypeDescription" name="taskTypeDescription" required>
-    //         </div>
-    //         <div class="button-group">
-    //             <button type="submit" class="submit-btn">Save</button>
-    //             <button type="button" class="submit-btn" onclick="close_modal('${modalId}')">Exit</button>
-    //         </div>
-    //     </form>
-    // `;
-    
-
-    // Handle form submission
     if(form) {
         form.addEventListener("submit", async function (event) {
 
@@ -3238,43 +2003,6 @@ const open_add_modal = (modalId) => {
         })
     }
 };
-
-// async function submit_handle(event) {
-//     event.preventDefault();
-//     await submit_task_type(modalId, form);
-
-//     const tableName = get_name(modalId);
-//     const fetchFunctions = {
-//         "task_types": fetch_data.task_datalist,
-//         "departments": fetch_data.dept_datalist,
-//         "items": fetch_data.item_datalist,
-//         "devices": fetch_data.device_datalist,
-//         "applications": fetch_data.app_datalist
-//     };
-
-//     if (fetchFunctions[tableName]) {
-//         await fetchFunctions[tableName]();
-//         console.log(`Datalist for ${tableName} updated.`);
-//         modal.style.display = 'none';
-//     } else {
-//         alert(`Error adding to table: ${tableName}`);
-//         console.warn(`No fetch function found for table: ${tableName}`);
-//     }
-// }
-
-// Function to open "Edit" modal
-const open_edit_modal = (modalId) => {
-    const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
-    if (!selectedRow) {
-        alert("Please select a row to edit.");
-        return;
-    }
-
-    open_add_modal(modalId);
-    document.getElementById('taskTypeName').value = selectedRow.cells[0].textContent;
-    document.getElementById('taskTypeDescription').value = selectedRow.cells[1].textContent;
-};
-
 
 // Function to close modal
 const close_modal = (modalId) => {
@@ -3317,60 +2045,3 @@ const submit_task_type = async (modalId, form) => {
     }
 };
 
-        // const formData = new FormData(form);
-        // const data = Object.fromEntries(formData.entries());
-
-        // console.log("data:",data);
-    // try {
-    //     const formData = new FormData(form);
-    //     const data = Object.fromEntries(formData.entries());
-
-    //     // let data = {};
-    
-    //     // formData.forEach((value, key) => {
-    //     //     data[key] = value;
-    //     // });
-
-    //     // console.log('addTasktoDatabase', taskData);
-    //     const response = await fetch('/api/tasks/add', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(taskData)
-    //     });
-
-    //     return response.ok ? await response.json() : null;
-    // } catch (err) {
-    //     console.error('Error adding task:', err);
-    //     return null;
-    // }
-
-    // const tableBody = document.getElementById('taskTypeTable');
-    // const taskTypeName = document.getElementById('taskTypeName').value.trim();
-    // const taskTypeDescription = document.getElementById('taskTypeDescription').value.trim();
-
-    // if (!taskTypeName || !taskTypeDescription) {
-    //     alert("Both fields are required.");
-    //     return;
-    // }
-
-    // // Check if editing existing row
-    // const selectedRow = document.querySelector('#taskTypeTable tbody tr.selected');
-    // if (selectedRow) {
-    //     selectedRow.cells[0].textContent = taskTypeName;
-    //     selectedRow.cells[1].textContent = taskTypeDescription;
-    //     selectedRow.classList.remove('selected'); // Unselect after editing
-    // } else {
-    //     // Add a new row
-    //     const newRow = document.createElement('tr');
-    //     newRow.innerHTML = `<td>${taskTypeName}</td><td>${taskTypeDescription}</td>`;
-        
-    //     // Enable row selection
-    //     newRow.addEventListener('click', function () {
-    //         document.querySelectorAll('#taskTypeTable tbody tr').forEach(row => row.classList.remove('selected'));
-    //         this.classList.add('selected');
-    //     });
-
-    //     tableBody.appendChild(newRow);
-    // }
-
-    // close_modal(modalId);

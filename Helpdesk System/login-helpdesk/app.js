@@ -540,6 +540,8 @@ app.get('/internal/:page/:view?', (req, res) => {
     });
 });
 
+// Lookup Tables
+
 // API Endpoint for Task Add, Edit, Delete
 app.post('/api/ref-table/:table', server.is_authenticated, async(req, res) => {
     const { table: refTable} = req.params;
@@ -588,6 +590,26 @@ app.delete('/api/delete-table/:table/:id', server.is_authenticated, async (req, 
     }
 });
 
+app.get('/api/search-table/:table/:query/:check', server.is_authenticated, async(req, res) => {
+    const { table, query, check } = req.params;
+    // const { query, check } = req.query;
+    const db = app.locals.db;
+
+    console.log(table, query, check);
+
+    if (!validTables.includes(table)) {
+        console.error("Received invalid table name:", table);
+        return res.status(400).json({ error: `Invalid table name: ${table}` });
+    }
+
+    try {
+        await task.search_reference(db, req, res, table, query, check, validTables);
+
+    } catch (err) {
+        console.error(`Error deleting row:`, err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
 
 // Fallback route for unmatched paths
 app.use((req, res) => {

@@ -179,7 +179,7 @@ CREATE TABLE `departments` (
 
 LOCK TABLES `departments` WRITE;
 /*!40000 ALTER TABLE `departments` DISABLE KEYS */;
-INSERT INTO `departments` VALUES (1,'Unknown','0'),(2,'Marketing','1234467890'),(5,'Amazing','1234567888');
+INSERT INTO `departments` VALUES (1,'Unknown','0'),(2,'Marketing','1234567890'),(5,'Amazing','1234567888');
 /*!40000 ALTER TABLE `departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -204,7 +204,7 @@ CREATE TABLE `devices` (
 
 LOCK TABLES `devices` WRITE;
 /*!40000 ALTER TABLE `devices` DISABLE KEYS */;
-INSERT INTO `devices` VALUES (4,'Asus Laptop'),(3,'Dell Desktop'),(11,'Lenovo Laptop'),(1,'Unknown');
+INSERT INTO `devices` VALUES (4,'Asus Laptop'),(3,'Dell Desktop'),(1,'Unknown');
 /*!40000 ALTER TABLE `devices` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -377,7 +377,7 @@ CREATE TABLE `task_types` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -386,7 +386,7 @@ CREATE TABLE `task_types` (
 
 LOCK TABLES `task_types` WRITE;
 /*!40000 ALTER TABLE `task_types` DISABLE KEYS */;
-INSERT INTO `task_types` VALUES (1,'Unknown','No Description'),(2,'Bug Fix','null');
+INSERT INTO `task_types` VALUES (1,'Unknown','No Description'),(2,'Bug Fix','Many Bugs Found.'),(20,'Test Add','Trying again'),(22,'Hello','Again'),(32,'Testing','fuajheiuf'),(33,'bugging ','hello'),(34,'another bug','pero wala na akong pake'),(35,'another bug part 2','hello');
 /*!40000 ALTER TABLE `task_types` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -400,8 +400,8 @@ UNLOCK TABLES;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_delete_task_types` AFTER DELETE ON `task_types` FOR EACH ROW BEGIN
                 UPDATE tasks
-                SET taskTypes = (SELECT id FROM task_types WHERE name = 'Unknown' LIMIT 1)
-                WHERE taskTypes IS NULL;
+                SET taskType = (SELECT id FROM task_types WHERE name = 'Unknown' LIMIT 1)
+                WHERE taskType IS NULL;
             END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -456,7 +456,7 @@ CREATE TABLE `tasks` (
   CONSTRAINT `fk_requestedBy` FOREIGN KEY (`requestedBy`) REFERENCES `requested_by` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_taskType` FOREIGN KEY (`taskType`) REFERENCES `task_types` (`id`) ON DELETE SET NULL,
   CONSTRAINT `tasks_chk_1` CHECK ((`severity` between 1 and 5))
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -465,7 +465,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,'9333','2025-03-20','New',1,2,'--',7,'Amazing','1234567888',4,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'g','hg'),(2,'2995','2025-03-20','New',1,2,'--',2,'Amazing','1234567888',4,1,1,3,1,'2025-03-20',NULL,NULL,NULL,'dfd','dfdf'),(3,'5790','2025-03-20','New',1,2,'--',7,'Marketing','0123456789',3,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'hh','gg');
+INSERT INTO `tasks` VALUES (1,'9333','2025-03-20','New',1,2,'--',7,'Amazing','1234567888',4,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'g','hg'),(2,'2995','2025-03-20','New',1,2,'--',2,'Amazing','1234567888',4,1,1,3,1,'2025-03-20',NULL,NULL,NULL,'dfd','dfdf'),(3,'5790','2025-03-20','New',1,2,'--',7,'Marketing','0123456789',3,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'hh','gg'),(4,'7573','2025-03-20','Cancelled',1,2,'--',7,'Marketing','1234467890',3,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'hello','heheh'),(5,'9856','2025-03-20','New',1,2,'Many Bugs Found.',7,'Marketing','1234567890',3,1,1,1,1,'2025-03-20',NULL,NULL,NULL,'gg','gg');
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -510,4 +510,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-20 16:58:01
+-- Dump completed on 2025-03-26  9:41:00

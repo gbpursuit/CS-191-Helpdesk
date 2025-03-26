@@ -17,7 +17,7 @@ x<div id="taskModal" class="modal">
                             <input type="text" id="TaskType" data-set="true" placeholder="Enter Task Type" readonly>
                         </div>
                         <button type="button" id="TaskTypeBtn" class="look-btn"
-                        aria-label="Open Task Type Table" >
+                        aria-label="Open Task Type Table" data-edit="false" data-key="task_datalist">
                         <i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
 
@@ -37,7 +37,7 @@ x<div id="taskModal" class="modal">
                             </select> -->
                         </div>
                         <button type="button" id="RequestedByBtn" class="look-btn"
-                        aria-label="Open Requested By Table" >
+                        aria-label="Open Requested By Table" data-edit="false" data-key="request_datalist">
                         <i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
 
@@ -50,7 +50,7 @@ x<div id="taskModal" class="modal">
                             </select> -->
                         </div>
                         <button type="button" id="ApprovedByBtn" class="look-btn" 
-                        aria-label="Open Approved By Table" >
+                        aria-label="Open Approved By Table" data-edit="false" data-key="approve_datalist">
                         <i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
 
@@ -86,7 +86,7 @@ x<div id="taskModal" class="modal">
                             </select>   -->
                         </div>         
                         <button type="button" id="ItInChargeBtn" class="look-btn" 
-                        aria-label="Open It in Charge Table" >
+                        aria-label="Open It in Charge Table" data-edit="false" data-key="it_datalist">
                         <i class="fa-solid fa-magnifying-glass"></i></button>                         
                     </div>
 
@@ -99,7 +99,7 @@ x<div id="taskModal" class="modal">
                             <input type="text" id="Device" placeholder="Enter Device Name" readonly>
                         </div>
                         <button type="button" id="DeviceBtn" class="look-btn" 
-                        aria-label="Open Device Table" >
+                        aria-label="Open Device Table" data-edit="false" data-key="device_datalist">
                         <i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
                     
@@ -112,7 +112,7 @@ x<div id="taskModal" class="modal">
                             <input type="text" id="Item" placeholder="Enter Item Name" readonly>
                         </div>
                         <button type="button" id="ItemBtn" class="look-btn" 
-                        aria-label="Open Item Table" >
+                        aria-label="Open Item Table" data-edit="false" data-key="item_datalist">
                         <i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
 
@@ -125,7 +125,7 @@ x<div id="taskModal" class="modal">
                             <input type="text" id="Application" placeholder="Enter Application Name" readonly>
                         </div>
                         <button type="button" id="ApplicationBtn" class="look-btn" 
-                        aria-label="Open Application Table" >
+                        aria-label="Open Application Table" data-edit="false" data-key="app_datalist">
                         <i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
                 </div>
@@ -213,13 +213,12 @@ x<div id="taskModal" class="modal">
             <div class="row-one">
                 <div class="right">
                     <input type="text" placeholder="Search Task" class = "look-input">
-                    <button type="button" class="search-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
             <div class="row-two">
                 <div id="taskTypeColOne" class="task-type col-one">
                     <div class="groups">
-                        <button class="c1 box" onclick="open_add_modal('addTaskTypeModal')">Add</button>
+                        <button class="c1 box" >Add</button>
                         <button class="c2 box" >Edit</button>
                         <button class="c3 box" >Delete</button>
                     </div>                
@@ -267,11 +266,11 @@ x<div id="taskModal" class="modal">
 </div>
 
 <!-- Add Task Type Modal -->
-<div id="addTaskTypeModal" class="modal outermost display">
+<div id="taskTypeAddModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Task Type </h2>
-            <span class="close-cont" onclick="close_modal('addTaskTypeModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('taskTypeAddModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="taskTypeForm">
@@ -300,13 +299,12 @@ x<div id="taskModal" class="modal">
             <div class="row-one">
                 <div class="right">
                     <input type="text" placeholder="Search Task" class = "look-input">
-                    <button type="button" class="search-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
             <div class="row-two">
                 <div id="requestedByColOne" class="requested-by col-one">
                     <div class="groups">
-                        <button class="c1 box" onclick="open_add_modal('addRequestedByModal')">Add</button>
+                        <button class="c1 box" >Add</button>
                         <button class="c2 box" >Edit</button>
                         <button class="c3 box" >Delete</button>                    
                     </div>
@@ -345,11 +343,11 @@ x<div id="taskModal" class="modal">
 </div>
 
 <!-- Add Requested By Modal -->
-<div id="addRequestedByModal" class="modal outermost display">
+<div id="requestedByAddModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Requested By</h2>
-            <span class="close-cont" onclick="close_modal('addRequestedByModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('requestedByAddModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="requestedByForm">
@@ -383,13 +381,12 @@ x<div id="taskModal" class="modal">
             <div class="row-one">
                 <div class="right">
                     <input type="text" placeholder="Search Task" class = "look-input">
-                    <button type="button" class="search-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
             <div class="row-two">
                 <div id="approvedByColOne" class="approved-by col-one">
                     <div class="groups">
-                        <button class="c1 box" onclick="open_add_modal('addApprovedByModal')">Add</button>
+                        <button class="c1 box">Add</button>
                         <button class="c2 box">Edit</button>
                         <button class="c3 box">Delete</button>
                     </div>
@@ -427,11 +424,11 @@ x<div id="taskModal" class="modal">
 </div>
 
 <!-- Add Approved By Modal -->
-<div id="addApprovedByModal" class="modal outermost display">
+<div id="approvedByAddModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Approved By</h2>
-            <span class="close-cont" onclick="close_modal('addApprovedByModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('approvedByAddModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="approvedByForm">
@@ -460,13 +457,12 @@ x<div id="taskModal" class="modal">
             <div class="row-one">
                 <div class="right">
                     <input type="text" placeholder="Search Task" class = "look-input">
-                    <button type="button" class="search-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
             <div class="row-two">
                 <div id="deviceColOne" class="device col-one">
                     <div class="groups">
-                        <button class="c1 box" onclick="open_add_modal('addDeviceModal')">Add</button>
+                        <button class="c1 box" >Add</button>
                         <button class="c2 box" >Edit</button>
                         <button class="c3 box" >Delete</button>
                     </div>
@@ -503,11 +499,11 @@ x<div id="taskModal" class="modal">
 </div>
 
 <!-- Add Device Modal -->
-<div id="addDeviceModal" class="modal outermost display">
+<div id="deviceAddModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Device Name</h2>
-            <span class="close-cont" onclick="close_modal('addDeviceModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('deviceAddModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="deviceForm">
@@ -531,13 +527,12 @@ x<div id="taskModal" class="modal">
             <div class="row-one">
                 <div class="right">
                     <input type="text" placeholder="Search Task" class = "look-input">
-                    <button type="button" class="search-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
             <div class="row-two">
                 <div id="itemColOne" class="item col-one">
                     <div class="groups">
-                        <button class="c1 box" onclick="open_add_modal('addItemModal')">Add</button>
+                        <button class="c1 box" >Add</button>
                         <button class="c2 box" >Edit</button>
                         <button class="c3 box">Delete</button>
                     </div>
@@ -574,11 +569,11 @@ x<div id="taskModal" class="modal">
 </div>
 
 <!-- Add Item Modal -->
-<div id="addItemModal" class="modal outermost display">
+<div id="itemAddModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Item Name</h2>
-            <span class="close-cont" onclick="close_modal('addItemModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('itemAddModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="itemForm">
@@ -603,13 +598,12 @@ x<div id="taskModal" class="modal">
             <div class="row-one">
                 <div class="right">
                     <input type="text" placeholder="Search Task" class = "look-input">
-                    <button type="button" class="search-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
             <div class="row-two">
                 <div id="itColOne" class="it col-one">
                     <div class="groups">
-                        <button class="c1 box" onclick="open_add_modal('addITModal')">Add</button>
+                        <button class="c1 box" >Add</button>
                         <button class="c2 box" >Edit</button>
                         <button class="c3 box">Delete</button>
                     </div>
@@ -646,11 +640,11 @@ x<div id="taskModal" class="modal">
 </div>
 
 <!-- Add IT Modal -->
-<div id="addITModal" class="modal outermost display">
+<div id="itAddModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add IT Employee Name</h2>
-            <span class="close-cont" onclick="close_modal('addITModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('itAddModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="itForm">
@@ -674,13 +668,12 @@ x<div id="taskModal" class="modal">
             <div class="row-one">
                 <div class="right">
                     <input type="text" placeholder="Search Task" class = "look-input">
-                    <button type="button" class="search-btn" aria-label="Open Device Table"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
             <div class="row-two">
                 <div id="appColOne" class="app col-one">
                     <div class="groups">
-                        <button class="c1 box" onclick="open_add_modal('addApplicationModal')">Add</button>
+                        <button class="c1 box" >Add</button>
                         <button class="c2 box" >Edit</button>
                         <button class="c3 box" >Delete</button>
                     </div>
@@ -717,11 +710,11 @@ x<div id="taskModal" class="modal">
 </div>
 
 <!-- Add Application Modal -->
-<div id="addApplicationModal" class="modal outermost display">
+<div id="applicationAddModal" class="modal outermost display">
     <div class="modal-content add-layout-content">
         <div class="title-cont">
             <h2 class="title">Add Application Name</h2>
-            <span class="close-cont" onclick="close_modal('addApplicationModal')">&times;</span>
+            <span class="close-cont" onclick="close_modal('applicationAddModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="applicationForm">

@@ -309,7 +309,6 @@ export const task = {
         `;
 
         params.push(sortField);
-
         const [tasks] = await db.query(baseQuery, params);
 
     
@@ -614,14 +613,14 @@ export const task = {
             // Optimize pa paps
             if (tableName === 'requested_by') {
                 [rows] = await db.query(`
-                    SELECT requested_by.id, requested_by.full_name, departments.name AS dep_name, departments.department_no AS dep_no
+                    SELECT requested_by.id, requested_by.full_name, departments.name, departments.department_no
                     FROM requested_by 
                     LEFT JOIN departments ON requested_by.department = departments.id
                     WHERE requested_by.id != 1
                 `);
             } else if(tableName == "approved_by") {
                 [rows] = await db.query(`
-                    SELECT approved_by.id, approved_by.full_name, app_departments.name AS dep_name
+                    SELECT approved_by.id, approved_by.full_name, app_departments.name
                     FROM approved_by 
                     LEFT JOIN app_departments ON approved_by.department = app_departments.id
                     WHERE approved_by.id != 1
@@ -635,7 +634,7 @@ export const task = {
                 [rows] = await db.query(`SELECT * FROM ?? WHERE id != 1`, [tableName]);
             }
             
-            res.json(rows);
+            return res.json(rows);
             
 
         } catch(err) {
@@ -865,7 +864,64 @@ export const task = {
             console.error("Error updating referenced table:", err);
             res.status(500).json({ err: 'Internal server error'});
          }
+    },
+
+    search_reference: async function(db, req, res, tableName, query, check, validTables) {
+        try {
+
+            if (check === 'false') {
+                return task.get_reference_table(db, req, res, tableName, validTables);
+            }
+
+            if (!validTables.includes(tableName)) {
+                return res.status(400).json({ error: 'Invalid table name' });
+            }
+
+            const tableColumns = {
+                'task_types': ['name', 'description'],
+                'requested_by': ['full_name'], 
+                'approved_by': ['full_name'], 
+                'it_in_charge': ['full_name'],
+                'devices': ['name'],
+                'items': ['name'],
+                'applications': ['name']
+            }
+            const tableJoins = {
+                'requested_by': {
+                    department: ['departments.name', 'departments.department_no'] 
+                },
+                'approved_by': {
+                    department: ['app_departments.name']  // app_departments only has name
+                }
+            };
+
+            let selectedColumns = tableColumns[tableName].map(col => `${tableName}.${col}`);
+            if (tableJoins[tableName]) {
+                selectedColumns.push(...tableJoins[tableName].department);
+            }
+            
+            let baseQuery = `SELECT ${selectedColumns.join(', ')} FROM ${tableName}`;
+            
+            if (tableJoins[tableName]) {
+                baseQuery += ` LEFT JOIN ${tableName === 'requested_by' ? 'departments' : 'app_departments'} ON ${tableName}.department = ${tableName === 'requested_by' ? 'departments.id' : 'app_departments.id'}`
+            }
+
+            let whereClause = selectedColumns.map(col => `${col} LIKE ?`).join(' OR ');
+            baseQuery += ` WHERE ${whereClause}`;
+
+            let queryParams = selectedColumns.map(() => `%${query}%`);
+
+            const [results] = await db.query(baseQuery, queryParams);
+
+            console.log(results);
+    
+            res.status(200).json(results);
+        } catch (err) {
+            console.error("Error searching referenced table:", err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
+    
 
     
 }
@@ -901,7 +957,7 @@ const checkTable = (tableName) => {
         case "it_in_charge": return { columnName: "itInCharge", identifier: "full_name" };
         case "devices": return { columnName: "deviceName", identifier: "name" };
         case "items": return { columnName: "itemName", identifier: "name" };
-        case "task_types": return { columnName: "taskTypes", identifier: "name" };
+        case "task_types": return { columnName: "taskType", identifier: "name" };
         default: return { columnName: "", identifier: "" };
     }
 };
