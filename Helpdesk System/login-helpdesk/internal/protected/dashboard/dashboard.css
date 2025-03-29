@@ -757,6 +757,7 @@ label[for="check"]{
     border-radius: 5px;
 }
 
+.page-btn,
 .pagination-button {
     border: none;
     background: none;
@@ -765,6 +766,7 @@ label[for="check"]{
     font-size: 14px;
 }
 
+.page-btn:hover,
 .pagination-button:hover {
     color: var(--hover-button);
     transition: color 0.5s ease;
@@ -1091,7 +1093,7 @@ input[type="date"] {
     background-color: var(--white);
     width: min(60%, 700px); 
     /* max-height: 80vh; */
-    height: 60vh; 
+    height: 75vh; 
     padding: 15px;
     border-radius: 6px;
     box-shadow: 0 4px 8px var(--shadow);
