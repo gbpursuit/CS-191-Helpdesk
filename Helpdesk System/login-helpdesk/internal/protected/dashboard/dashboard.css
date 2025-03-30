@@ -718,6 +718,7 @@ label[for="check"]{
     height: 10px;
     border-radius: 4px;
 } */
+
 .legend-status {
     display: flex;
     flex-wrap: wrap;
@@ -1115,7 +1116,7 @@ input[type="date"] {
     background-color: var(--white);
     width: min(60%, 700px); 
     /* max-height: 80vh; */
-    height: 75vh; 
+    height: 76vh; 
     padding: 15px;
     border-radius: 6px;
     box-shadow: 0 4px 8px var(--shadow);

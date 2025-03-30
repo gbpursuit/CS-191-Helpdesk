@@ -617,6 +617,7 @@ export const task = {
                     FROM requested_by 
                     LEFT JOIN departments ON requested_by.department = departments.id
                     WHERE requested_by.id != 1
+                    ORDER BY id DESC
                 `);
             } else if(tableName == "approved_by") {
                 [rows] = await db.query(`
@@ -624,14 +625,16 @@ export const task = {
                     FROM approved_by 
                     LEFT JOIN app_departments ON approved_by.department = app_departments.id
                     WHERE approved_by.id != 1
+                    ORDER BY id DESC
                 `);
             } else if (tableName === 'it_in_charge') {
                 [rows] = await db.query(`
                     SELECT id, full_name FROM it_in_charge 
                     WHERE id != 1
+                    ORDER BY id DESC
                 `);   
             } else {
-                [rows] = await db.query(`SELECT * FROM ?? WHERE id != 1`, [tableName]);
+                [rows] = await db.query(`SELECT * FROM ?? WHERE id != 1 ORDER BY id DESC`, [tableName]);
             }
             
             return res.json(rows);
@@ -904,13 +907,13 @@ export const task = {
             let baseQuery = `SELECT ${selectedColumns.join(', ')} FROM ${table}`;
             
             if (tableJoins[table]) {
-                baseQuery += ` LEFT JOIN ${table === 'requested_by' ? 'departments' : 'app_departments'} ON ${tableName}.department = ${tableName === 'requested_by' ? 'departments.id' : 'app_departments.id'}`
+                baseQuery += ` LEFT JOIN ${table === 'requested_by' ? 'departments' : 'app_departments'} ON ${table}.department = ${table === 'requested_by' ? 'departments.id' : 'app_departments.id'}`
             }
 
             let whereClause = selectedColumns.map(col => `${col} LIKE ?`).join(' OR ');
             whereClause = `(${whereClause}) AND id != 1`;
             console.log(whereClause);
-            baseQuery += ` WHERE ${whereClause}`;
+            baseQuery += ` WHERE ${whereClause} ORDER BY id DESC`;
 
             let queryParams = selectedColumns.map(() => `%${lookupSearch}%`);
 
@@ -924,9 +927,6 @@ export const task = {
             res.status(500).json({ error: 'Internal server error' });
         }
     }
-    
-
-    
 }
 
 export const limiter = {

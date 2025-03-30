@@ -886,7 +886,6 @@ const load = {
                 url += `&${params.toString()}`;
             }
 
-                
             const response = await fetch(url);
             if (!response.ok) {
                 console.error("Error fetching tasks:", response.status);
@@ -964,8 +963,6 @@ const load = {
             const lookupUrl = new URLSearchParams(window.location.search);
             const searchQuery = lookupUrl.get('lookupSearch') || '';
 
-            console.log("Search Query is:", searchQuery);
-
             let url = new URL(`/api/search-table?table=${table}`, window.location.origin);
             if (searchQuery) {
                 url.searchParams.set('lookupSearch', searchQuery);
@@ -989,8 +986,6 @@ const load = {
         }
     }
 }
-
-let deletedRows = [];
 
 const edit_button = async (table, id, val) => {
     try {
@@ -1060,55 +1055,6 @@ const edit_button = async (table, id, val) => {
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡟⢀⣼⣿⣿⣿⣿⣿⣿⡿⣋⣴⠟⣡⣶⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠿⣿⣷⣹⣿⡷⣿⣦⣻⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⡿⡏⣯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢘⡇⠸⣿⢋⣿⠟⠋⢁⡿⢠⠛⠠⠌⠉⣿⡿⣿⣿⡿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣷⢿⣿⣿⣿⣿⡟⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢷⣧⣼⡀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀
-
-// const open_container = (elementId, isEdit=false) => {
-//     const elementMap = {
-//         "TaskTypeBtn": ["taskTypeAdd", fetch_data.task_datalist],
-//         "RequestedByBtn": ["requestedByAdd", fetch_data.request_datalist],
-//         "ApprovedByBtn": ["approvedByAdd", fetch_data.approve_datalist],
-//         "ItInChargeBtn": ["itAdd", fetch_data.it_datalist],
-//         "DeviceBtn": ["deviceAdd", fetch_data.device_datalist],
-//         "ItemBtn": ["itemAdd", fetch_data.item_datalist],
-//         "ApplicationBtn": ["applicationAdd", fetch_data.app_datalist]
-//     };
-
-//     let itemSelect = (isEdit) ? elementId.replace('edit', '') : elementId;
-
-//     const entry = elementMap[itemSelect];
-//     if (!entry) return;
-
-//     const [containerId, fetchFunction] = entry;
-
-//     const container = document.getElementById(containerId);
-//     if(!container) return;
-
-//     const body = container.querySelector("tbody");
-//     const selectId = elementId.replace("Btn", "");
-//     const select = document.getElementById(selectId);
-   
-//     container.style.display = 'flex';
-
-//     // If a row is already selected and we open the contaienr
-//     if (body && select) {
-//         body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
-
-//         const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-//             row.cells[0].innerText === select.value
-//         );
-
-//         console.log(matchingRow);
-
-//         if (matchingRow) {
-//             selectedRowMap[itemSelect] = matchingRow;
-//             selectedRowMap[itemSelect].classList.add('highlight');
-//             console.log(selectedRowMap, selectedRowMap[itemSelect])
-//             console.log('hellooo');
-//         } 
-//     }
-
-//     if (fetchFunction) fetchFunction(isEdit, selectId);
-
-// };
 
 const fetch_data = {
     task_datalist: (isEdit = false) => fetchRefTableFull({
@@ -1202,6 +1148,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
 
         const container = document.getElementById(containerId);
         const body = document.getElementById(bodyId);
+        const tableContainer = container.querySelector('.table-content');
 
         const select = isEdit ? document.getElementById(`edit${selectId}`) : document.getElementById(selectId);
         const taskDescription = description ? (isEdit ? document.getElementById('editTaskDescription'): document.getElementById('taskDescription')) : null;
@@ -1220,9 +1167,10 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         const searchInput = container.querySelector('.look-input');
 
         // Pagination
-        let current = 1;
-        let taskpage = 7; // default of 1
+        let current = 0;
+        let taskpage = 0;
         let total = 0;
+
         const prev = container.querySelector('.pagination-prev');
         const next = container.querySelector('.pagination-next');
         const currentPageNum = container.querySelector('.page-num');
@@ -1260,32 +1208,26 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             });
         }
 
-        // function update_page_num(page) {
-        //     currentPageNum.textContent = `${current}`;
-        //     prev.disabled = (current <= 1);
-        //     next.disabled = (current >= page);
-        // }
-
-
-
         function render_table(data) {
-            console.log("Rendering data:", data);
             body.innerHTML = "";
             total = data.length;
 
             const totalPages = Math.ceil(total/taskpage);
 
+            if (current > totalPages & totalPages > 0) {
+                current = totalPages;
+            }
+            
             const start = (current - 1) * taskpage;
             const end = start + taskpage;
-            // const paginatedTasks = data.slice(start, end);
-            const paginatedTasks = data;
+            const paginatedTasks = data.slice(start, end);
 
             if (paginatedTasks.length === 0) {
-                container.querySelector('.table-content').style.display = 'none';
+                tableContainer.style.display = 'none';
                 container.querySelector('.no-data-table').style.display = 'flex'; 
                 container.querySelector('.page').style.display = 'none'; 
             } else {
-                container.querySelector('.table-content').style.display = 'table';
+                tableContainer.style.display = 'table';
                 container.querySelector('.no-data-table').style.display = 'none';  
                 container.querySelector('.page').style.display = 'flex'; 
             }
@@ -1293,21 +1235,8 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             paginatedTasks.forEach((task, index) => {
                 render_row(task, index);
             });
-        }
 
-        function render_no_data() {
-            const row = document.createElement("tr");
-            const noDataCell = document.createElement("td");
-            noDataCell.colSpan = columns.length;
-
-            let img = document.createElement('img');
-            img.src = "/internal/protected/no-data.jpg";
-            img.alt = 'No data available';
-            img.classList.add('no-image');
-
-            noDataCell.appendChild(img);
-            row.appendChild(noDataCell);
-            body.appendChild(row);
+            update_page_num(totalPages);
         }
 
         function render_row(data, index) {
@@ -1344,21 +1273,45 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             }
         }
 
-        // let originalData = [];
+        function calculate_tasks() {
+            const sampleRow = container.querySelector(`.${bodyId} tbody tr`);
 
-        // if (prev && next) {
-        //     prev.onclick = async () => {
-        //         if (current > 1) {
-        //             current--;
-        //             render_table(originalData);
-        //         }
-        //     }
-        //     next.onclick = async () => {
-        //         current++;
-        //         render_table(originalData);
+            if(!tableContainer) return 1;
 
-        //     }
-        // }
+            const containerHeight = tableContainer.clientHeight || 1;
+            const rowHeight = sampleRow ? sampleRow.clientHeight || 1 : 5;
+
+            return Math.max(1, Math.floor((containerHeight / rowHeight) - 1));
+        }
+
+        function update_page_num(page) {
+            currentPageNum.textContent = `${current}`;
+            prev.disabled = (current <= 1);
+            next.disabled = (current >= page);
+        }
+
+        function update_tasks_page() {
+            const newTasksPerPage = calculate_tasks();
+            if (newTasksPerPage !== tasksPerPage) {
+                tasksPerPage = newTasksPerPage;
+            }
+        }
+
+        if (prev && next) {
+            prev.onclick = async () => {
+                if (current > 1) {
+                    current--;
+                    const data = await load.load_reference(table);
+                    render_table(data);
+                }
+            }
+            next.onclick = async () => {
+                current++;
+                const data = await load.load_reference(table);
+                render_table(data);
+
+            }
+        }
 
         if (searchInput) {
             let timeout;
@@ -1367,7 +1320,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                 clearTimeout(timeout);
                 timeout = setTimeout(async() => {
                     const query = searchInput.value.trim(); 
-                    console.log(query);
 
                     const searchUrl = new URL(window.location.href);
                     query ? searchUrl.searchParams.set("lookupSearch", query) : searchUrl.searchParams.delete('lookupSearch');
@@ -1376,7 +1328,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                     const data = await load.load_reference(table, 'true');
                     render_table(data);   
                 }, 500);
-                currentPage = 1;
+                
             }
             searchInput.removeEventListener('input', search_table);
             searchInput.addEventListener('input', search_table);
@@ -1386,15 +1338,16 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         if (openButton) {
             const open_container = async () => {
                 try {
-                    console.log('hello');
+                    current = 1;
+
+                    container.style.display = 'flex';
+                    taskpage = calculate_tasks();
+
                     const data = await load.load_reference(table);
                     // if(data === null) return;
                     if(data === null) return alert('Error retrieving data.');
         
-                    // originalData = [...data];
-
                     render_table(data);
-                    container.style.display = 'flex';
 
                 } catch (error) {
                     console.error("Error fetching data:", error);
