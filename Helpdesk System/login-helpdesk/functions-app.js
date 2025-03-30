@@ -866,14 +866,15 @@ export const task = {
          }
     },
 
-    search_reference: async function(db, req, res, tableName, query, check, validTables) {
+    search_reference: async function(db, req, res, validTables) {
+        const { table, lookupSearch, check } = req.query;
         try {
 
             if (check === 'false') {
-                return task.get_reference_table(db, req, res, tableName, validTables);
+                return task.get_reference_table(db, req, res, table, validTables);
             }
 
-            if (!validTables.includes(tableName)) {
+            if (!validTables.includes(table)) {
                 return res.status(400).json({ error: 'Invalid table name' });
             }
 
@@ -895,21 +896,23 @@ export const task = {
                 }
             };
 
-            let selectedColumns = tableColumns[tableName].map(col => `${tableName}.${col}`);
-            if (tableJoins[tableName]) {
-                selectedColumns.push(...tableJoins[tableName].department);
+            let selectedColumns = tableColumns[table].map(col => `${table}.${col}`);
+            if (tableJoins[table]) {
+                selectedColumns.push(...tableJoins[table].department);
             }
             
-            let baseQuery = `SELECT ${selectedColumns.join(', ')} FROM ${tableName}`;
+            let baseQuery = `SELECT ${selectedColumns.join(', ')} FROM ${table}`;
             
-            if (tableJoins[tableName]) {
-                baseQuery += ` LEFT JOIN ${tableName === 'requested_by' ? 'departments' : 'app_departments'} ON ${tableName}.department = ${tableName === 'requested_by' ? 'departments.id' : 'app_departments.id'}`
+            if (tableJoins[table]) {
+                baseQuery += ` LEFT JOIN ${table === 'requested_by' ? 'departments' : 'app_departments'} ON ${tableName}.department = ${tableName === 'requested_by' ? 'departments.id' : 'app_departments.id'}`
             }
 
             let whereClause = selectedColumns.map(col => `${col} LIKE ?`).join(' OR ');
+            whereClause = `(${whereClause}) AND id != 1`;
+            console.log(whereClause);
             baseQuery += ` WHERE ${whereClause}`;
 
-            let queryParams = selectedColumns.map(() => `%${query}%`);
+            let queryParams = selectedColumns.map(() => `%${lookupSearch}%`);
 
             const [results] = await db.query(baseQuery, queryParams);
 

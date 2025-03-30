@@ -548,6 +548,8 @@ label[for="check"]{
 
 /* No data image */
 .no-data {
+    position: absolute;
+
     display: none;
     width: 100%; 
     height: 85%;
@@ -559,14 +561,34 @@ label[for="check"]{
 }
 
 .no-image {
-    width: 75%;  
+    width: 700px;  
     height: auto;   
     object-fit: cover;
 }
 
+.no-data-table {
+    position: absolute;
+    left: 25%;
+    top: 25%;
+
+    display: none;
+    width: 50%; 
+    height: 50%;
+    aspect-ratio: 1 / 1;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: var(--white);
+}
+
+.no-image-table {
+    width: 500px;
+    height: auto;
+}
 
 /* Table Data  */
 .table {
+    position: relative;
     overflow-x: auto; 
     display: flex;
 
@@ -1204,6 +1226,7 @@ input[type="date"] {
 } */
 
 .col-two {
+    position: relative;
     background-color: var(--white);
     border-radius: 4px;
     padding: 10px;
@@ -1214,6 +1237,7 @@ input[type="date"] {
     max-width: 100%;
     height: 100%;
     overflow: auto; /* both x and y */
+    gap: 10px;
 }
 
 .table-types {
@@ -1222,7 +1246,6 @@ input[type="date"] {
     
     width: 100%;
     height: 95%;
-    
 }
 
 .table-content {

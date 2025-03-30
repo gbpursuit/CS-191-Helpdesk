@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         }); 
 
         // Modal Functions - Ensure global availability
-        window.open_add_modal = open_add_modal;
+        // window.open_add_modal = open_add_modal;
         // window.open_edit_modal = open_edit_modal;
         // window.delete_entry = delete_entry;
         window.close_modal = close_modal;
@@ -885,6 +885,7 @@ const load = {
             if (params.toString()) {
                 url += `&${params.toString()}`;
             }
+
                 
             const response = await fetch(url);
             if (!response.ok) {
@@ -905,9 +906,11 @@ const load = {
             if (totalTasks === 0) {
                 table.style.display = 'none';
                 noData.style.display = 'flex';  
+                document.querySelector('.fixed-bottom').style.display = 'none';
             } else {
                 table.style.display = 'table';
                 noData.style.display = 'none';  
+                document.querySelector('.fixed-bottom').style.display = 'flex';
             }
 
             console.log("Tasks: ", tasks);
@@ -922,21 +925,21 @@ const load = {
     
             page.update_pagination(totalPages);
     
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.set('page', currentPage); // Always update page number
-            if (searchQuery) {
-                newUrl.searchParams.set('search', searchQuery);
-            } else {
-                newUrl.searchParams.delete('search');
-            }
-            if (filterBy && filterValue) {
-                newUrl.searchParams.set('filterBy', filterBy);
-                newUrl.searchParams.set('value', filterValue);
-            } else {
-                newUrl.searchParams.delete('filterBy');
-                newUrl.searchParams.delete('value');
-            }
-            window.history.pushState({}, '', newUrl);
+            // const newUrl = new URL(window.location.href);
+            // newUrl.searchParams.set('page', currentPage); // Always update page number
+            // if (searchQuery) {
+            //     newUrl.searchParams.set('search', searchQuery);
+            // } else {
+            //     newUrl.searchParams.delete('search');
+            // }
+            // if (filterBy && filterValue) {
+            //     newUrl.searchParams.set('filterBy', filterBy);
+            //     newUrl.searchParams.set('value', filterValue);
+            // } else {
+            //     newUrl.searchParams.delete('filterBy');
+            //     newUrl.searchParams.delete('value');
+            // }
+            // window.history.pushState({}, '', newUrl);
     
         } catch (err) {
             console.error('Error loading tasks:', err);
@@ -956,21 +959,30 @@ const load = {
         }
     },
 
-    load_reference: async function (table, query = 'hello world', check = 'false') {
+    load_reference: async function (table, check = 'false') {
         try {    
-            // const response = await fetch(`/api/search-table/${table}/${query}/${check}`);
-            const url = `/api/search-table/${encodeURIComponent(table)}/${encodeURIComponent(query)}/${encodeURIComponent(check)}`;
-            const response = await fetch(url);
+            const lookupUrl = new URLSearchParams(window.location.search);
+            const searchQuery = lookupUrl.get('lookupSearch') || '';
+
+            console.log("Search Query is:", searchQuery);
+
+            let url = new URL(`/api/search-table?table=${table}`, window.location.origin);
+            if (searchQuery) {
+                url.searchParams.set('lookupSearch', searchQuery);
+            } else {
+                url.searchParams.set('check', 'false');
+            }
+
+            // console.log(url.toString());
+            const response = await fetch(url.toString());
 
             if (!response.ok) {
+                console.log('testing');
                 throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
-            console.log(response, data);
-
             return data;
-
         } catch (err) {
             console.error("Error loading reference tasks:", err);
             return null;
@@ -1049,57 +1061,54 @@ const edit_button = async (table, id, val) => {
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢘⡇⠸⣿⢋⣿⠟⠋⢁⡿⢠⠛⠠⠌⠉⣿⡿⣿⣿⡿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣷⢿⣿⣿⣿⣿⡟⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢷⣧⣼⡀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀
 
+// const open_container = (elementId, isEdit=false) => {
+//     const elementMap = {
+//         "TaskTypeBtn": ["taskTypeAdd", fetch_data.task_datalist],
+//         "RequestedByBtn": ["requestedByAdd", fetch_data.request_datalist],
+//         "ApprovedByBtn": ["approvedByAdd", fetch_data.approve_datalist],
+//         "ItInChargeBtn": ["itAdd", fetch_data.it_datalist],
+//         "DeviceBtn": ["deviceAdd", fetch_data.device_datalist],
+//         "ItemBtn": ["itemAdd", fetch_data.item_datalist],
+//         "ApplicationBtn": ["applicationAdd", fetch_data.app_datalist]
+//     };
 
+//     let itemSelect = (isEdit) ? elementId.replace('edit', '') : elementId;
 
-const open_container = (elementId, isEdit=false) => {
-    const elementMap = {
-        "TaskTypeBtn": ["taskTypeAdd", fetch_data.task_datalist],
-        "RequestedByBtn": ["requestedByAdd", fetch_data.request_datalist],
-        "ApprovedByBtn": ["approvedByAdd", fetch_data.approve_datalist],
-        "ItInChargeBtn": ["itAdd", fetch_data.it_datalist],
-        "DeviceBtn": ["deviceAdd", fetch_data.device_datalist],
-        "ItemBtn": ["itemAdd", fetch_data.item_datalist],
-        "ApplicationBtn": ["applicationAdd", fetch_data.app_datalist]
-    };
+//     const entry = elementMap[itemSelect];
+//     if (!entry) return;
 
-    let itemSelect = (isEdit) ? elementId.replace('edit', '') : elementId;
+//     const [containerId, fetchFunction] = entry;
 
-    const entry = elementMap[itemSelect];
-    if (!entry) return;
+//     const container = document.getElementById(containerId);
+//     if(!container) return;
 
-    const [containerId, fetchFunction] = entry;
-
-    const container = document.getElementById(containerId);
-    if(!container) return;
-
-    const body = container.querySelector("tbody");
-    const selectId = elementId.replace("Btn", "");
-    const select = document.getElementById(selectId);
+//     const body = container.querySelector("tbody");
+//     const selectId = elementId.replace("Btn", "");
+//     const select = document.getElementById(selectId);
    
-    container.style.display = 'flex';
+//     container.style.display = 'flex';
 
-    // If a row is already selected and we open the contaienr
-    if (body && select) {
-        body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+//     // If a row is already selected and we open the contaienr
+//     if (body && select) {
+//         body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
 
-        const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
-            row.cells[0].innerText === select.value
-        );
+//         const matchingRow = Array.from(body.querySelectorAll("tr")).find(row => 
+//             row.cells[0].innerText === select.value
+//         );
 
-        console.log(matchingRow);
+//         console.log(matchingRow);
 
-        if (matchingRow) {
-            selectedRowMap[itemSelect] = matchingRow;
-            selectedRowMap[itemSelect].classList.add('highlight');
-            console.log(selectedRowMap, selectedRowMap[itemSelect])
-            console.log('hellooo');
-        } 
-    }
+//         if (matchingRow) {
+//             selectedRowMap[itemSelect] = matchingRow;
+//             selectedRowMap[itemSelect].classList.add('highlight');
+//             console.log(selectedRowMap, selectedRowMap[itemSelect])
+//             console.log('hellooo');
+//         } 
+//     }
 
-    if (fetchFunction) fetchFunction(isEdit, selectId);
+//     if (fetchFunction) fetchFunction(isEdit, selectId);
 
-};
-
+// };
 
 const fetch_data = {
     task_datalist: (isEdit = false) => fetchRefTableFull({
@@ -1193,6 +1202,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
 
         const container = document.getElementById(containerId);
         const body = document.getElementById(bodyId);
+
         const select = isEdit ? document.getElementById(`edit${selectId}`) : document.getElementById(selectId);
         const taskDescription = description ? (isEdit ? document.getElementById('editTaskDescription'): document.getElementById('taskDescription')) : null;
         const department = departmentFields ? (isEdit ? document.getElementById('editDepartment') : document.getElementById('department')) : null;
@@ -1256,7 +1266,10 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         //     next.disabled = (current >= page);
         // }
 
+
+
         function render_table(data) {
+            console.log("Rendering data:", data);
             body.innerHTML = "";
             total = data.length;
 
@@ -1267,47 +1280,37 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             // const paginatedTasks = data.slice(start, end);
             const paginatedTasks = data;
 
+            if (paginatedTasks.length === 0) {
+                container.querySelector('.table-content').style.display = 'none';
+                container.querySelector('.no-data-table').style.display = 'flex'; 
+                container.querySelector('.page').style.display = 'none'; 
+            } else {
+                container.querySelector('.table-content').style.display = 'table';
+                container.querySelector('.no-data-table').style.display = 'none';  
+                container.querySelector('.page').style.display = 'flex'; 
+            }
+
             paginatedTasks.forEach((task, index) => {
                 render_row(task, index);
             });
+        }
 
-            // update_page_num(totalPages);
+        function render_no_data() {
+            const row = document.createElement("tr");
+            const noDataCell = document.createElement("td");
+            noDataCell.colSpan = columns.length;
+
+            let img = document.createElement('img');
+            img.src = "/internal/protected/no-data.jpg";
+            img.alt = 'No data available';
+            img.classList.add('no-image');
+
+            noDataCell.appendChild(img);
+            row.appendChild(noDataCell);
+            body.appendChild(row);
         }
 
         function render_row(data, index) {
-            // body.innerHTML = "";
-
-    
-            // const fragment = document.createDocumentFragment();
-            // data.forEach((val, index) => {
-            //     if (deletedRows.includes(`${container.id}-${index}`)) return;
-
-            //     const row = document.createElement("tr");
-            //     row.id = `${container.id}-${index}`;
-            //     row.dataset.index = index;
-            //     row.innerHTML = columns.map(col => `<td data-id="${val.id}">${val[col] ?? ''}</td>`).join('');
-
-            //     // Auto-select if session matches (for IT In Charge)
-            //     if (sessionName && val.full_name === sessionName) {
-            //         row.classList.add("highlight");
-            //         selectedRow =  row;
-            //     }
-
-            //     row.addEventListener('click', function () {
-            //         body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
-            //         row.classList.add("highlight");
-
-            //         selectedRow = row;
-            //         selectedId = val.id;
-            //         update_state();
-            //     });
-
-            //     fragment.appendChild(row);
-            // });
-
-            // body.appendChild(fragment);
-
-
             const row = document.createElement("tr");
             row.id = `${container.id}-${index}`;
             row.dataset.index = index;
@@ -1341,7 +1344,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             }
         }
 
-        let originalData = [];
+        // let originalData = [];
 
         // if (prev && next) {
         //     prev.onclick = async () => {
@@ -1364,14 +1367,14 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                 clearTimeout(timeout);
                 timeout = setTimeout(async() => {
                     const query = searchInput.value.trim(); 
-                    if(!query) {
-                        render_table(originalData);
-                        return
-                    }
-    
-                    const data = await load.load_reference(table, query, 'true');
-                    render_table(data); // Render search results
-    
+                    console.log(query);
+
+                    const searchUrl = new URL(window.location.href);
+                    query ? searchUrl.searchParams.set("lookupSearch", query) : searchUrl.searchParams.delete('lookupSearch');
+                    window.history.pushState({}, "", searchUrl);
+
+                    const data = await load.load_reference(table, 'true');
+                    render_table(data);   
                 }, 500);
                 currentPage = 1;
             }
@@ -1385,9 +1388,10 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                 try {
                     console.log('hello');
                     const data = await load.load_reference(table);
+                    // if(data === null) return;
                     if(data === null) return alert('Error retrieving data.');
         
-                    originalData = [...data];
+                    // originalData = [...data];
 
                     render_table(data);
                     container.style.display = 'flex';
@@ -1403,7 +1407,9 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
 
         if (closeButton) {
             const close_container = () => {
-                console.log(selectedRow);
+                const removeQuery = new URL(window.location.href);
+                removeQuery.searchParams.delete('lookupSearch');
+                window.history.pushState({}, "", removeQuery);
 
                 container.style.display = 'none';
                 searchInput.value = "";
@@ -1453,7 +1459,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
     
                         const data = await load.load_reference(table);
     
-                        originalData = [...data];
+                        // originalData = [...data];
                         render_table(data);
                         
                         modal.style.display = 'none';
@@ -1545,9 +1551,9 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                         });
 
                         const cells = selectedRow.querySelectorAll("td");
-                        originalData = originalData.map(item => 
-                            item.id === selectedId ? { ...item, ...updatedData } : item
-                        );
+                        // originalData = originalData.map(item => 
+                        //     item.id === selectedId ? { ...item, ...updatedData } : item
+                        // );
 
 
                         editValues = [...cells].map(cell => cell.innerText.trim());
@@ -1670,7 +1676,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                         selectedRow.remove();
                         selectedRow = null;
                         
-                        originalData = originalData.filter(item => item.id !== selectedId);
+                        // originalData = originalData.filter(item => item.id !== selectedId);
     
                         remove_highlight();
                     } catch (err) {
@@ -1983,44 +1989,44 @@ const get_name = (id) => {
 }
 
 // Function to open "Add" modal
-const open_add_modal = (modalId) => {
-    const modal = document.getElementById(modalId);
-    if (!modal) return console.error(`Modal with ID '${modalId}' not found.`);
+// const open_add_modal = (modalId) => {
+//     const modal = document.getElementById(modalId);
+//     if (!modal) return console.error(`Modal with ID '${modalId}' not found.`);
     
-    modal.style.display = 'flex'; // Show modal
+//     modal.style.display = 'flex'; // Show modal
 
-    const modalBody = modal.querySelector('.modal-body');
-    const form = modal.querySelector('form');
+//     const modalBody = modal.querySelector('.modal-body');
+//     const form = modal.querySelector('form');
     
-    if(form) {
-        form.addEventListener("submit", async function (event) {
+//     if(form) {
+//         form.addEventListener("submit", async function (event) {
 
-            event.preventDefault();
-            const success = await submit_task_type(modalId, form);
-            if(!success) return;
+//             event.preventDefault();
+//             const success = await submit_task_type(modalId, form);
+//             if(!success) return;
 
-            const tableName = get_name(modalId);        
-            const fetchFunctions = {
-                "task_types": fetch_data.task_datalist,
-                "items": fetch_data.item_datalist,
-                "devices": fetch_data.device_datalist,
-                "applications": fetch_data.app_datalist,
-                "approved_by":fetch_data.approve_datalist,
-                "requested_by":fetch_data.request_datalist,
-                "it_in_charge": fetch_data.it_datalist,
-            };
+//             const tableName = get_name(modalId);        
+//             const fetchFunctions = {
+//                 "task_types": fetch_data.task_datalist,
+//                 "items": fetch_data.item_datalist,
+//                 "devices": fetch_data.device_datalist,
+//                 "applications": fetch_data.app_datalist,
+//                 "approved_by":fetch_data.approve_datalist,
+//                 "requested_by":fetch_data.request_datalist,
+//                 "it_in_charge": fetch_data.it_datalist,
+//             };
 
-            if (fetchFunctions[tableName]) {
-                await fetchFunctions[tableName]();
-                console.log(`Datalist for ${tableName} updated.`);
-                modal.style.display = 'none';
-            } else {
-                alert(`Error adding to table: ${tableName}`);
-                console.warn(`No fetch function found for table: ${tableName}`);
-            }
-        })
-    }
-};
+//             if (fetchFunctions[tableName]) {
+//                 await fetchFunctions[tableName]();
+//                 console.log(`Datalist for ${tableName} updated.`);
+//                 modal.style.display = 'none';
+//             } else {
+//                 alert(`Error adding to table: ${tableName}`);
+//                 console.warn(`No fetch function found for table: ${tableName}`);
+//             }
+//         })
+//     }
+// };
 
 // Function to close modal
 const close_modal = (modalId) => {

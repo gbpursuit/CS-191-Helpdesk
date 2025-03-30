@@ -441,9 +441,11 @@ app.get('/api/:type/:table?', async (req, res, next) => {
             'tasks': () => server.is_authenticated(req, res, async () => await task.get_task(db, req, res)),
             'users': async () => await task.get_user(db, req, res),
             'session-user': async () => await task.session_user(db, req, res),
-            'ref-table': async() => await task.get_reference_table(db, req, res, refTable, validTables)
+            // 'ref-table': async() => await task.get_reference_table(db, req, res, refTable, validTables),
+            'search-table': async() => await task.search_reference(db, req, res, validTables)
         };
 
+        // console.log('hello');
         return actions[type] ? await actions[type]() : res.status(400).json({ error: 'Invalid task type' });
     } catch (err) {
         console.error('Error in task API:', err);
@@ -460,7 +462,7 @@ app.post('/api/tasks/:type', server.is_authenticated, limiter.task_limit, async 
         const actions = {
             'add': async () => await task.add_task(db, req, res, validTables)
         };
-
+        console.log('hello');
         return actions[type] ? await actions[type]() : res.status(400).json({ error: 'Invalid task type' });
     } catch (err) {
         console.error('Error in task API:', err);
@@ -590,26 +592,26 @@ app.delete('/api/delete-table/:table/:id', server.is_authenticated, async (req, 
     }
 });
 
-app.get('/api/search-table/:table/:query/:check', server.is_authenticated, async(req, res) => {
-    const { table, query, check } = req.params;
-    // const { query, check } = req.query;
-    const db = app.locals.db;
+// app.get('/api/search-table', server.is_authenticated, async(req, res) => {
+//     // const { table, query, check } = req.params;
+//     // const { query, check } = req.query;
+//     const db = app.locals.db;
 
-    console.log(table, query, check);
+//     // console.log(table, query, check);
 
-    if (!validTables.includes(table)) {
-        console.error("Received invalid table name:", table);
-        return res.status(400).json({ error: `Invalid table name: ${table}` });
-    }
+//     // if (!validTables.includes(table)) {
+//     //     console.error("Received invalid table name:", table);
+//     //     return res.status(400).json({ error: `Invalid table name: ${table}` });
+//     // }
+//     console.log('hello');
+//     try {
+//         await task.search_reference(db, req, res, validTables);
 
-    try {
-        await task.search_reference(db, req, res, table, query, check, validTables);
-
-    } catch (err) {
-        console.error(`Error deleting row:`, err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-})
+//     } catch (err) {
+//         console.error(`Error deleting row:`, err);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// })
 
 // Fallback route for unmatched paths
 app.use((req, res) => {
