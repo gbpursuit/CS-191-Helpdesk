@@ -1226,9 +1226,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
         const searchInput = container.querySelector('.look-input');
 
         // Pagination
-        let current = 0;
-        let taskpage = 0;
-        let total = 0;
+        let current = 1, taskpage = 0, total = 0;
 
         const prev = container.querySelector('.pagination-prev');
         const next = container.querySelector('.pagination-next');
@@ -1338,7 +1336,7 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             if(!tableContainer) return 1;
 
             const containerHeight = tableContainer.clientHeight || 1;
-            const rowHeight = sampleRow ? sampleRow.clientHeight || 1 : 5;
+            const rowHeight = sampleRow ? sampleRow.clientHeight || 1 : 6;
 
             return Math.max(1, Math.floor((containerHeight / rowHeight) - 1));
         }
@@ -1347,13 +1345,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
             currentPageNum.textContent = `${current}`;
             prev.disabled = (current <= 1);
             next.disabled = (current >= page);
-        }
-
-        function update_tasks_page() {
-            const newTasksPerPage = calculate_tasks();
-            if (newTasksPerPage !== tasksPerPage) {
-                tasksPerPage = newTasksPerPage;
-            }
         }
 
         if (prev && next) {
@@ -1460,7 +1451,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                 if (!modal) return console.error(`Modal with ID '${containerId}' not found.`);
     
                 modal.style.display = 'flex'; // Show modal
-                const modalBody = modal.querySelector('.modal-body');
                 const form = modal.querySelector('form');
     
                 if(form) {
@@ -1470,8 +1460,6 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                         if(!success) return;
     
                         const data = await load.load_reference(table);
-    
-                        // originalData = [...data];
                         render_table(data);
                         
                         modal.style.display = 'none';
@@ -1620,7 +1608,10 @@ async function fetchRefTableFull({ table, containerId, bodyId, selectId, openBtn
                     department.value = selectedRow.cells[1]?.innerText || '';
                     departmentNo.value = selectedRow.cells[2]?.innerText || '';
                 }
+                current = 1;
                 container.style.display = 'none';
+                body.innerHTML = "";
+                searchInput.value = "";
             }
 
             confirmSelect.removeEventListener('click', confirm_row);

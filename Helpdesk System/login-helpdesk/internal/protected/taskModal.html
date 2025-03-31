@@ -6,197 +6,200 @@
         </div>         
         <form id="newTaskForm" onsubmit="addTask(event)" class="task-form scroll">
             <div class="main-column">
-                <div class = "column-one">
-                    
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="TaskType">Task Type<span class="required"> *</span></label>
-                            <!-- <select id="taskType" class="dropdown" required>
-                                <option value="" class="option-values" disabled selected>Select Task Type</option>
-                            </select> -->
-                            <input type="text" id="TaskType" data-set="true" placeholder="Enter Task Type" readonly>
+                <div class="rowone">
+                    <div class = "column-one">
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="TaskType">Task Type<span class="required"> *</span></label>
+                                <!-- <select id="taskType" class="dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Task Type</option>
+                                </select> -->
+                                <input type="text" id="TaskType" data-set="true" placeholder="Enter Task Type" readonly>
+                            </div>
+                            <button type="button" id="TaskTypeBtn" class="look-btn"
+                            aria-label="Open Task Type Table" data-edit="false" data-key="task_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
-                        <button type="button" id="TaskTypeBtn" class="look-btn"
-                        aria-label="Open Task Type Table" data-edit="false" data-key="task_datalist">
-                        <i class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
-
-                    <!-- onclick="open_container('taskTypeAdd', 'taskTypeTable')" -->
-
-                    <div class="form-group">
-                        <label for="taskDescription">Task Description</label>
-                        <input type="text" id="taskDescription" placeholder="Enter Task Description">
-                    </div>
-                    
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="RequestedBy">Requested by<span class="required"> *</span></label>
-                            <input type="text" id="RequestedBy" data-set="true" placeholder="Enter Requested By" readonly>
-                            <!-- <select id="requestedBy" class = "dropdown">
-                                <option value="" class="option-values" disabled selected>Select Requested by</option>
-                            </select> -->
+    
+                        <!-- onclick="open_container('taskTypeAdd', 'taskTypeTable')" -->
+    
+                        <div class="form-group">
+                            <label for="taskDescription">Task Description</label>
+                            <input type="text" id="taskDescription" placeholder="Enter Task Description">
                         </div>
-                        <button type="button" id="RequestedByBtn" class="look-btn"
-                        aria-label="Open Requested By Table" data-edit="false" data-key="request_datalist">
-                        <i class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
-
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="ApprovedBy">Approved by</label>
-                            <input type="text" id="ApprovedBy" placeholder="Enter Approved By" readonly>
-                            <!-- <select id="approvedBy" class = "dropdown">
-                                <option value="" class="option-values" disabled selected>Select Approved by</option>
-                            </select> -->
+                        
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="RequestedBy">Requested by<span class="required"> *</span></label>
+                                <input type="text" id="RequestedBy" data-set="true" placeholder="Enter Requested By" readonly>
+                                <!-- <select id="requestedBy" class = "dropdown">
+                                    <option value="" class="option-values" disabled selected>Select Requested by</option>
+                                </select> -->
+                            </div>
+                            <button type="button" id="RequestedByBtn" class="look-btn"
+                            aria-label="Open Requested By Table" data-edit="false" data-key="request_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
-                        <button type="button" id="ApprovedByBtn" class="look-btn" 
-                        aria-label="Open Approved By Table" data-edit="false" data-key="approve_datalist">
-                        <i class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
-
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="department">Department</label>
-                            <input type="text" id="department" placeholder="Enter Department Name" readonly>
-                            <!-- <select id="department" class = "dropdown" required>
-                                <option value="" class="option-values" disabled selected>Select Department</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Executive">Executive</option>
-                                <option value="Warehouse">Warehouse</option>
-                                <option value="IT">IT</option>
-                            </select> -->
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="ApprovedBy">Approved by</label>
+                                <input type="text" id="ApprovedBy" placeholder="Enter Approved By" readonly>
+                                <!-- <select id="approvedBy" class = "dropdown">
+                                    <option value="" class="option-values" disabled selected>Select Approved by</option>
+                                </select> -->
+                            </div>
+                            <button type="button" id="ApprovedByBtn" class="look-btn" 
+                            aria-label="Open Approved By Table" data-edit="false" data-key="approve_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
-                        <!-- <button type="button" id="dprtBtn" class="look-btn" aria-label="Open Department Table"><i class="fa-solid fa-magnifying-glass"></i></button> -->
-                    </div>
-
-                    <div class="form-group">
-                        <label for="departmentNo">Department No</label>
-                        <input type="text" id="departmentNo"  class="input-box disable" placeholder="Enter Dept. No." disabled>
-                    </div>
-
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="ItInCharge">IT in Charge<span class="required"> *</span></label>
-                            <input type="text" id="ItInCharge" data-set="true" placeholder="Enter It In Charge" disabled>
-                            <!-- <select id="itInCharge" class="dropdown" required>
-                                <option value="" class="option-values" disabled selected>Select IT in Charge</option>
-                                <option value="Weng Castrillon">Weng Castrillon</option>
-                                <option value="Anne Ranay">Anne Ranay</option>
-                                <option value="Julius Jara">Julius Jara</option>
-                            </select>   -->
-                        </div>         
-                        <button type="button" id="ItInChargeBtn" class="look-btn" 
-                        aria-label="Open It in Charge Table" data-edit="false" data-key="it_datalist">
-                        <i class="fa-solid fa-magnifying-glass"></i></button>                         
-                    </div>
-
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="Device">Device Name</label>
-                            <!-- <select id="DeviceName" class = "dropdown" required>
-                                <option value="" class="option-values" disabled selected>Select Device Name</option>
-                            </select> -->
-                            <input type="text" id="Device" placeholder="Enter Device Name" readonly>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="department">Department</label>
+                                <input type="text" id="department" placeholder="Enter Department Name" readonly>
+                                <!-- <select id="department" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Department</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Executive">Executive</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                    <option value="IT">IT</option>
+                                </select> -->
+                            </div>
+                            <!-- <button type="button" id="dprtBtn" class="look-btn" aria-label="Open Department Table"><i class="fa-solid fa-magnifying-glass"></i></button> -->
                         </div>
-                        <button type="button" id="DeviceBtn" class="look-btn" 
-                        aria-label="Open Device Table" data-edit="false" data-key="device_datalist">
-                        <i class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
-                    
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="Item">Item Name</label>
-                            <!-- <select id="ItemName" class = "dropdown" required>
-                                <option value="" class="option-values" disabled selected>Select Item Name</option>
-                            </select> -->
-                            <input type="text" id="Item" placeholder="Enter Item Name" readonly>
+    
+                        <div class="form-group">
+                            <label for="departmentNo">Department No</label>
+                            <input type="text" id="departmentNo"  class="input-box disable" placeholder="Enter Dept. No." disabled>
                         </div>
-                        <button type="button" id="ItemBtn" class="look-btn" 
-                        aria-label="Open Item Table" data-edit="false" data-key="item_datalist">
-                        <i class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
-
-                    <div class="form-group container">
-                        <div class="label-container">
-                            <label for="Application">Application Name</label>
-                            <!-- <select id="applicationName" class = "dropdown" required>
-                                <option value="" class="option-values" disabled selected>Select Application Name</option>
-                            </select> -->
-                            <input type="text" id="Application" placeholder="Enter Application Name" readonly>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="ItInCharge">IT in Charge<span class="required"> *</span></label>
+                                <input type="text" id="ItInCharge" data-set="true" placeholder="Enter It In Charge" disabled>
+                                <!-- <select id="itInCharge" class="dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select IT in Charge</option>
+                                    <option value="Weng Castrillon">Weng Castrillon</option>
+                                    <option value="Anne Ranay">Anne Ranay</option>
+                                    <option value="Julius Jara">Julius Jara</option>
+                                </select>   -->
+                            </div>         
+                            <button type="button" id="ItInChargeBtn" class="look-btn" 
+                            aria-label="Open It in Charge Table" data-edit="false" data-key="it_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>                         
                         </div>
-                        <button type="button" id="ApplicationBtn" class="look-btn" 
-                        aria-label="Open Application Table" data-edit="false" data-key="app_datalist">
-                        <i class="fa-solid fa-magnifying-glass"></i></button>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="Device">Device Name</label>
+                                <!-- <select id="DeviceName" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Device Name</option>
+                                </select> -->
+                                <input type="text" id="Device" placeholder="Enter Device Name" readonly>
+                            </div>
+                            <button type="button" id="DeviceBtn" class="look-btn" 
+                            aria-label="Open Device Table" data-edit="false" data-key="device_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                        
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="Item">Item Name</label>
+                                <!-- <select id="ItemName" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Item Name</option>
+                                </select> -->
+                                <input type="text" id="Item" placeholder="Enter Item Name" readonly>
+                            </div>
+                            <button type="button" id="ItemBtn" class="look-btn" 
+                            aria-label="Open Item Table" data-edit="false" data-key="item_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="Application">Application Name</label>
+                                <!-- <select id="applicationName" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Application Name</option>
+                                </select> -->
+                                <input type="text" id="Application" placeholder="Enter Application Name" readonly>
+                            </div>
+                            <button type="button" id="ApplicationBtn" class="look-btn" 
+                            aria-label="Open Application Table" data-edit="false" data-key="app_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+    
+                    <div class="column-two">
+                        <div class="form-group">
+                            <label for="taskId">Task ID</label>
+                            <input type="text" id="taskId" class="id-box disable" disabled>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="taskDate">Transaction Date</label>
+                            <input type="text" id="taskDate" class = "date-box disable" disabled>
+                        </div>                             
+    
+                        <div class="form-group">
+                            <label for="taskStatus">Status<span class="required"> *</span></label>
+                            <select id="taskStatus" class = "dropdown" required>
+                                <option value="New"  selected>New</option>
+                                <option value="Open">Open</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="On Hold">On Hold</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="severity">Severity<span class="required"> *</span></label>
+                            <select id="severity" class = "dropdown" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>                    
+                        </div>
+                        <div class="form-group">
+                            <label for="dateReq">Date Requested</label>
+                            <input type="date" id="dateReq" placeholder="Enter Date Requested" >
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="dateRec">Date Received</label>
+                            <input type="date" id="dateRec" placeholder="Enter Date Received">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="dateStart">Date Started</label>
+                            <input type="date" id="dateStart" placeholder="Enter Date Started">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="dateFin">Date Finished</label>
+                            <input type="date" id="dateFin" placeholder="Enter Date Finished">
+                        </div>
+    
                     </div>
                 </div>
-
-                <div class="column-two">
-                    <div class="form-group">
-                        <label for="taskId">Task ID</label>
-                        <input type="text" id="taskId" class="id-box disable" disabled>
+                <div class="rowtwo">
+                    <div class="add-task-footer">
+                        <div class="form-group outside">
+                            <label for="problemDetails">Problem Details<span class="required"> *</span></label>
+                            <textarea id="problemDetails" class="scroll" data-set="true" placeholder="Enter Problem Details"></textarea>
+                        </div>
+                        <div class="form-group outside">
+                            <label for="remarks">Remarks<span class="required"> *</span></label>
+                            <textarea id="remarks" class="scroll"  data-set="true" placeholder="Enter Task Remarks"></textarea>
+                        </div>  
+                        <button type="submit" class="button-add">Add Task</button>
                     </div>
-
-                    <div class="form-group">
-                        <label for="taskDate">Transaction Date</label>
-                        <input type="text" id="taskDate" class = "date-box disable" disabled>
-                    </div>                             
-
-                    <div class="form-group">
-                        <label for="taskStatus">Status<span class="required"> *</span></label>
-                        <select id="taskStatus" class = "dropdown" required>
-                            <option value="New"  selected>New</option>
-                            <option value="Open">Open</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="On Hold">On Hold</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="severity">Severity<span class="required"> *</span></label>
-                        <select id="severity" class = "dropdown" required>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>                    
-                    </div>
-                    <div class="form-group">
-                        <label for="dateReq">Date Requested</label>
-                        <input type="date" id="dateReq" placeholder="Enter Date Requested" >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="dateRec">Date Received</label>
-                        <input type="date" id="dateRec" placeholder="Enter Date Received">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="dateStart">Date Started</label>
-                        <input type="date" id="dateStart" placeholder="Enter Date Started">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="dateFin">Date Finished</label>
-                        <input type="date" id="dateFin" placeholder="Enter Date Finished">
-                    </div>
-
                 </div>
-            </div>
-            <div class="add-task-footer">
-                <div class="form-group outside">
-                    <label for="problemDetails">Problem Details<span class="required"> *</span></label>
-                    <textarea id="problemDetails" class="scroll" data-set="true" placeholder="Enter Problem Details"></textarea>
-                </div>
-                <div class="form-group outside">
-                    <label for="remarks">Remarks<span class="required"> *</span></label>
-                    <textarea id="remarks" class="scroll"  data-set="true" placeholder="Enter Task Remarks"></textarea>
-                </div>  
-                <button type="submit" class="button-add">Add Task</button>
             </div>
         </form>
     </div>
