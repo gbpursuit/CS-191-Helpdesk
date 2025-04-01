@@ -198,22 +198,28 @@ function handle_new_account() {
         let enteredAdmin = adminName.value.trim();
         let enteredPass = adminPass.value.trim();
 
-        if(!enteredUsername || !enteredPass) {
+        if(!enteredAdmin || !enteredPass) {
             return;
         }
 
         // Modify soon to request for admin table
         try {
-            const response = await fetch('/api/auth/sign-in', {
+            const response = await fetch('/api/isAdmin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ username: enteredAdmin, password: enteredPass }),
             });
+
+            const data = await response.json();
     
             if (!response.ok) {
-                throw new Error ('Invalid username or password');
+                throw new Error ('Error verification. Please try again later.');
+            }
+
+            if (data.itExists === 0) {
+                throw new Error ('Invalid username or password. Please try again.');
             }
 
             toggle_cont('adminContainer', 'newCont');
@@ -221,7 +227,7 @@ function handle_new_account() {
             adminPass.value = "";
         } catch (error) {
             console.error('Error:', error);
-            show_error(adminError, "An error occurred during login. Please try again later.", 'adminPassword', 'adminName');
+            show_error(adminError, error.message, 'adminPassword', 'adminName');
         }
 
     })

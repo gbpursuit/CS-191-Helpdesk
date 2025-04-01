@@ -226,6 +226,50 @@ export const account = {
             console.error('Database error:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
+    },
+
+    get_user: async function (db, req, res) {
+        try {
+            const [rows] = await db.query(`SELECT username, first_name, last_name FROM users ORDER BY username`);
+
+            if (rows.length < 0) {
+                res.status(404).json({ error: 'No username found.' });
+            } else {
+                res.status(200).json(rows);
+            }
+
+        } catch(err) {
+            console.error('Error fetching uers:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    is_admin: async function(db, req, res) {
+        try {
+            const [rows] = await db.query(
+                'SELECT password, COUNT(*) AS userCount FROM users WHERE username = ?',
+                [req.body.username]
+            );
+    
+            const user = rows[0];
+    
+            if (!user || user.userCount === 0) {
+                return res.json({ itExists: 0, error: 'User not found' });
+            }
+            const match = await bcrypt.compare(req.body.password, user.password);
+    
+            if (!match) {
+                return res.json({ itExists: 0, error: 'Invalid password' });
+            }
+    
+            // If user exists and password matches
+            return res.json({ itExists: 1 });
+
+
+        } catch (err) {
+            console.error("Error verifying admin credentials:", err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
 }
 
@@ -580,22 +624,6 @@ export const task = {
             res.status(200).json(tasks);
         } catch (err) {
             console.error('Error fetching tasks:', err);
-            res.status(500).json({ error: 'Internal server error' });
-        }
-    },
-
-    get_user: async function (db, req, res) {
-        try {
-            const [rows] = await db.query(`SELECT username, first_name, last_name FROM users ORDER BY username`);
-
-            if (rows.length < 0) {
-                res.status(404).json({ error: 'No username found.' });
-            } else {
-                res.status(200).json(rows);
-            }
-
-        } catch(err) {
-            console.error('Error fetching uers:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     },

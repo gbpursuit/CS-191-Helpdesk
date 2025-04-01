@@ -281,7 +281,7 @@ img {
 }
 
 .admin-form input[type="text"],
-.admin-form input[type="adminPassword"],
+.admin-form input[type="password"],
 .new-form input[type="text"],
 .new-form input[type="password"] {
     box-sizing: border-box;
@@ -296,7 +296,7 @@ img {
 }
 
 .admin-form input[type="text"]:focus,
-.admin-form input[type="adminPassword"]:focus,
+.admin-form input[type="password"]:focus,
 .new-form input[type="text"]:focus,
 .new-form input[type="password"]:focus {
     border-color: var(--dark-green);
