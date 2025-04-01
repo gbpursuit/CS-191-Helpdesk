@@ -92,9 +92,6 @@ export const UI = {
             if (response.ok) {
                 localStorage.setItem("sidebarState", "closed");
                 
-                let text = "/internal/"
-                text += (bool) ? 'login/sign-in' : 'welcome';
-
                 window.location.replace('/internal/welcome');
     
             } else {

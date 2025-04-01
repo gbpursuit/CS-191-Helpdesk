@@ -109,13 +109,63 @@ img {
     text-align: center;
 }
 
+.active-acc {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    width: 70%;
+    height: 60%;
+}
+
+.active-form {
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.active-form span {
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.active-form span::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 0%;
+    height: 2px;
+    background-color: var(--dark-green);
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+
+.active-form span:hover {
+    cursor: pointer;
+    color: var(--dark-green2);
+}
+
+.active-form span:hover::after {
+    cursor: pointer;
+    background-color: var(--dark-green2);
+    width: 100%;
+    left: 0;
+}
+
+.outer-container { 
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .login-container {
     background-color: var(--v1-gray);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
-    width: 80%;
+    width: 100%;
     max-width: 350px;
     text-align: center;
 }
@@ -200,17 +250,27 @@ img {
     gap: 20px;
 }
 
+.admin-cont,
+.new-cont {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.admin-form,
 .new-container {
     background-color: var(--v1-gray);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
-    width: 80%;
+    width: 100%;
     max-width: 350px;
     text-align: center;
 }
 
+.admin-form label,
 .new-form label {
     color: var(--dark-green);
     text-align: left;
@@ -220,6 +280,8 @@ img {
     margin-bottom: 0.5rem;
 }
 
+.admin-form input[type="text"],
+.admin-form input[type="adminPassword"],
 .new-form input[type="text"],
 .new-form input[type="password"] {
     box-sizing: border-box;
@@ -233,11 +295,19 @@ img {
     color: var(--text-color);
 }
 
+.admin-form input[type="text"]:focus,
+.admin-form input[type="adminPassword"]:focus,
 .new-form input[type="text"]:focus,
 .new-form input[type="password"]:focus {
     border-color: var(--dark-green);
     outline: none;
     box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+.admin-pass-cont {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .newUser::placeholder {
@@ -254,6 +324,11 @@ img {
     color: var(--hot-pink);
     font-weight: normal;
     font-size: 1em;
+}
+
+.error {
+    transition: border-color 0.3s ease;
+    border: 2px solid var(--hot-pink) !important;
 }
 
 /* Keyframes */

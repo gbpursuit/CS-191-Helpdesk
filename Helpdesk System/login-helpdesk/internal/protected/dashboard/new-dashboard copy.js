@@ -353,7 +353,6 @@ const search = {
 const add = {
     add_to_database: async function(taskData){
         try {
-            // console.log('addTasktoDatabase', taskData);
             const response = await fetch('/api/tasks/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
