@@ -1,0 +1,755 @@
+<div id="taskModal" class="modal">
+    <div id = "modalContent" class="modal-content" onclick = "event.stopPropagation()">   
+        <div class="add-task-header">
+            <span class="close">&times;</span>
+            <h2 class = "add-task">Add New Task</h2>
+        </div>         
+        <form id="newTaskForm" onsubmit="addTask(event)" class="task-form scroll">
+            <div class="main-column">
+                <div class="rowone">
+                    <div class = "column-one">
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="TaskType">Task Type<span class="required"> *</span></label>
+                                <!-- <select id="taskType" class="dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Task Type</option>
+                                </select> -->
+                                <input type="text" id="TaskType" data-set="true" placeholder="Enter Task Type" readonly>
+                            </div>
+                            <button type="button" id="TaskTypeBtn" class="look-btn"
+                            aria-label="Open Task Type Table" data-edit="false" data-key="task_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <!-- onclick="open_container('taskTypeAdd', 'taskTypeTable')" -->
+    
+                        <div class="form-group">
+                            <label for="taskDescription">Task Description</label>
+                            <input type="text" id="taskDescription" placeholder="Enter Task Description">
+                        </div>
+                        
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="RequestedBy">Requested by<span class="required"> *</span></label>
+                                <input type="text" id="RequestedBy" data-set="true" placeholder="Enter Requested By" readonly>
+                                <!-- <select id="requestedBy" class = "dropdown">
+                                    <option value="" class="option-values" disabled selected>Select Requested by</option>
+                                </select> -->
+                            </div>
+                            <button type="button" id="RequestedByBtn" class="look-btn"
+                            aria-label="Open Requested By Table" data-edit="false" data-key="request_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="ApprovedBy">Approved by</label>
+                                <input type="text" id="ApprovedBy" placeholder="Enter Approved By" readonly>
+                                <!-- <select id="approvedBy" class = "dropdown">
+                                    <option value="" class="option-values" disabled selected>Select Approved by</option>
+                                </select> -->
+                            </div>
+                            <button type="button" id="ApprovedByBtn" class="look-btn" 
+                            aria-label="Open Approved By Table" data-edit="false" data-key="approve_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="department">Department</label>
+                                <input type="text" id="department" placeholder="Enter Department Name" readonly>
+                                <!-- <select id="department" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Department</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Executive">Executive</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                    <option value="IT">IT</option>
+                                </select> -->
+                            </div>
+                            <!-- <button type="button" id="dprtBtn" class="look-btn" aria-label="Open Department Table"><i class="fa-solid fa-magnifying-glass"></i></button> -->
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="departmentNo">Department No</label>
+                            <input type="text" id="departmentNo"  class="input-box disable" placeholder="Enter Dept. No." disabled>
+                        </div>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="ItInCharge">IT in Charge<span class="required"> *</span></label>
+                                <input type="text" id="ItInCharge" data-set="true" placeholder="Enter It In Charge" disabled>
+                                <!-- <select id="itInCharge" class="dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select IT in Charge</option>
+                                    <option value="Weng Castrillon">Weng Castrillon</option>
+                                    <option value="Anne Ranay">Anne Ranay</option>
+                                    <option value="Julius Jara">Julius Jara</option>
+                                </select>   -->
+                            </div>         
+                            <button type="button" id="ItInChargeBtn" class="look-btn" 
+                            aria-label="Open It in Charge Table" data-edit="false" data-key="it_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>                         
+                        </div>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="Device">Device Name</label>
+                                <!-- <select id="DeviceName" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Device Name</option>
+                                </select> -->
+                                <input type="text" id="Device" placeholder="Enter Device Name" readonly>
+                            </div>
+                            <button type="button" id="DeviceBtn" class="look-btn" 
+                            aria-label="Open Device Table" data-edit="false" data-key="device_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                        
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="Item">Item Name</label>
+                                <!-- <select id="ItemName" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Item Name</option>
+                                </select> -->
+                                <input type="text" id="Item" placeholder="Enter Item Name" readonly>
+                            </div>
+                            <button type="button" id="ItemBtn" class="look-btn" 
+                            aria-label="Open Item Table" data-edit="false" data-key="item_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <div class="form-group container">
+                            <div class="label-container">
+                                <label for="Application">Application Name</label>
+                                <!-- <select id="applicationName" class = "dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Application Name</option>
+                                </select> -->
+                                <input type="text" id="Application" placeholder="Enter Application Name" readonly>
+                            </div>
+                            <button type="button" id="ApplicationBtn" class="look-btn" 
+                            aria-label="Open Application Table" data-edit="false" data-key="app_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+    
+                    <div class="column-two">
+                        <div class="form-group">
+                            <label for="taskId">Task ID</label>
+                            <input type="text" id="taskId" class="id-box disable" disabled>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="taskDate">Transaction Date</label>
+                            <input type="text" id="taskDate" class = "date-box disable" disabled>
+                        </div>                             
+    
+                        <div class="form-group">
+                            <label for="taskStatus">Status<span class="required"> *</span></label>
+                            <select id="taskStatus" class = "dropdown" required>
+                                <option value="New"  selected>New</option>
+                                <option value="Open">Open</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="On Hold">On Hold</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="severity">Severity<span class="required"> *</span></label>
+                            <select id="severity" class = "dropdown" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>                    
+                        </div>
+                        <div class="form-group">
+                            <label for="dateReq">Date Requested</label>
+                            <input type="date" id="dateReq" placeholder="Enter Date Requested" >
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="dateRec">Date Received</label>
+                            <input type="date" id="dateRec" placeholder="Enter Date Received">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="dateStart">Date Started</label>
+                            <input type="date" id="dateStart" placeholder="Enter Date Started">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="dateFin">Date Finished</label>
+                            <input type="date" id="dateFin" placeholder="Enter Date Finished">
+                        </div>
+    
+                    </div>
+                </div>
+                <div class="rowtwo">
+                    <div class="add-task-footer">
+                        <div class="form-group outside">
+                            <label for="problemDetails">Problem Details<span class="required"> *</span></label>
+                            <textarea id="problemDetails" class="scroll" data-set="true" placeholder="Enter Problem Details"></textarea>
+                        </div>
+                        <div class="form-group outside">
+                            <label for="remarks">Remarks<span class="required"> *</span></label>
+                            <textarea id="remarks" class="scroll"  data-set="true" placeholder="Enter Task Remarks"></textarea>
+                        </div>  
+                        <button type="submit" class="button-add">Add Task</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Task Type Pop-up -->
+<div id="taskTypeAdd" class="task-type-add outermost display">
+    <div id="taskTypeContent" class="taskType-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Task Type</h2>
+            <span id class="close-cont">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div class="row-one">
+                <div class="right">
+                    <input type="text" placeholder="Search Task" class = "look-input">
+                </div>
+            </div>
+            <div class="row-two">
+                <div id="taskTypeColOne" class="task-type col-one">
+                    <div class="groups">
+                        <button class="c1 box" >Add</button>
+                        <button class="c2 box" >Edit</button>
+                        <button class="c3 box" >Delete</button>
+                    </div>                
+                </div>
+                <div id="taskTypeColTwo" class="task-type col-two">
+                    <div class = "no-data-table">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image-table">
+                    </div>
+                    <div class="table-types">
+                        <table class = "table-content">
+                            <thead>
+                                <tr>
+                                    <th>Task Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taskTypeTable">
+                                <!-- Table rows will be dynamically added -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <button id="TaskTypePrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="TaskTypeNum" class = "page-num">1</span>
+                        </div>
+                        <button id="TaskTypeNextx" class="pagination-next page-btn" type="button">&raquo;</button>
+                    </div>
+                    <!-- <div class="row-three same-row">
+                        <button id="prevPage" class="pagination-button page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="currentPage">1</span>
+                        </div>
+                        <button id="nextPage" class="pagination-button page-btn" type="button">&raquo;</button>
+                    </div> -->
+                </div>
+            </div>
+
+        </div>
+        <div class="footer-cont initial">
+            <div class="left">
+                <button type = "button" class="c4 box" >Cancel</button>
+                <button type = "button" class="c5 box" >Select</button>
+                <button type = "button" class="c6 box" >Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Task Type Modal -->
+<div id="taskTypeAddModal" class="modal outermost display">
+    <div class="modal-content add-layout-content">
+        <div class="title-cont">
+            <h2 class="title">Add Task Type </h2>
+            <span class="close-cont" onclick="close_modal('taskTypeAddModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="taskTypeForm">
+                <div class="input-group">
+                    <label for="newTask">Task Type:</label>
+                    <input type="text" id="newTask" name="newTask" placeholder="Enter Task Type">
+                </div>
+                <div class="input-group">
+                    <label for="newDescription">Description:</label>
+                    <input type="text" id="newDescription" name="newDescription" placeholder="Enter Task Description">
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Requested By Pop-up -->
+<div id="requestedByAdd" class="requested-by-add outermost display">
+    <div id="requestedByContent" class="requestedBy-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Requested By</h2>
+            <span class="close-cont">&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div class="row-one">
+                <div class="right">
+                    <input type="text" placeholder="Search Task" class = "look-input">
+                </div>
+            </div>
+            <div class="row-two">
+                <div id="requestedByColOne" class="requested-by col-one">
+                    <div class="groups">
+                        <button class="c1 box" >Add</button>
+                        <button class="c2 box" >Edit</button>
+                        <button class="c3 box" >Delete</button>                    
+                    </div>
+                </div>
+                <div id="requestedByColTwo" class="requested-by col-two">
+                    <div class = "no-data-table">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image-table">
+                    </div>
+                    <div class="table-types">
+                        <table class="table-content">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Contact No.</th>
+                                </tr>
+                            </thead>
+                            <tbody id = "requestTable">
+                                <!-- Table rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <button id="RequestedByPrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="RequestedByNum" class = "page-num">1</span>
+                        </div>
+                        <button id="RequestedByNext" class="pagination-next page-btn" type="button">&raquo;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-cont">
+            <button type = "button" class="c4 box" >Cancel</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Requested By Modal -->
+<div id="requestedByAddModal" class="modal outermost display">
+    <div class="modal-content add-layout-content">
+        <div class="title-cont">
+            <h2 class="title">Add Requested By</h2>
+            <span class="close-cont" onclick="close_modal('requestedByAddModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="requestedByForm">
+                <div class="input-group">
+                    <label for="reqName">Employee Name:</label>
+                    <input type="text" id="reqName" name="reqName" placeholder="Enter Employee Name">
+                </div>
+                <div class="input-group">
+                    <label for="reqDept">Department:</label>
+                    <input type="text" id="reqDept" name="reqDept" placeholder="Enter Employee Department">
+                </div>
+                <div class="input-group">
+                    <label for="reqContact">Contact No.:</label>
+                    <input type="tel" id="reqContact" name="reqContact" pattern="[0-9]{10}" placeholder="Enter Employee Contact No.">
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Approved By Pop-up -->
+<div id="approvedByAdd" data="hello" class="approved-by-add outermost display">
+    <div id="approvedByContent" class="approvedBy-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Approved By</h2>
+            <span class="close-cont" >&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div class="row-one">
+                <div class="right">
+                    <input type="text" placeholder="Search Task" class = "look-input">
+                </div>
+            </div>
+            <div class="row-two">
+                <div id="approvedByColOne" class="approved-by col-one">
+                    <div class="groups">
+                        <button class="c1 box">Add</button>
+                        <button class="c2 box">Edit</button>
+                        <button class="c3 box">Delete</button>
+                    </div>
+                </div>
+                <div id="approvedByColTwo" class="approved-by col-two">
+                    <div class = "no-data-table">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image-table">
+                    </div>
+                    <div class="table-types">
+                        <table class = "table-content">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                </tr>
+                            </thead>
+                            <tbody id = "approveTable">
+                                <!-- Table rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <button id="ApprovedByPrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="ApprovedByNum" class = "page-num">1</span>
+                        </div>
+                        <button id="ApprovedByNext" class="pagination-next page-btn" type="button">&raquo;</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        <div class="footer-cont">
+            <button type = "button" class="c4 box" >Cancel</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Approved By Modal -->
+<div id="approvedByAddModal" class="modal outermost display">
+    <div class="modal-content add-layout-content">
+        <div class="title-cont">
+            <h2 class="title">Add Approved By</h2>
+            <span class="close-cont" onclick="close_modal('approvedByAddModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="approvedByForm">
+                <div class="input-group">
+                    <label for="approvedName">Employee Name:</label>
+                    <input type="text" id="approvedName" name="approvedName" placeholder="Enter Employee Name">
+                </div>
+                <div class="input-group">
+                    <label for="approvedDept">Department:</label>
+                    <input type="text" id="approvedDept" name="approvedDept" placeholder="Enter Employee Department">
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div id="deviceAdd" class="device-add outermost display">
+    <div id="deviceContent" class="device-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Device Name</h2>
+            <span class="close-cont" >&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div class="row-one">
+                <div class="right">
+                    <input type="text" placeholder="Search Task" class = "look-input">
+                </div>
+            </div>
+            <div class="row-two">
+                <div id="deviceColOne" class="device col-one">
+                    <div class="groups">
+                        <button class="c1 box" >Add</button>
+                        <button class="c2 box" >Edit</button>
+                        <button class="c3 box" >Delete</button>
+                    </div>
+                </div>
+                <div id="deviceColTwo" class="device col-two">
+                    <div class = "no-data-table">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image-table">
+                    </div>
+                    <div class="table-types">
+                        <table class = "table-content">
+                            <thead>
+                                <tr>
+                                    <th>Device Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id = "deviceTable">
+                                <!-- Table rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <button id="DevicePrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="DeviceNum" class = "page-num">1</span>
+                        </div>
+                        <button id="DeviceNext" class="pagination-next page-btn" type="button">&raquo;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-cont">
+            <button type = "button" class="c4 box" >Cancel</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Device Modal -->
+<div id="deviceAddModal" class="modal outermost display">
+    <div class="modal-content add-layout-content">
+        <div class="title-cont">
+            <h2 class="title">Add Device Name</h2>
+            <span class="close-cont" onclick="close_modal('deviceAddModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="deviceForm">
+                <div class="input-group">
+                    <label for="newDevice">Device Name:</label>
+                    <input type="text" id="newDevice" name="newDevice" placeholder="Enter Device Name">
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="itemAdd" class="item-add outermost display">
+    <div id="itemContent" class="item-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Item Name</h2>
+            <span class="close-cont" >&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div class="row-one">
+                <div class="right">
+                    <input type="text" placeholder="Search Task" class = "look-input">
+                </div>
+            </div>
+            <div class="row-two">
+                <div id="itemColOne" class="item col-one">
+                    <div class="groups">
+                        <button class="c1 box" >Add</button>
+                        <button class="c2 box" >Edit</button>
+                        <button class="c3 box">Delete</button>
+                    </div>
+                </div>
+                <div id="itemColTwo" class="item col-two">
+                    <div class = "no-data-table">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image-table">
+                    </div>
+                    <div class="table-types">
+                        <table class = "table-content">
+                            <thead>
+                                <tr>
+                                    <th>Item Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id = "itemTable">
+                                <!-- Table rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <button id="ItemPrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="ItemNum" class = "page-num">1</span>
+                        </div>
+                        <button id="ItemNext" class="pagination-next page-btn" type="button">&raquo;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-cont">
+            <button type = "button" class="c4 box" >Cancel</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Item Modal -->
+<div id="itemAddModal" class="modal outermost display">
+    <div class="modal-content add-layout-content">
+        <div class="title-cont">
+            <h2 class="title">Add Item Name</h2>
+            <span class="close-cont" onclick="close_modal('itemAddModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="itemForm">
+                <div class="input-group">
+                    <label for="newItem">Item Name:</label>
+                    <input type="text" id="newItem" name="newItem" placeholder="Enter Item Name">
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div id = "itAdd" class="it-add outermost display">
+    <div id="itContent" class="it-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">IT in Charge</h2>
+            <span class="close-cont" >&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div class="row-one">
+                <div class="right">
+                    <input type="text" placeholder="Search Task" class = "look-input">
+                </div>
+            </div>
+            <div class="row-two">
+                <div id="itColOne" class="it col-one">
+                    <div class="groups">
+                        <button class="c1 box" >Add</button>
+                        <button class="c2 box" >Edit</button>
+                        <button class="c3 box">Delete</button>
+                    </div>
+                </div>
+                <div id="itColTwo" class="it col-two">
+                    <div class = "no-data-table">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image-table">
+                    </div>
+                    <div class="table-types">
+                        <table class="table-content">
+                            <thead>
+                                <tr>
+                                    <th>IT Employee</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itTable">
+                                <!-- Table rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <button id="ItInChargePrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="ItInChargeNum" class = "page-num">1</span>
+                        </div>
+                        <button id="ItInChargeNext" class="pagination-next page-btn" type="button">&raquo;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-cont">
+            <button type = "button" class="c4 box" >Cancel</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add IT Modal -->
+<div id="itAddModal" class="modal outermost display">
+    <div class="modal-content add-layout-content">
+        <div class="title-cont">
+            <h2 class="title">Add IT Employee Name</h2>
+            <span class="close-cont" onclick="close_modal('itAddModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="itForm">
+                <div class="input-group">
+                    <label for="newIt">IT Employee Name:</label>
+                    <input type="text" id="newIt" name="newIt" placeholder="Enter IT Employee Name">
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id = "applicationAdd" class="application-add outermost display">
+    <div id="appContent" class="app-content layout-content">
+        <div class="title-cont">
+            <h2 class="title">Application Name</h2>
+            <span class="close-cont" >&times;</span>
+        </div>
+        <div class="cont-cont">
+            <div class="row-one">
+                <div class="right">
+                    <input type="text" placeholder="Search Task" class = "look-input">
+                </div>
+            </div>
+            <div class="row-two">
+                <div id="appColOne" class="app col-one">
+                    <div class="groups">
+                        <button class="c1 box" >Add</button>
+                        <button class="c2 box" >Edit</button>
+                        <button class="c3 box" >Delete</button>
+                    </div>
+                </div>
+                <div id="appColTwo" class="app col-two">
+                    <div class = "no-data-table">
+                        <img src="/internal/protected/no-data.jpg" alt="Your paking face" class="no-image-table">
+                    </div>
+                    <div class="table-types">
+                        <table class="table-content">
+                            <thead>
+                                <tr>
+                                    <th>Application Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id= "appTable">
+                                <!-- Table rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <button id="ApplicationPrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                        <div class="pages">
+                            <span id="ApplicationNum" class = "page-num">1</span>
+                        </div>
+                        <button id="ApplicationNext" class="pagination-next page-btn" type="button">&raquo;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-cont">
+            <button type = "button" class="c4 box" >Cancel</button>
+            <button type = "button" class="c5 box" >Select</button>
+            <button type = "button" class="c6 box" >Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Application Modal -->
+<div id="applicationAddModal" class="modal outermost display">
+    <div class="modal-content add-layout-content">
+        <div class="title-cont">
+            <h2 class="title">Add Application Name</h2>
+            <span class="close-cont" onclick="close_modal('applicationAddModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="applicationForm">
+                <div class="input-group">
+                    <label for="newApp">Application Name:</label>
+                    <input type="text" id="newApp" name="newApp" placeholder="Enter Application Name">
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+

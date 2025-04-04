@@ -144,9 +144,7 @@ export const server = {
 
 export const account = {
     sign_in: async function(app, req, res, username, password) {
-        if (!username || !password) {
-            return res.status(400).json({ error: 'Username and password are required' });
-        }
+
 
         try {
             const [rows] = await app.locals.db.query(
@@ -230,7 +228,7 @@ export const account = {
 
     get_user: async function (db, req, res) {
         try {
-            const [rows] = await db.query(`SELECT username, first_name, last_name FROM users ORDER BY username`);
+            const [rows] = await db.query(`SELECT username, full_name FROM users ORDER BY username`);
 
             if (rows.length < 0) {
                 res.status(404).json({ error: 'No username found.' });
@@ -923,7 +921,7 @@ export const task = {
                     department: ['departments.name', 'departments.department_no'] 
                 },
                 'approved_by': {
-                    department: ['app_departments.name']  // app_departments only has name
+                    department: ['app_departments.name']  
                 }
             };
 
@@ -932,6 +930,7 @@ export const task = {
                 selectedColumns.push(...tableJoins[table].department);
             }
             
+            const tableId = table === 'requested_by' ? 'requested_by.id' : (table === 'approved_by' ? 'approved_by.id' : 'id');
             let baseQuery = `SELECT ${selectedColumns.join(', ')} FROM ${table}`;
             
             if (tableJoins[table]) {
@@ -939,9 +938,9 @@ export const task = {
             }
 
             let whereClause = selectedColumns.map(col => `${col} LIKE ?`).join(' OR ');
-            whereClause = `(${whereClause}) AND id != 1`;
+            whereClause = `(${whereClause}) AND ${tableId} != 1`;
             console.log(whereClause);
-            baseQuery += ` WHERE ${whereClause} ORDER BY id DESC`;
+            baseQuery += ` WHERE ${whereClause} ORDER BY ${tableId} DESC`;
 
             let queryParams = selectedColumns.map(() => `%${lookupSearch}%`);
 
@@ -960,7 +959,7 @@ export const task = {
 export const limiter = {
     login_limit: rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 10, // Max 10 task submissions per 15 minutes
+        max: 50, // Max 10 task submissions per 15 minutes
         message: { error: 'Too many requests, please try again later.' }
     }),
 

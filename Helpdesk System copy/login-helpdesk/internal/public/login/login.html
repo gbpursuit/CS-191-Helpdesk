@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Login</title>
+    <link rel="icon" href="/internal/browsericon.png" type="image/png">
+    <link rel="stylesheet" href="/internal/global.css">
+    <link rel="stylesheet" href="/internal/public/login/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="/internal/public/login/login.js" type="module" defer></script>
+</head>
+<body>
+    <div id="loggedIn" class="logged-in">
+        <div id = "loggedContainer" class = "logged-container">
+            <h2 id = "textLogged" class = "text-logged">Sign in as </h2>
+            <h4 id = "userLogged" class = "user-logged"></h4>
+            <div id = "buttonOptions" class = "button-options">
+                <button id = "loggingIn" class = "logging-in" type="button">Yes, I will</button>
+                <button id = "changeAcc" class = "change-acc" type="button">No, I will change account</button>
+            </div>
+        </div>
+    </div>
+    <div id="login" class = "login-acc">
+        <h2 class="sign-in-login">Sign in to Help Desk</h2>
+        <div id="darkmode-login" class="d-mode"> <!-- problem -->
+            <i class="fa-solid fa-moon icon moon"></i>
+            <i class="fa-regular fa-sun icon sun"></i>
+            <span class="switch-login"></span>
+        </div>
+        <button id="loginBack" class="login-back">
+            <span class="sr-only">Go back</span>
+            <i class="fa fa-chevron-left arrow-icon"></i>
+        </button>
+        <div id="loginContainer" class="login-container">
+            <form id="loginForm" class="login-form">
+                <label for="username">Username<span class="required"> *</span></label>
+                <select id="username" name="username" class="dropdown_user" required>
+                    <option selected disabled></option>
+                </select>
+                <div class="password-container">
+                    <label for="password">Password<span class="required"> *</span></label>
+                    <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a>
+                </div>
+                <input type="password" id="password" name="password" class="password" required>
+                <div id="usernameError" class="error-message"></div>
+                <button id="sign-in" type="submit">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Container -->
+    <div id="forgotContainer" class="forgot-container">
+        <form id="forgotForm" class="forgot-form">
+        </form>
+    </div>
+
+</body>
+</html>

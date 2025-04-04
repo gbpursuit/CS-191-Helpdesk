@@ -150,11 +150,11 @@ export const UI = {
     },
 
     // make async soon if may backend na
-    show_profile: function () {
-        const profile = document.getElementById('profileText');
-        profile.addEventListener('click', (event) => {
-            event.preventDefault();
-            window.location.replace('/internal/profile')
-        });
-    }
+    // show_profile: function () {
+    //     const profile = document.getElementById('profileText');
+    //     profile.addEventListener('click', (event) => {
+    //         event.preventDefault();
+    //         window.location.replace('/internal/profile')
+    //     });
+    // }
 };

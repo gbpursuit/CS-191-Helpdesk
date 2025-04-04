@@ -337,7 +337,7 @@ label[for="check"]{
     position: absolute;
     padding: 2px 1px;
     top: 80%;
-    right: 3.5%;
+    right: 30px;
     background-color: var(--whitesmoke); 
     border: 1px solid var(--v2-gray);
     border-radius: 5px;
@@ -968,7 +968,7 @@ label[for="check"]{
     border-radius: 4px;
     font-size: 0.7rem;
     color: var(--text-color); 
-    /* background-color: var(--white);  */
+    background-color: var(--white); 
     height: 30px;
 }
 
@@ -1149,7 +1149,7 @@ input[type="date"] {
     padding: 10px;
     background-color: var(--dark-green2);
     border-radius: 4px 4px 0 0;
-    color: var(--white);
+    color: white;
     font-size: 14px;
     font-weight: bold;
 }
@@ -1157,7 +1157,6 @@ input[type="date"] {
 .close-cont {
     position: absolute;
     right: 10px;
-    color: var(--white);
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
@@ -1220,14 +1219,13 @@ input[type="date"] {
     align-items: center;
     font-size: 14px;
     font-weight: bold;
-    color: var(--white);
+    color: white;
     cursor: pointer;
     border-style: none;
 }
 
 .box:hover {
     background-color: var(--another-green); 
-    color: var(--white);
 }
 
 /* .new-task-button {
@@ -1416,12 +1414,12 @@ input[type="date"] {
 .highlight {
     background-color: var(--dark-green2); 
     filter: contrast(90%);
-    color: var(--white);
+    color: white;
     font-weight: bold;
 }
 
 .highlight:hover {
-    color: var(--white) !important;
+    color: white !important;
     background-color: var(--another-green) !important;
 }
 

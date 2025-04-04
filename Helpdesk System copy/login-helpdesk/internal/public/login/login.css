@@ -1,0 +1,270 @@
+/* General Styles */
+html {
+    height: 100%;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+img {
+    width: 100%;
+}
+
+[class] {
+    transition: background-color 0.3s ease;
+}
+
+/* ======================== Logged-in Page ========================== */  
+.logged-in {
+    display: none;
+}
+
+.logged-container {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 35px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.user-logged {
+    display: none;
+}
+
+.text-logged {
+    margin-bottom: 10px;
+    color: var(--dark-green);
+    text-align: center;
+}
+
+.button-options {
+    flex: 0 0 48%; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logging-in, .change-acc {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--dark-green);
+    color: var(--white);
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logging-in:hover, .change-acc:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.01);
+}
+
+.logging-in:active, .change-acc:active {
+    background-color: var(--hover-button);
+    transform: scale(0.98);
+}
+
+/* ======================== Login Page ========================== */  
+.sign-in-login {
+    margin-bottom: 30px;
+    color: var(--dark-green);
+    text-align: center;
+}
+
+.login-acc {
+    display: none;
+}
+
+.login-container {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 35px;
+    width: 350px;
+    text-align: center;
+}
+
+.login-form label {
+    color: var(--dark-green);
+    text-align: left;
+    display: block;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.dropdown_user,
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    box-sizing: border-box;
+    border: 1px solid var(--v2-gray);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 0.4rem;
+    width: 100%;
+    font-size: 1rem;
+    background-color: var(--new-white);
+    color: var(--text-color);
+}
+
+.dropdown_user:focus,
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+    border-color: var(--dark-green);
+    outline: none;
+    box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+.error-message {
+    color: var(--hot-pink);
+    font-size: 12px;
+    padding: 0px 3px;
+    margin-bottom: 10px;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.password-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.forgot-password {
+    font-size: 11px;
+    color: var(--hot-pink);
+    text-decoration: none;
+}
+
+.login-form button {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--dark-green);
+    color: var(--white);
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.login-back {
+    position: fixed;
+    top: 20px;
+    left: 20px; 
+    background-color: var(--dark-green);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; 
+}
+
+.login-form button:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.01);
+}
+
+.login-back:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.1);
+}
+
+.login-form button:active,
+.login-back:active {
+    transform: scale(0.95);
+}
+
+.arrow-icon {
+    color: white;
+    font-size: 1rem;
+}
+
+.required {
+    color: var(--hot-pink);
+    font-weight: normal;
+    font-size: 1em;
+}
+
+/* ======================== Forgot Password ========================== */  
+
+.forgot-container {
+    visibility: hidden;
+}
+
+#forgotContainer {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 35px;
+    max-width: 350px;
+    width: 100%;
+    text-align: center;
+}
+
+/* ======================== Dark Mode ========================== */  
+
+.login-acc .d-mode {
+    position: fixed; 
+    bottom: 28px;
+    left: 10px; 
+    cursor: pointer;
+}
+
+.login-acc .d-mode i {
+    position: absolute;
+}
+
+.login-acc .d-mode i.sun {
+    opacity: 0; /* Initially hide the sun icon */
+}
+
+.login-acc .d-mode i.moon {
+    color: var(--dark-green);
+}
+
+.switch-login::before {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+body.dark-mode .d-mode i.sun {
+    opacity: 1;
+}
+
+body.dark-mode .d-mode i.moon {
+    opacity: 0;
+}
+
+body.dark-mode .switch::before {
+    left: 22px;
+    background: var(--dark-green);
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 100%;
+    }
+}
+

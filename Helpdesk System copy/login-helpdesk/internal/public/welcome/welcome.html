@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Login</title>
+    <link rel="icon" href="/internal/browsericon.png" type="image/png">
+    <link rel="stylesheet" href="/internal/global.css">
+    <link rel="stylesheet" href="/internal/public/welcome/welcome.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="/internal/public/welcome/welcome.js" type="module" defer></script>
+</head>
+<body>
+    
+    <div class="boysen-header">
+        <h1 class = "boysen">Pacific Paint (BOYSEN) Philippines</h1>
+    </div>
+    <div id = "container" class="container-page">
+        <!-- <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a> -->
+        <div class="form-container sign-in animated-elem">
+            <div id="activeAccount" class="active-acc">
+                <h1 class="header">We noticed an <br> active session</h1>
+                <div class="active-form">
+                    <button id = "continue" type = "button" class = "form-button">Continue as </button>
+                    <span id = "logoutSpan">No, thanks. I'll change account.</span>
+                </div>
+            </div>
+            <div id="outerContainer" class="outer-container">
+                <h1 class="header">Login here</h1>
+                <div id="loginContainer" class="login-container">
+                    <form id="loginForm" class="login-form">
+                        <label for="username">Username<span class="required"> *</span></label>
+                        <select id="username" name="username" class="dropdown_user">
+                            <option selected disabled></option>
+                        </select>
+                        <div class="password-container">
+                            <label for="password">Password<span class="required"> *</span></label>
+                            
+                        </div>
+                        <input type="password" id="password" name="password" class="password">
+                        <div id="usernameError" class="error-message"></div>
+                        <button id="sign-in" type="submit" class = "form-button">Sign In</button>
+                    </form>
+                </div>  
+            </div>
+        </div>
+        <div id="createAccountPage" class="form-container create-acc animated-elem">
+            <div id="adminContainer" class="admin-cont">
+                <h1 class="header">Are you an admin?</h1>
+                <form id="adminForm" class="admin-form">
+                    <label for="adminName">Admin Username<span class="required"> *</span></label>
+                    <input type="text" id="adminName" class = "newUser" name="adminName"  autocomplete="off">
+
+                    <div class="admin-pass-cont">
+                        <label for="adminPassword">Password<span class="required"> *</span></label>
+                    </div>
+                    <input type="password" id="adminPassword" name="adminPassword" class="adminPassword" >
+                    <div id="adminError" class="error-message"></div>
+                    <button id="checkAdmin" type="submit" class = "form-button">Yes, I'm an admin!</button>
+                </form>
+            </div>
+
+            <div id="newCont" class="new-cont">
+                <h1 class="header">Register a <br> new account</h1>
+                <div id = "newContainer" class = "new-container">
+                    <form id="newAccForm" class="new-form">
+                        <label for="new-user">Username<span class="required"> *</span></label>
+                        <input type="text" id="new-user" class = "newUser" name="username" placeholder="Enter a unique username" autocomplete="off">
+                        
+                        <label for="new-name">Name<span class="required"> *</span></label>
+                        <input type="text" id="new-name" class = "newUser" name="name" placeholder="Enter your full name (eg. John Doe)" autocomplete="off">
+        
+                        <div class="password-container">
+                            <label for="new-pass">Password<span class="required"> *</span></label>
+                        </div>
+                        <input type="password" id="new-pass" name="password" class = "newUser"
+                        placeholder="Alphanumeric characters only">
+                        <div id="newError" class="error-message"></div>
+                        <button id="submit-account" type="submit" class = "form-button">Submit</button>
+                    </form>
+                </div>
+            </div>
+        
+        </div>
+        <!-- <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>Welcome!</h1>
+                <p>Already have an account? Sign in.</p>
+                <button class="ghost" id="signIn">Sign In</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <h1>New Here?</h1>
+                <p>Join us by creating an account.</p>
+                <button class="ghost" id="signUp">Sign Up</button>
+            </div>
+        </div> -->
+        <div class="overlay-container">
+            <div class="overlay animated-elem">
+                <div class="overlay-panel overlay-left">
+                    <div class="overlay-gradient"></div>
+                    <div class="contents">
+                        <h1 class = "items overlay-header">New Here?</h1>
+                        <p class = "items overlay-p">Join the team by creating an account.</p>
+                        <button type = "button" class="items ghost" id="register">Register</button>
+                    </div>
+                </div>
+                <div class="overlay-mid">
+                    <div id="darkmode-login" class="d-mode">
+                        <i class="fa-solid fa-moon icon moon"></i>
+                        <i class="fa-regular fa-sun icon sun"></i>
+                        <span class="switch-login"></span>
+                    </div>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <div class="overlay-gradient"></div>
+                    <div class="contents">
+                        <h1 class = "items overlay-header">Welcome!</h1>
+                        <p class = "items overlay-p">Already have an account? Sign in.</p>
+                        <button type = "button" class="items ghost" id="signIn">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+
+</body>
+</html>
+
+<!-- <div class="overlay">
+    <div class="overlay-panel overlay-left">
+        <h1>Welcome!</h1>
+        <p>Already have an account? Sign in.</p>
+        <button class="ghost" id="signIn">Sign In</button>
+    </div>
+    <div class="overlay-panel overlay-right">
+        <h1>New Here?</h1>
+        <p>Join us by creating an account.</p>
+        <button class="ghost" id="signUp">Sign Up</button>
+    </div>
+</div> -->
+
+        <!-- <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Left Green</h1>
+                </div>
+                <div class="overlay-panel overlay-mid">
+                    <h1>Middle White</h1>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Right Green</h1>
+                </div>
+            </div>
+        </div>         -->
+
+    <!-- <div id="enterPage" class="enter-page">
+        <div id="darkmode-login" class="d-mode"> 
+            <i class="fa-solid fa-moon icon moon"></i>
+            <i class="fa-regular fa-sun icon sun"></i>
+            <span class="switch-login"></span>
+        </div>
+        <div id = "imageId" class = "image-id">
+            <img src="/internal/public/loginPic.png" alt="Your Image Description" class="image-content">
+        </div>
+        <div id = "signContainer" class = "sign-container">
+            <h1 class="sign-in-text">Welcome!</h1>
+            <button id="signAccount" class = "sign-account" type="button">Sign In</button>
+            <button id="addAccount" class = "add-account" type="button">Create New Account</button>
+        </div>
+    </div> -->

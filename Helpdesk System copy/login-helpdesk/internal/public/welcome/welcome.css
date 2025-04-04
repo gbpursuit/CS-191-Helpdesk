@@ -1,0 +1,556 @@
+
+html {
+    height: 100vh;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--v2-gray);
+    display: flex;
+    overflow:hidden;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    font-family: "Poppins", sans-serif;
+    gap: 20px;
+}
+
+img {
+    width: 100%;
+}
+
+[class] {
+    transition: background-color 0.3s ease;
+}
+
+.boysen-header {
+    width: 90%;
+    max-width: 1060px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    white-space: normal;
+    padding: 10px; 
+}
+
+.boysen {
+    color: var(--dark-green);
+    font-size: clamp(1.5rem, 3vw, 60px);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.container-page {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 6px 8px var(--shadow);
+    box-sizing: border-box;
+    border-radius: 20px;
+    padding: 35px;
+    width: 90%; 
+    max-width: 1060px; 
+    /* max-height: 660px; */
+    height: 75%;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.form-container {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.6s ease-in-out;
+}
+
+.header {
+    color: var(--dark-green);
+    text-align: center;
+    font-weight: 500;
+}
+
+.sign-in {
+    position: absolute;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    transform: translateX(0%);
+    transition: transform 0.6s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.create-acc {
+    position: absolute;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.6s ease-in-out;
+}
+
+.sign-in-login {
+    color: var(--dark-green);
+    text-align: center;
+}
+
+.active-acc {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    width: 70%;
+    height: 60%;
+}
+
+.active-form {
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.active-form span {
+    color: var(--dark-green);
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.active-form span::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 0%;
+    height: 2px;
+    background-color: var(--dark-green);
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+
+.active-form span:hover {
+    cursor: pointer;
+    color: var(--dark-green2);
+}
+
+.active-form span:hover::after {
+    cursor: pointer;
+    background-color: var(--dark-green2);
+    width: 100%;
+    left: 0;
+}
+
+.outer-container { 
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.login-container {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 35px;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.login-form label {
+    color: var(--dark-green);
+    text-align: left;
+    display: block;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.dropdown_user,
+.login-form input[type="password"] {
+    box-sizing: border-box;
+    border: 1px solid var(--v2-gray);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 0.4rem;
+    width: 100%;
+    font-size: 1rem;
+    background-color: var(--new-white);
+    color: var(--text-color);
+}
+
+.dropdown_user:focus,
+.login-form input[type="password"]:focus {
+    border-color: var(--dark-green);
+    outline: none;
+    box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+.error-message {
+    color: var(--hot-pink);
+    font-size: 12px;
+    padding: 0px 3px;
+    margin-bottom: 10px;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.password-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.forgot-password {
+    font-size: 11px;
+    color: var(--hot-pink);
+    text-decoration: none;
+}
+
+.login-back {
+    position: fixed;
+    top: 20px;
+    left: 20px; 
+    background-color: var(--dark-green);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; 
+}
+
+.required {
+    color: var(--hot-pink);
+    font-weight: normal;
+    font-size: 1em;
+}
+
+.create-acc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.admin-cont,
+.new-cont {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.admin-form,
+.new-container {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 35px;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.admin-form label,
+.new-form label {
+    color: var(--dark-green);
+    text-align: left;
+    display: block;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.admin-form input[type="text"],
+.admin-form input[type="password"],
+.new-form input[type="text"],
+.new-form input[type="password"] {
+    box-sizing: border-box;
+    border: 1px solid var(--v2-gray);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 0.4rem;
+    width: 100%;
+    font-size: 1rem;
+    background-color: var(--new-white);
+    color: var(--text-color);
+}
+
+.admin-form input[type="text"]:focus,
+.admin-form input[type="password"]:focus,
+.new-form input[type="text"]:focus,
+.new-form input[type="password"]:focus {
+    border-color: var(--dark-green);
+    outline: none;
+    box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+.admin-pass-cont {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.newUser::placeholder {
+    color: var(--v2-gray);
+    font-size: 15px;
+}
+
+.arrow-icon {
+    color: white;
+    font-size: 1rem;
+}
+
+.required {
+    color: var(--hot-pink);
+    font-weight: normal;
+    font-size: 1em;
+}
+
+.error {
+    transition: border-color 0.3s ease;
+    border: 2px solid var(--hot-pink) !important;
+}
+
+/* Keyframes */
+.overlay,
+.sign-in,
+.create-acc {
+    will-change: transform, opacity;
+}
+
+.animated-elem {
+    animation: slideInLeft 0.5s ease-in-out, fadeIn 0.5s ease-in-out;
+}
+
+.overlay-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.overlay {
+    display: flex;
+    width: 155%; 
+    height: 100%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+}
+
+.overlay-panel {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.overlay-header,
+.overlay-p {
+    color: var(--text-color);
+    text-align: center;
+    text-shadow: 0 4px 8px var(--txt-shadow);
+    transition: 0.3s ease-in-out;
+}
+
+.overlay-left, .overlay-right {
+    position: relative;
+    pointer-events: auto;
+    flex: 1;
+    background: var(--dark-green);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    overflow: hidden;
+    
+}
+
+.overlay-panel {
+    background-image: url('/internal/public/boat.gif'); 
+    filter: hue-rotate(0deg) contrast(120%);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.overlay-left {
+    background-position: left center; 
+}
+
+
+.overlay-right {
+    background-position: right center; 
+}
+
+.overlay-gradient {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to top,
+        var(--overlay-dark) 30%,
+        var(--overlay-light)
+    );
+    z-index: 1; 
+}
+
+.items {
+    z-index: 2; 
+}
+
+.overlay-mid {
+    position: relative;
+    flex: 1;
+    background: rgba(255, 255, 255, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contents {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+}
+
+.form-button {
+    border-radius: 20px;
+    border: 1px solid var(--dark-green);
+    background-color: var(--dark-green);
+    color: var(--white);
+}
+
+.ghost {
+    border-radius: 20px;
+    border: 1px solid var(--text-color);
+    background-color: transparent;
+    color: var(--text-color);
+}
+
+.form-button, .ghost {
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 10px;
+    padding-block: 12px;
+    width: 100%;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+    transition: 0.3s ease-in-out;
+}
+
+.form-button:hover,
+.ghost:hover {
+    letter-spacing: 3px;
+}
+
+.form-button:active,
+.ghost:active {
+    transform: scale(0.95);
+}
+
+.form-button:focus,
+.ghost:focus {
+    outline: none;
+}
+
+.container-page.right-panel-active .overlay {
+    transform: translateX(-33.4%);
+}
+
+.container-page.right-panel-active .sign-in {
+    transform: translateX(100%);
+}
+
+.container-page.right-panel-active .create-acc {
+    transform: translateX(0);
+}
+
+.d-mode {
+    position: absolute; 
+    bottom: 30px;
+    left: 10px; 
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.d-mode i {
+    position: absolute;
+}
+
+.d-mode i.sun {
+    opacity: 0; 
+}
+
+.d-mode i.moon {
+    color: var(--dark-green);
+}
+
+.switch-login::before {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+body.dark-mode .d-mode i.sun {
+    opacity: 1;
+}
+
+body.dark-mode .d-mode i.moon {
+    opacity: 0;
+}
+
+body.dark-mode .switch::before {
+    left: 22px;
+    background: var(--dark-green);
+}
+
+body.dark-mode .overlay-gradient {
+    background: linear-gradient(
+        to top,
+        var(--overlay-dark) 15%,
+        var(--overlay-light) 
+    );
+    z-index: 1;
+}
+
+body.dark-mode .overlay-panel {
+    filter: hue-rotate(0deg) brightness(70%) contrast(200%) saturate(70%);
+}
+
+
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 100%;
+    }
+}
+
+@media(max-width: 1000px ){
+    .boysen {
+        font-size: clamp(1.5rem, 4vw, 60px);
+    }
+}
+

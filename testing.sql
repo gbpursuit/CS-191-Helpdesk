@@ -502,10 +502,44 @@ AND kcu.REFERENCED_TABLE_NAME IS NOT NULL;
 -- DESCRIBE `delete`;
 -- SELECT * FROM `delete`;
 
+-- DESCRIBE tasks;
+
+-- ALTER TABLE tasks 
+-- MODIFY COLUMN taskType INT DEFAULT NULL,
+-- MODIFY COLUMN itInCharge INT DEFAULT NULL,
+-- MODIFY COLUMN requestedBy INT DEFAULT NULL,
+-- MODIFY COLUMN approvedBy INT DEFAULT NULL,
+-- MODIFY COLUMN itemName INT DEFAULT NULL,
+-- MODIFY COLUMN deviceName INT DEFAULT NULL,
+-- MODIFY COLUMN applicationName INT DEFAULT NULL;
+
+
+
+-- ALTER TABLE tasks 
+-- DROP FOREIGN KEY fk_applicationName;
+-- ALTER TABLE tasks
+-- ADD CONSTRAINT fk_applicationName
+-- FOREIGN KEY (applicationName) REFERENCES applications(id) ON DELETE SET NULL;
+
+
+SHOW TRIGGERS;
+
+DESCRIBE tasks;
+DESCRIBE approved_by;
+DESCRIBE requested_by;
+DESCRIBE it_in_charge;
+
+
+SELECT TABLE_NAME, CONSTRAINT_NAME, DELETE_RULE
+FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
+WHERE TABLE_NAME = 'tasks';
+
+
 -- Select all records from the users table
 SELECT * FROM users;
 
 -- Select all records from the tasks table
+TRUNCATE tasks;
 SELECT * FROM tasks;
 
 SELECT * FROM task_types;

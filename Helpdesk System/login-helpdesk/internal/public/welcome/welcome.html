@@ -15,6 +15,47 @@
     <div class="boysen-header">
         <h1 class = "boysen">Pacific Paint (BOYSEN) Philippines</h1>
     </div>
+    <div id="dropdownList" class="dropdown-list">
+        <div class="user-title dropdown-cont">
+            <h3>Employee Data</h3>
+            <span class="close-user">&times;</span>
+        </div>
+        <div class="user-cont dropdown-cont">
+            <div class="first-column column-group">
+                <div class="box-groups">
+                    <button class="c1 box" >Users</button>
+                    <button class="c2 box" >Admin</button>
+                </div>
+
+            </div>
+            <div class="second-column column-group">
+                <div class="table-out">
+                    <table id = "userTableCont" class = "user-table-cont">
+                        <tbody id = "userTable" class = "user-row">
+                            <!-- Table rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="page-cont">
+                    <button id="userPrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                    <div class="pages">
+                        <span id="userNum" class = "page-num">1</span>
+                    </div>
+                    <button id="userNext" class="pagination-next page-btn" type="button">&raquo;</button>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="user-pages dropdown-cont">
+            <div class="page-cont">
+                <button id="userPrev" class="pagination-prev page-btn" type="button">&laquo;</button>
+                <div class="pages">
+                    <span id="userNum" class = "page-num">1</span>
+                </div>
+                <button id="userNext" class="pagination-next page-btn" type="button">&raquo;</button>
+            </div>
+        </div> -->
+
+    </div>
     <div id = "container" class="container-page">
         <!-- <a href="#" id="forgotPassword" class="forgot-password">Forget password?</a> -->
         <div class="form-container sign-in animated-elem">
@@ -29,16 +70,24 @@
                 <h1 class="header">Login here</h1>
                 <div id="loginContainer" class="login-container">
                     <form id="loginForm" class="login-form">
-                        <label for="username">Username<span class="required"> *</span></label>
-                        <select id="username" name="username" class="dropdown_user">
+                        <label for="username">Name<span class="required"> *</span></label>
+                        <div class="input-cont">
+                            <input type="text" id="username" name="username" readonly>  
+                            <button type="button" id="userBtn" class="look-btn"
+                            aria-label="Open Task Type Table" onclick = "">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                        <!-- <select id="username" name="username" class="dropdown_user">
                             <option selected disabled></option>
-                        </select>
+                        </select> -->
                         <div class="password-container">
                             <label for="password">Password<span class="required"> *</span></label>
                             
                         </div>
                         <input type="password" id="password" name="password" class="password">
-                        <div id="usernameError" class="error-message"></div>
+                        <div id="usernameError" class="error-message">
+                            <p>hello</p>
+                        </div>
                         <button id="sign-in" type="submit" class = "form-button">Sign In</button>
                     </form>
                 </div>  
@@ -46,7 +95,7 @@
         </div>
         <div id="createAccountPage" class="form-container create-acc animated-elem">
             <div id="adminContainer" class="admin-cont">
-                <h1 class="header">Are you an admin?</h1>
+                <h1 class="header">Before that... <br> Are you an admin?</h1>
                 <form id="adminForm" class="admin-form">
                     <label for="adminName">Admin Username<span class="required"> *</span></label>
                     <input type="text" id="adminName" class = "newUser" name="adminName"  autocomplete="off">
@@ -65,7 +114,7 @@
                 <div id = "newContainer" class = "new-container">
                     <form id="newAccForm" class="new-form">
                         <label for="new-user">Username<span class="required"> *</span></label>
-                        <input type="text" id="new-user" class = "newUser" name="username" placeholder="Enter a unique username" autocomplete="off">
+                        <input type="text" id="new-user" class = "newUser" name="username" placeholder="Enter your username (eg. johndoe)" autocomplete="off">
                         
                         <label for="new-name">Name<span class="required"> *</span></label>
                         <input type="text" id="new-name" class = "newUser" name="name" placeholder="Enter your full name (eg. John Doe)" autocomplete="off">
@@ -75,7 +124,9 @@
                         </div>
                         <input type="password" id="new-pass" name="password" class = "newUser"
                         placeholder="Alphanumeric characters only">
-                        <div id="newError" class="error-message"></div>
+                        <div id="newError" class="error-message">
+                            <p>hello</p>
+                        </div>
                         <button id="submit-account" type="submit" class = "form-button">Submit</button>
                     </form>
                 </div>

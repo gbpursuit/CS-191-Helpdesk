@@ -1,0 +1,173 @@
+/* General Styles */
+html {
+    height: 100%;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+img {
+    width: 100%;
+}
+
+[class] {
+    transition: background-color 0.3s ease;
+}
+
+/* ======================== Create Account Page ========================== */  
+
+.create-acc {
+    display: none;
+}
+
+.sign-in-login {
+    margin-bottom: 30px;
+    color: var(--dark-green);
+    text-align: center;
+}
+
+.new-container {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 35px;
+    width: 350px;
+    /* width: 100%; */
+    text-align: center;
+}
+
+.new-form label {
+    color: var(--dark-green);
+    text-align: left;
+    display: block;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.new-form input[type="text"],
+.new-form input[type="password"] {
+    box-sizing: border-box;
+    border: 1px solid var(--v2-gray);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 0.4rem;
+    width: 100%;
+    font-size: 1rem;
+    background-color: var(--new-white);
+    color: var(--text-color);
+}
+
+.new-form input[type="text"]:focus,
+.new-form input[type="password"]:focus {
+    border-color: var(--dark-green);
+    outline: none;
+    box-shadow: 0 0 5px rgba(47, 77, 51, 0.2);
+}
+
+
+.new-form button {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--dark-green);
+    color: var(--white);
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.newUser::placeholder {
+    color: var(--v2-gray);
+    font-size: 15px;
+}
+
+.create-back {
+    position: fixed;
+    top: 20px;
+    left: 20px; 
+    background-color: var(--dark-green);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; 
+}
+
+.new-form button:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.01);
+}
+
+.create-back:hover {
+    background-color: var(--hover-button);
+    transform: scale(1.1);
+}
+
+.new-form button:active,
+.create-back:active {
+    transform: scale(0.95);
+}
+
+.arrow-icon {
+    color: white;
+    font-size: 1rem;
+}
+
+.required {
+    color: var(--hot-pink);
+    font-weight: normal;
+    font-size: 1em;
+}
+
+/* ======================== Dark Mode ========================== */  
+
+.create-acc .d-mode-again {
+    position: fixed; 
+    bottom: 28px;
+    left: 10px; 
+    cursor: pointer;
+}
+
+.create-acc .d-mode-again i {
+    position: absolute;
+}
+
+.create-acc .d-mode-again i.sun {
+    opacity: 0; 
+}
+
+.create-acc .d-mode-again i.moon {
+    color: var(--dark-green);
+}
+
+.switch-login::before {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+body.dark-mode .d-mode i.sun {
+    opacity: 1;
+}
+
+body.dark-mode .d-mode i.moon {
+    opacity: 0;
+}
+
+body.dark-mode .switch::before {
+    left: 22px;
+    background: var(--dark-green);
+}

@@ -1,0 +1,238 @@
+<div id="taskInfoModal" class="submitted-modal">
+    <div id="submittedContent" class="submitted-content">
+        <div id="top" class="top-stuff">
+            <span class="close-task">&times;</span>
+            <h2 class="sub-task">Task Information</h2>
+        </div>
+        <div id="taskInfoContent" class = "task-content">
+            <!-- Task details will be populated here -->
+        </div>
+        <div id="bottom" class="bottom-stuff">
+            <button type = "button" id="editTaskButton" class="edit-btn">Edit Task</button>
+            <button type = "button" id="printTaskButton" class="print-btn">Print Task</button>
+            <button type = "button" id="cancelTaskButton" class="cancel-btn">Cancel Task</button>
+        </div>
+    </div>
+</div>
+
+<div id="taskEditModal" class="edit-modal">
+    <div id="editModalContent" class="edit-modal-content" onclick="event.stopPropagation()">            
+        <!-- <span class="edit-close" onclick="document.getElementById('taskEditModal').style.display='none'">&times;</span> -->
+        <!-- <h2 class="edit-task-title">Edit Task</h2> -->
+        <div class="edit-task-header">
+            <span class="close" onclick="document.getElementById('taskEditModal').style.display='none'">&times;</span>
+            <h2 class = "edit-task">Edit Task</h2>
+        </div>         
+        <form id="editTaskForm" onsubmit="updateTask(event)" class="edit-task-form">
+            <div class="edit-main-column">
+                <div class="rowone">
+                    <div class="edit-column-one">
+                    
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editTaskType">Task Type<span class="required"> *</span></label>
+                                <!-- <select id="editTaskType" class = "edit-dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Task Type</option>
+                                </select> -->
+                                <input type="text" id="editTaskType" data-select="true" placeholder="Enter Task Type" readonly>
+                            </div>
+                            <button type="button" id="editTaskTypeBtn" class="look-btn" 
+                            aria-label="Open Task Table" data-edit="true" data-key="task_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                        <!-- onclick="open_container(this.id, true)" -->
+                        <div class="edit-form-group">
+                            <label for="editTaskDescription">Task Description</label>
+                            <input type="text" id="editTaskDescription" placeholder="Enter Task Description">
+                        </div>
+    
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editRequestedBy">Requested by<span class="required"> *</span></label>
+                                <!-- <select id="editRequestedBy" class = "edit-dropdown">
+                                    <option value="" class="option-values" disabled selected>Select Requested by</option>
+                                </select> -->
+                                <input type="text" id="editRequestedBy" data-select="true" placeholder="Enter Task Type" readonly>
+                            </div>
+                            <button type="button" id="editRequestedByBtn" class="look-btn" 
+                            aria-label="Open Requested By Table" data-edit="true" data-key="request_datalist">
+                                <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                                   
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editApprovedBy">Approved by</label>
+                                <!-- <select id="editApprovedBy" class = "edit-dropdown">
+                                    <option value="" class="option-values" disabled selected>Select Approved by</option>
+                                </select> -->
+                                <input type="text" id="editApprovedBy" data-select="true" placeholder="Enter Task Type" readonly>
+                            </div>
+                            <button type="button" id="editApprovedByBtn" class="look-btn" 
+                            aria-label="Open Approved By Table" data-edit="true" data-key="approve_datalist">
+                                <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editDepartment">Department<span class="required"> *</span></label>
+                                <input type="text" id="editDepartment"  data-select="true" placeholder="Enter Task Type" readonly>
+                                <!-- <select id="editDepartment" class="edit-dropdown">
+                                    <option value="" class="option-values" disabled selected>Select Department</option>
+                                    <option value="Marketing" class="update-values">Marketing</option>
+                                    <option value="Executive">Executive</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                    <option value="IT">IT</option>
+                                </select> -->
+                            </div>
+                            <!-- <button type="button" id="editDprtBtn" class="look-btn" aria-label="Open Department Table" data-edit="true" data-key="_datalist"><i class="fa-solid fa-magnifying-glass"></i></button> -->
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editDepartmentNo">Department No</label>
+                            <input type="text" id="editDepartmentNo" class="edit-input-box disable" placeholder="Enter Dept. No." disabled>
+                        </div>
+    
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editItInCharge">IT in Charge<span class="required"> *</span></label>
+                                <input type="text" id="editItInCharge" data-select="true" placeholder="Enter Task Type" readonly>
+                                <!-- <select id="editItInCharge" class="edit-dropdown">
+                                    <option value="" class="option-values" disabled selected>Select IT in Charge</option>
+                                    <option value="Weng Castrillon">Weng Castrillon</option>
+                                    <option value="Anne Ranay">Anne Ranay</option>
+                                    <option value="Julius Jara">Julius Jara</option>
+                                </select> -->
+                            </div>
+                            <button type="button" id="editItInChargeBtn" class="look-btn" 
+                            aria-label="Open Department Table" data-edit="true" data-key="it_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <!-- <div class="edit-form-group">
+                            <label for="editDeviceName">Device Name</label>
+                            <input type="text" id="editDeviceName" placeholder="Enter Device Name">
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editItemName">Item Name</label>
+                            <input type="text" id="editItemName" placeholder="Enter Item Name">
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editApplicationName">Application Name</label>
+                            <input type="text" id="editApplicationName" placeholder="Enter Application Name">
+                        </div> -->
+    
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editDevice">Device Name</label>
+                                <!-- <select id="editDeviceName" class = "edit-dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Task Type</option>
+                                </select> -->
+                                <input type="text" id="editDevice" data-select="true" placeholder="Enter Device Name" readonly>
+                            </div>
+                            <button type="button" id="editDeviceBtn" class="look-btn" 
+                            aria-label="Open Device Table" data-edit="true" data-key="device_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                        
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editItem">Item Name</label>
+                                <!-- <select id="editItemName" class = "edit-dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Task Type</option>
+                                </select> -->
+                                <input type="text" id="editItem" data-select="true" placeholder="Enter Item Name" readonly>
+                            </div>
+                            <button type="button" id="editItemBtn" class="look-btn" 
+                            aria-label="Open Item Table" data-edit="true" data-key="item_datalist"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+    
+                        <div class="edit-form-group container">
+                            <div class="label-container">
+                                <label for="editApplication">Application Name</label>
+                                <!-- <select id="editApplicationName" class = "edit-dropdown" required>
+                                    <option value="" class="option-values" disabled selected>Select Task Type</option>
+                                </select> -->
+                                <input type="text" id="editApplication" data-select="true" placeholder="Enter Application Name" readonly>
+                            </div>
+                            <button type="button" id="editApplicationBtn" class="look-btn" 
+                            aria-label="Open Application Table" data-edit="true" data-key="app_datalist">
+                            <i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+    
+                    <div class="edit-column-two">
+                        <div class="edit-form-group">
+                            <label for="editTaskId">Task ID</label>
+                            <input type="text" id="editTaskId" class="edit-id-box" disabled>
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editTaskDate">Transaction Date</label>
+                            <input type="text" id="editTaskDate" class="edit-date-box" disabled>
+                        </div>                             
+    
+                        <div class="edit-form-group">
+                            <label for="editTaskStatus">Status</label>
+                            <select id="editTaskStatus" class="edit-dropdown">
+                                <option value="New">New</option>
+                                <option value="Open">Open</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="On Hold">On Hold</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editSeverity">Severity</label>
+                            <select id="editSeverity" class="edit-dropdown">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>                    
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editDateReq">Date Requested</label>
+                            <input type="date" id="editDateReq" placeholder="Enter Date Requested">
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editDateRec">Date Received</label>
+                            <input type="date" id="editDateRec" placeholder="Enter Date Received">
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editDateStart">Date Started</label>
+                            <input type="date" id="editDateStart" placeholder="Enter Date Started">
+                        </div>
+    
+                        <div class="edit-form-group">
+                            <label for="editDateFin">Date Finished</label>
+                            <input type="date" id="editDateFin" placeholder="Enter Date Finished">
+                        </div>
+                    </div>
+                </div>
+                <div class="rowtwo">
+                    <div class="edit-task-footer">
+                        <div class="edit-form-group outside">
+                            <label for="editProblemDetails">Problem Details<span class="required"> *</span></label>
+                            <textarea id="editProblemDetails" class="scroll" data-set="true" placeholder="Enter Problem Details"></textarea>
+                        </div>
+                        <div class="edit-form-group outside">
+                            <label for="editRemarks">Remarks<span class="required"> *</span></label>
+                            <textarea id="editRemarks" class="scroll"  data-set="true" placeholder="Enter Task Remarks"></textarea>
+                        </div>   
+                        <button type="submit" class="button-update">Update Task</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>  
