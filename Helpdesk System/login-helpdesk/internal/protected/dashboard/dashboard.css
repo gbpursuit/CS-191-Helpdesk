@@ -627,9 +627,9 @@ label[for="check"]{
 
 .task-table td {
     border: 1px solid var(--v2-gray);
-    padding: 12px 15px;
+    padding: 11.8px 15px;
     text-align: left;
-    font-size: 0.86rem;
+    font-size: 0.85rem;
 }
 
 .task-table td.status::before {
@@ -2003,9 +2003,16 @@ body.dark-mode .task-table tbody tr:hover {
 }
 
 /* Responsive */
+/* @media (max-width: 1300px) {
+    .login-container { 
+        background-color: red;
+    }
+} */
+
+
 @media (max-width: 850px) {
     .login-container, .dashboard-container {
-        max-width: 100%; /* Full width on smaller screens */
+        max-width: 100%; 
     }
     
     .side-bar header {

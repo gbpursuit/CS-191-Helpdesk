@@ -6,9 +6,11 @@ document.addEventListener("DOMContentLoaded", async function() {
         await load.load_html("/internal/protected/taskEditModal.html", "dashboardContainer"); //since position is absolute
 
         document.getElementById('containerTable').addEventListener('wheel', (event) => {
-            event.preventDefault();
-            event.currentTarget.scrollLeft += event.deltaY; 
-        });
+            if (event.deltaY !== 0 || event.deltaX !== 0) {
+                event.preventDefault();
+                event.currentTarget.scrollLeft += event.deltaX + event.deltaY;
+            }
+        }, { passive: false });
     
         document.getElementById("printButton").addEventListener("click", async function () {
             if (!generatedPDF) {
@@ -25,7 +27,6 @@ document.addEventListener("DOMContentLoaded", async function() {
         // window.open_edit_modal = open_edit_modal;
         // window.delete_entry = delete_entry;
         window.close_modal = close_modal;
-        // window.open_container = open_container;
     
         // Layout Functions
         layout.list_navigation();
@@ -50,12 +51,18 @@ document.addEventListener("DOMContentLoaded", async function() {
     
         // UI Functions
         UI.handle_darkmode(".toggle-switch");
-        UI.dropdown_toggle();
+        // UI.dropdown_toggle();
         UI.handle_sidebar();
         // UI.show_profile();
-        await UI.reflect_username();
+        // await UI.reflect_username();
     });
 })
+
+const socket = io();
+
+// Get active user
+let activeUser = null;
+
 
 
 // function lookButtonHandler(event) {
@@ -98,6 +105,8 @@ const layout = {
             sumElements.sumTitle.innerText = "IT Management - Summary";
             sumElements.sumContainer.style.display = 'block';
         }
+        layout.reflect_username();
+        layout.dropdown_toggle();
     },
 
     get_elem: function(int) {
@@ -166,6 +175,74 @@ const layout = {
         window.closeNotificationPopup = function() {
             (is_dashboard_active() ? dashboardPopup : summaryPopup).style.display = 'none';
         };
+    },
+
+    reflect_username: async function() {
+        try {
+            const response = await fetch('/api/session-user');
+            const data = await response.json();
+
+            if (data.fullName) {
+                // Dynamically update the user's full name
+                console.log(data);
+                const firstName = data.fullName.split(' ')[0];
+                document.getElementById('userFullName').textContent = firstName; 
+                document.getElementById("pagename").textContent = data.username;
+            } 
+            activeUser = data.username;
+            socket.emit('updateSocket', data.username);
+        } catch (err) {
+            console.error('Error fetching session user:', err);
+            window.location.replace('/internal/welcome');
+        }
+    },
+
+    dropdown_toggle: function() {
+        const logoutButton = document.querySelector(".logout-btn");
+        const profile = document.querySelector(".user-profile");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        const logoutText = document.getElementById('logoutText');
+
+        function toggle_dropdown(event) {
+            event.stopPropagation();
+            dropdownMenu.classList.toggle("show");
+        }
+
+        logoutButton.addEventListener("click", toggle_dropdown);
+        profile.addEventListener("click", toggle_dropdown);
+
+        document.addEventListener("click", function(event) {
+            if (!dropdownMenu.contains(event.target) && !logoutButton.contains(event.target)) {
+                dropdownMenu.classList.remove("show");
+            }
+        });
+
+        logoutText.addEventListener("click", async function(event) {
+            event.preventDefault();
+            await layout.logout_function();
+            ["searchQuery", "filterBy", "filterValue"].forEach(item => localStorage.removeItem(item));
+        });
+
+    },
+
+    logout_function: async function() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                haaders: {
+                    'Content-Type':'application/json'
+                }
+            });
+
+            if(!response.ok) throw new Error('Logout failed');
+
+            socket.emit('logout', activeUser);
+            localStorage.setItem('sidebarState', 'closed');
+            window.location.replace('/internal/welcome');
+
+        } catch (err) {
+            console.error('Error logging out:', err);
+        }
     }
 }
 
@@ -484,6 +561,12 @@ const add = {
 
         // Set up cancel button event listener
         const cancelTask = document.getElementById('cancelTaskButton');
+
+        socket.on('cancelLoadTask', async() => {
+            console.log('Cancelling load task socket called.');
+            await load.load_tasks();
+        })
+
         cancelTask.onclick = async () => {
             await cancel.cancel_task(taskData.taskId);
         };
@@ -540,6 +623,12 @@ const add = {
             dateReqField.value = currentDate;
         });
 
+        // Load tasks to other receivers -- prolly mga admin
+        socket.on('loadTask', async() => {
+            console.log('Ading load task socket called.');
+            await load.load_tasks();
+        })
+
         window.addTask = async (event) => {
             event.preventDefault();
 
@@ -582,8 +671,12 @@ const add = {
             console.log(taskData);
             const newTask = await add.add_to_database(taskData);
             if (newTask) {
+                socket.emit('addTask', {check: true, user: activeUser});
                 console.log('Task saved:', newTask);
+
+                // Load tasks for the user who added it
                 await load.load_tasks();
+
                 UI.close_modal('taskModal', true);
             } else {
                 console.error('Failed to save task');
@@ -677,7 +770,8 @@ const cancel = {
             if (response.ok) {
                 console.log("Task cancelled successfully:", data);
                 alert(`Task ${taskId} cancelled successfully!`); 
-                await load.load_tasks();
+                socket.emit('updateTask', {check: 'cancel', user: activeUser});
+                // await load.load_tasks();
                 taskInfoModal.style.display = "none";
             } else {
                 console.error("Error cancelling task:", data.error);
@@ -720,6 +814,11 @@ const update = {
     open_edit_modal: async function(taskData){
         const editModal = document.getElementById('taskEditModal');
         const editTaskForm = document.getElementById('editTaskForm');
+
+        socket.on('updateLoadTask', async() => {
+            console.log('Updating load task socket called.');
+            await load.load_tasks(null, true);
+        })
     
         // Define task fields mapping
         const editTaskFields = {
@@ -820,6 +919,7 @@ const update = {
 
     update_task: async function(taskId, formData) {
         const editModal = document.getElementById('taskEditModal');
+
         try {
             const response = await fetch(`/api/tasks/${taskId}`, {
                 method: "PUT",
@@ -843,6 +943,7 @@ const update = {
             const newTasksPerPage = page.task_per_page();
             if (newTasksPerPage !== tasksPerPage) tasksPerPage = newTasksPerPage;
     
+            socket.emit('updateTask', {check: 'update', user: activeUser});
             await load.load_tasks(null, true);
             editModal.style.display = "none";
 
@@ -1242,6 +1343,8 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
         let depName = null;
         let depNum = null;
 
+        let containerOpen = false;
+
         function update_state() {
             confirmCancel.disabled = confirmSelect.disabled = !selectedRow;
             confirmCancel.classList.toggle('confirmed', !!selectedRow);
@@ -1287,20 +1390,6 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
 
             update_page_num(totalPages);
         }
-
-            // data.forEach((task, index) => {
-            //     const row = document.createElement("tr");
-            //     row.innerHTML = `<td class = "user-name" data-key = "${task.username}">${task.full_name}</td>`;
-
-            //     row.addEventListener('click', () => {
-            //         select.value = row.cells[0].innerText;
-            //         select.setAttribute("data-key", task.username.trim());
-            //         userCont.style.display = 'none';
-            //     });
-
-            //     body.appendChild(row);
-
-            // });
 
         function render_row(data, index) {
             const row = document.createElement("tr");
@@ -1356,6 +1445,13 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
             next.disabled = (current >= page);
         }
 
+        socket.on('loadReferenceTable', async() => {
+            if (containerOpen) {
+                const data = await load.load_reference(table);
+                render_table(data);
+            }
+        })
+
         const search_table = () => {
             let timeout;
             clearTimeout(timeout);
@@ -1375,6 +1471,7 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
         const open_container = async () => {
             try {
                 current = 1;
+                containerOpen = true;
                 add_event_listeners();
 
                 container.style.display = 'flex';
@@ -1396,6 +1493,7 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
             removeQuery.searchParams.delete('lookupSearch');
             window.history.pushState({}, "", removeQuery);
 
+            containerOpen = false;
             container.style.display = 'none';
             searchInput.value = "";
             body.innerHTML = "";
@@ -1494,6 +1592,9 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                         departmentNo.value = updatedData.dep_no;
                     }
 
+                    socket.emit('updateTable', true);
+                    await load.load_tasks();
+
                 } else {
                     console.error("Error updating row:", result.error);
                 }
@@ -1548,8 +1649,9 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                     const success = await submit_task_type(modalId, form);
                     if(!success) return;
 
-                    const data = await load.load_reference(table);
-                    render_table(data);
+                    socket.emit('updateTable', true);
+                    // const data = await load.load_reference(table);
+                    // render_table(data);
                     
                     modal.style.display = 'none';
                     form.reset();   
@@ -1632,12 +1734,13 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                         throw new Error(errorData.error || "Failed to delete row.");
                     }
 
+                    socket.emit('updateTable', true);
                     await load.load_tasks();
-                    selectedRow.remove();
-                    selectedRow = null;
+                    // selectedRow.remove();
+                    // selectedRow = null;
                     
-                    const data = await load.load_reference(table);
-                    render_table(data);
+                    // const data = await load.load_reference(table);
+                    // render_table(data);
                     
                     // originalData = originalData.filter(item => item.id !== selectedId);
 
@@ -1805,7 +1908,9 @@ const page = {
         if (!tableContainer) return 1; 
     
         const containerHeight = tableContainer.clientHeight || 1;
-        const rowHeight = sampleRow ? sampleRow.clientHeight || 1 : 40
+        const rowHeight = sampleRow ? sampleRow.clientHeight || 1 : 42;
+
+        console.log(containerHeight, rowHeight);
     
         return Math.max(1, Math.floor((containerHeight / rowHeight) - 1));
     },
@@ -1833,7 +1938,7 @@ const page = {
     },
 }
 
-setTimeout(page.update_tasks_per_page, 150);
+setTimeout(page.update_tasks_per_page, 200);
 
 if (prevButton && nextButton) {
     prevButton.onclick = async () => {

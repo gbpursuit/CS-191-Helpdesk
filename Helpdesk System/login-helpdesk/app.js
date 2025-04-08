@@ -23,19 +23,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ---- Session Configuration ----
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: process.env.COOKIE_SECURE === 'true',
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 1000,
-        },
-    })
-);
+const sessionMiddleware =  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.COOKIE_SECURE === 'true',
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 1000,
+    },
+})
+app.use(sessionMiddleware);
 
 // ---- Middleware ----
 app.use((req, res, next) => {
@@ -280,7 +279,7 @@ app.use((req, res) => {
 
 // ---- Start Server ----
 server.update_dump();
-server.launch_server(app);
+server.launch_server(app, sessionMiddleware);
 
 // Delete Tasks -- for admin only (future implement)
 // app.delete('/api/tasks/:taskId', server.is_authenticated, limiter.delete_limit, async (req, res) => {

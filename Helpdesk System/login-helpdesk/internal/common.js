@@ -131,23 +131,23 @@ export const UI = {
 
     },
 
-    reflect_username: async function() {
-        try {
-            const response = await fetch('/api/session-user');
-            const data = await response.json();
+    // reflect_username: async function() {
+    //     try {
+    //         const response = await fetch('/api/session-user');
+    //         const data = await response.json();
 
-            if (data.fullName) {
-                // Dynamically update the user's full name
-                console.log(data);
-                const firstName = data.fullName.split(' ')[0];
-                document.getElementById('userFullName').textContent = firstName; 
-                document.getElementById("pagename").textContent = data.username;
-            } 
-        } catch (err) {
-            console.error('Error fetching session user:', err);
-            window.location.replace('/internal/welcome');
-        }
-    },
+    //         if (data.fullName) {
+    //             // Dynamically update the user's full name
+    //             console.log(data);
+    //             const firstName = data.fullName.split(' ')[0];
+    //             document.getElementById('userFullName').textContent = firstName; 
+    //             document.getElementById("pagename").textContent = data.username;
+    //         } 
+    //     } catch (err) {
+    //         console.error('Error fetching session user:', err);
+    //         window.location.replace('/internal/welcome');
+    //     }
+    // },
 
     // make async soon if may backend na
     // show_profile: function () {

@@ -41,6 +41,9 @@ document.addEventListener("DOMContentLoaded", async function() {
     // await username_datalist();
 });
 
+const socket = io();
+socket.emit('message', 'hello');
+
 // Functions
 function show_error(errorElement, message, passId, userId, usernameId = null, check = false) {
     const pass = document.getElementById(passId);
@@ -182,10 +185,11 @@ async function handle_login() {
                 console.log(response);
         
                 if (!response.ok) {
-                    // throw new Error ("Invalid credentials. Please try again.");
-                    return
+                    throw new Error ("Invalid credentials. Please try again.");
                 }
 
+                const data = await response.json();
+                socket.emit('registerUser', data.username);
                 window.location.replace("/internal/dashboard");
             } catch (error) {
                 console.error('Error:', error);
@@ -390,7 +394,7 @@ function handle_new_account() {
         return /^[a-zA-Z0-9]+$/.test(password);
     }
 
-    newAccForm.addEventListener('submit', function(event) {
+    newAccForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const enteredUsername = usernameInput.value.trim();
@@ -412,23 +416,22 @@ function handle_new_account() {
             return;
         }
 
-        fetch('/api/auth/create-account', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username: enteredUsername, name: enteredName, password: enteredPassword }),
-        })
-        .then(response => {
-            if(!response.ok) {
-                throw new Error ('Invalid username or password');
-            }
-            winddow.location.replace('/internal/login/logged-in');
-        })
-        .catch(error => {
-            console.error('Error:', error);
+        try {
+            const response = await fetch('/api/auth/create-account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: enteredUsername, name: enteredName, password: enteredPassword }),
+            });
+            
+            if(!response.ok) throw new Error ('Invalid credentials. Please try again.');
+            window.location.replace('/internal/login/logged-in');
+
+        } catch (err) {
+            console.error('Error:', err);
             show_error(usernameError, "An error occurred during login. Please try again later.", 'new-pass', 'new-user');
-            // show_error(usernameInput, usernameError, "An error occurred during login. Please try again later.");
-        });
+        }
+
     });
 }

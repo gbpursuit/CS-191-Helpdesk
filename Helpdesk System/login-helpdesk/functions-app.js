@@ -9,9 +9,15 @@ import rateLimit from 'express-rate-limit'; // npm install express-rate-limit
 import validator from 'validator'; // npm install validator
 import cron from 'node-cron';
 
+import http from 'http';
+import { Server } from 'socket.io';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const watchPath = path.join(__dirname, 'internal');
+
+const users = new Map();
+let io;
 
 export const server = {
     start_live_reload: async function() {
@@ -32,13 +38,130 @@ export const server = {
         }
     },
 
-    start_server: async function(app) {
+    start_server: async function(app, sessionMiddleware) {
         try {
             portfinder.basePort = 3000; // Starting point for finding the port
             const availablePort = await portfinder.getPortPromise();
 
+            const httpServer = http.createServer(app);
+            io = new Server (httpServer, {
+                cors: {
+                    origin: '*',
+                    methods: ['GET', 'POST', 'PUT']
+                }
+            });
+
+            io.use((socket, next) => {
+                sessionMiddleware(socket.request, socket.request.res || {}, next);
+            });
+
+            io.on('connection', (socket) => {
+                console.log('A user has opened the webpage: ', socket.id);
+            
+                socket.on('registerUser', (userId) => {
+                    let sockets = users.get(userId);
+                    if (!sockets) {
+                        sockets = new Set();  // Create a new Set if no socket IDs exist for this user
+                        users.set(userId, sockets);  // Add the user with an empty Set
+                    }
+            
+                    sockets.add(socket.id);
+            
+                    console.log(`User ${userId} has been successfully registered with socket ID: ${socket.id}`);
+                    console.log('Active users after registration: ', users);
+                });
+            
+                socket.on('message', (msg) => {
+                    console.log('Received message: ', msg);
+                });
+            
+                socket.on('addTask', (addedCheck) => {
+                    console.log('addTask called');
+                    const { check, user } = addedCheck;
+                    if (check) {
+                        users.forEach((socketIds, userId) => {
+                            if (userId !== user) {
+                                console.log('Executing addTask to other users');
+                                socketIds.forEach(socketId => {
+                                    io.to(socketId).emit('loadTask');
+                                });
+                            }
+                        });
+                    }
+                });
+
+                socket.on('updateTask', (addedCheck) => {
+
+                    let defineTask = null;
+
+                    function emit_user(task) {
+                        users.forEach((socketIds, userId) => {
+                            if (userId !== user) {
+                                console.log('Executing updateTask to other users');
+                                socketIds.forEach(socketId => {
+                                    io.to(socketId).emit(task);
+                                });
+                            }
+                        });
+                    }
+
+                    console.log('updateTask called');
+                    const { check, user } = addedCheck;
+                    if (check === 'update') {
+                        defineTask = 'updateLoadTask';
+                    } else {
+                        defineTask = 'cancelLoadTask';
+                    }
+                    emit_user(defineTask);
+                })
+
+                socket.on('updateTable', (updateCheck) => {
+                    if (updateCheck) {
+                        io.emit('loadReferenceTable')
+                    }
+                })
+            
+                socket.on('updateSocket', (userId) => {
+                    let sockets = users.get(userId);
+                    if (!sockets) {
+                        sockets = new Set();  // If no sockets exist, create a new Set
+                        users.set(userId, sockets);
+                    }
+            
+                    sockets.add(socket.id);
+                    console.log(`User ${userId} has successfully updated their socket.id: ${socket.id}`);
+                    console.log('Active users after updating: ', users);
+                });
+
+                socket.on('logout', (userId) => {
+                    console.log(`User ${userId} has successfully logged out.`);
+            
+                    users.forEach((socketIds, userId) => {
+                        if (socketIds.has(socket.id)) {
+                            socketIds.delete(socket.id);
+                            if (socketIds.size === 0) {
+                                users.delete(userId);  
+                            }
+                        }
+                    });
+                    console.log(`Active users after ${userId} logged out: `, users);
+                })
+            
+                socket.on('disconnect', () => {
+                    console.log(`User with socket ID ${socket.id} has disconnected`);
+            
+                    users.forEach((socketIds, userId) => {
+                        if (socketIds.has(socket.id)) {
+                            socketIds.delete(socket.id);  
+                        }
+                    });
+            
+                    console.log('Active users after disconnection: ', users);
+                });
+            });
+
             // Now that we have an available port, start the server
-            app.listen(availablePort, () => {
+            httpServer.listen(availablePort, () => {
                 console.log(`Server running on http://localhost:${availablePort}/internal/welcome`);
             });
         } catch (err) {
@@ -46,7 +169,7 @@ export const server = {
         }
     },
 
-    launch_server: async function(app) {
+    launch_server: async function(app, sessionMiddleware) {
         try {
             // await restore_existing_database();
             const db = await setup_database();
@@ -55,7 +178,7 @@ export const server = {
             // Start livereload and the server
             // await createTrigger(db);
             await server.start_live_reload();
-            await server.start_server(app);
+            await server.start_server(app, sessionMiddleware);
         } catch (err) {
             console.error('Failed to set up the database:', err);
             process.exit(1); // Exit on critical failure
@@ -160,7 +283,7 @@ export const account = {
             if (!match) throw new Error('Invalid password');
 
             req.session.username = user.username;
-            return res.status(200).json({ success: true });
+            return res.status(200).json({ success: true, username: user.username });
 
         } catch (err) {
             console.error('Database error:', err);

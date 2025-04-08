@@ -39,6 +39,7 @@ img {
 .boysen {
     color: var(--dark-green);
     font-size: clamp(1.5rem, 3vw, 60px);
+    white-space: nowrap;
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: capitalize;
@@ -60,6 +61,7 @@ img {
     position: relative;
     align-items: center;
     justify-content: center;
+    transition: width 1.5s ease;
 }
 
 .dropdown-list {
@@ -67,6 +69,7 @@ img {
     position: absolute;
     left: 50%;
     transform: translateX(20%) translateY(20%);
+    transition: transform 1.5s ease;
     top: 50%;
     z-index: 1000;
 
@@ -362,6 +365,8 @@ img {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    justify-content: center;
+    align-items:center;
 }
 
 .login-container {
@@ -370,7 +375,7 @@ img {
     box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
-    width: 100%;
+    width: 90%;
     min-width: 350px;
     max-width: 350px;
     text-align: center;
@@ -529,7 +534,7 @@ img {
     box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
-    width: 100%;
+    width: 90%;
     min-width: 350px;
     max-width: 350px;
     text-align: center;
@@ -806,15 +811,60 @@ body.dark-mode .overlay-panel {
 }
 
 
-@media (max-width: 768px) {
-    .login-container {
-        max-width: 100%;
-    }
-}
-
 @media(max-width: 1000px ){
     .boysen {
         font-size: clamp(1.5rem, 4vw, 60px);
     }
 }
 
+@media (max-width: 900px) {
+    .container-page {
+        width: 600px;
+        /* background-color: transparent;
+        box-shadow: none; */
+    }
+
+    .dropdown-list {
+        transform: translateX(-65%) translateY(20%);
+    }
+
+    .overlay-panel {
+        display:none;
+    }
+
+    .form-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .container-page {
+        width: 450px;
+        transition: width 1s ease;
+    }
+}
+
+/* .input-cont input[type="text"] {
+    box-sizing: border-box;
+    border: 1px solid var(--v2-gray);
+    border-radius: 8px;
+    padding: 0.4rem;
+    flex-grow: 1;
+    font-size: 1rem;
+    background-color: var(--new-white);
+    color: var(--text-color);
+}
+
+.look-btn {
+    background-color: var(--new-white);
+    color: var(--dark-green);
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 1px solid var(--v2-gray);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+} */
