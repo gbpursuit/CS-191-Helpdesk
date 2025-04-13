@@ -76,14 +76,14 @@ export const server = {
                 });
             
                 socket.on('addTask', (addedCheck) => {
-                    console.log('addTask called');
-                    const { check, user } = addedCheck;
-                    if (check) {
+                    const { task, user } = addedCheck;
+                    
+                    if (task) {
                         users.forEach((socketIds, userId) => {
                             if (userId !== user) {
                                 console.log('Executing addTask to other users');
                                 socketIds.forEach(socketId => {
-                                    io.to(socketId).emit('loadTask');
+                                    io.to(socketId).emit('loadTask', { taskFile: task });
                                 });
                             }
                         });
@@ -433,8 +433,6 @@ export const task = {
         let sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC'
         let sortField = ['taskDate', 'department'].includes(filterBy) ? filterBy : 'tasks.id';
         
-        // let baseQuery = `SELECT * FROM tasks ${whereClause} ORDER BY ?? ${sortOrder}`;
-
         // Replace the id values with actual names in their respective tables
         let baseQuery = `
             SELECT 
@@ -487,6 +485,47 @@ export const task = {
         }));
     },
 
+    get_single_task: async function(db, taskId) {
+        const [newTask] = await db.query(`
+            SELECT 
+                tasks.id,
+                tasks.taskId,
+                tasks.taskDate,
+                tasks.taskStatus,
+                tasks.severity,
+                task_types.name AS taskType, 
+                tasks.taskDescription,
+                tasks.problemDetails,
+                tasks.remarks,
+                itUser.full_name AS itInCharge,
+                tasks.department, 
+                tasks.departmentNo,
+                requestedUser.full_name AS requestedBy,  
+                approvedUser.full_name AS approvedBy,    
+                items.name AS itemName, 
+                devices.name AS deviceName, 
+                applications.name AS applicationName, 
+                tasks.dateReq,
+                tasks.dateRec,
+                tasks.dateStart,
+                tasks.dateFin
+            FROM tasks
+            LEFT JOIN task_types ON tasks.taskType = task_types.id
+            LEFT JOIN it_in_charge AS itUser ON tasks.itInCharge = itUser.id
+			LEFT JOIN requested_by AS requestedUser ON tasks.requestedBy = requestedUser.id
+			LEFT JOIN departments ON requestedUser.department = departments.id
+			LEFT JOIN approved_by AS approvedUser ON tasks.approvedBy = approvedUser.id
+			LEFT JOIN app_departments ON approvedUser.department = app_departments.id
+            LEFT JOIN items ON tasks.itemName = items.id
+            LEFT JOIN devices ON tasks.deviceName = devices.id
+            LEFT JOIN applications ON tasks.applicationName = applications.id
+            WHERE tasks.taskId = ?
+            `, [taskId]);
+
+        return newTask[0];
+
+    },
+
     add_task: async function (db, req, res, validTables) {
         try {
             const {
@@ -494,44 +533,15 @@ export const task = {
                 itInCharge, department, departmentNo, requestedBy, approvedBy, itemName, deviceName, applicationName,
                 dateReq, dateRec, dateStart, dateFin, problemDetails, remarks
             } = req.body;
-    
-            // async function get_or_insert(table, column, value) {
-            //     if (!value) return null; // Handle NULL values
-    
-            //     // Check if value exists
-            //     const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
-            //     if (existing.length) return existing[0].id;
-    
-            //     // Insert new value and return ID
-            //     const [result] = await db.query(`INSERT INTO ${table} (${column}) VALUES (?)`, [value]);
-            //     return result.insertId; // return the id of newly created value
-            // }
-    
+       
             async function get_or_insert(table, column, value) {
                 if (!value) return null;
-            
-                // Check if value exists
-                // if (column === 'full_name') {
-                //     const [existing] = await db.query(`SELECT username FROM ${table} WHERE full_name = ?`, [value]);
-                //     return existing.length ? existing[0].username : null;
-                // }
 
                 if (validTables.includes(table) && value === '--') {
                     const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, ['Unknown']);
                     if (existing.length) return existing[0].id;
                 }
-
-                // if (table === "it_in_charge") {
-                //     const [existing] = await db.query(`SELECT id FROM approved_by WHERE ${column} = ?`, [value]);
-                //     if (existing.length) {
-                //         return existing[0].id;
-                //     } else {
-
-                //     }
-                // }
-
-                // if (table === "approved_by") console.log (value);
-            
+           
                 const [existing] = await db.query(`SELECT id FROM ${table} WHERE ${column} = ?`, [value]);
                 if (existing.length) return existing[0].id;
 
@@ -557,6 +567,7 @@ export const task = {
             const itInChargeId = await get_or_insert('it_in_charge', 'full_name', itInCharge);
             const requestedById = await get_or_insert('requested_by', 'full_name', requestedBy);
             const approvedById = await get_or_insert('approved_by', 'full_name', approvedBy);
+            
             // const departmentId = await get_or_insert('departments', 'name', department);
             const itemId = await get_or_insert('items', 'name', itemName);
             const deviceId = await get_or_insert('devices', 'name', deviceName);
@@ -579,6 +590,8 @@ export const task = {
                 convertDate(dateRec), convertDate(dateStart), convertDate(dateFin), problemDetails, remarks
             ]);
     
+            // console.log(req.session.username, res);
+            // socket.emit('addTask', { task: get_single_task(taskId), user: req.session.username });
             res.status(201).json({ success: true, message: 'Task saved successfully' });
     
         } catch (err) {

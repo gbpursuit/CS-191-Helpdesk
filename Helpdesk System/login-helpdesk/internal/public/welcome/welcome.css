@@ -69,7 +69,7 @@ img {
     position: absolute;
     left: 50%;
     transform: translateX(20%) translateY(20%);
-    transition: transform 1.5s ease;
+    transition: transform 1s ease;
     top: 50%;
     z-index: 1000;
 
