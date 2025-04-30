@@ -5,10 +5,18 @@ document.addEventListener("DOMContentLoaded", async function() {
     const container = document.getElementById("container");
     const registerButton = document.getElementById("register");
     const signInButton = document.getElementById("signIn");
+    // const userCont = document.getElementById("dropdownList");
+    // const btn = document.getElementById('userBtn');
 
     registerButton.addEventListener("click", () => {
         container.classList.add("right-panel-active");
         const usernameError = document.getElementById("usernameError");
+
+        userCont.style.display = 'none';
+        container.style.pointerEvents = 'auto';
+        btn.disabled = false;
+        btn.classList.remove('abled');
+        current = 1;
 
         setTimeout(() => {
             usernameError.style.display = "none";
@@ -205,6 +213,7 @@ async function handle_login() {
 
 
 let current = 1, taskpage = 5, total = 0;
+const container = document.getElementById("container");
 const prev = document.getElementById('userPrev');
 const next = document.getElementById('userNext');
 const currentPageNum = document.getElementById('userNum');
@@ -260,6 +269,7 @@ function render_user(data, body) {
         select.value = row.cells[0].innerText;
         select.setAttribute("data-key", data.username.trim());
         userCont.style.display = 'none';
+        container.style.pointerEvents = 'auto';
         btn.disabled = false;
         btn.classList.remove('abled');
         current = 1;
@@ -278,6 +288,7 @@ function username_data() {
             }
             
             userCont.style.display = 'flex';
+            container.style.pointerEvents = 'none';            
 
             const data = await response.json();
             render_table(data, body);
@@ -306,6 +317,7 @@ function username_data() {
 
     clsBtn.addEventListener('click', () => {
         userCont.style.display = 'none';
+        container.style.pointerEvents = 'auto';
         current = 1;
         body.innerHTML = "";
         btn.disabled = false;

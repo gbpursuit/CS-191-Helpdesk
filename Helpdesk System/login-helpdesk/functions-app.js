@@ -809,10 +809,14 @@ export const task = {
     },
 
     add_reference: async function(db, req, res, tableName, validTables) {
+
+        let counter = 0;
         try {
             if (!validTables.includes(tableName)) {
                 return res.status(400).json({ error: 'Invalid reference table' });
             }
+
+            console.log("Counter:", counter++);
 
             let query = "";
             let values = [];
@@ -954,9 +958,11 @@ export const task = {
                     let department = (tableName == 'requested_by') ? 'departments' : 'app_departments';
 
                     let req_query = `SELECT id FROM ${department} WHERE name = ?`;
-                    let req_values = [req.body.val.dep_name];
+                    let req_values = [req.body.val.name];
 
                     const [req_result] = await db.query(req_query, req_values);
+
+                    console.log(req_result);
 
                     if (req_result.length > 0) {
                         let existingDepartment = req_result[0];
@@ -967,13 +973,13 @@ export const task = {
                         `UPDATE app_departments SET name = ? WHERE id = ?`;
 
                         const updateDeptValues = (tableName == 'requested_by') ?
-                        [req.body.val.dep_no, existingDepartment.id] :
-                        [req.body.val.dep_name, existingDepartment.id]
+                        [req.body.val.department_no, existingDepartment.id] :
+                        [req.body.val.name, existingDepartment.id]
                 
   
                         // Perform the update
                         await db.query(updateDeptQuery, updateDeptValues);
-                        console.log('Contact number updated to:', req.body.val.dep_no);
+                        console.log('Contact number updated to:', req.body.val.department_no);
                 
                         let departmentId = existingDepartment.id;
                         query = `UPDATE ${tableName} SET first_name = ?, last_name = ?, department = ? WHERE id = ?`;
@@ -985,9 +991,10 @@ export const task = {
                         `INSERT INTO departments (name, department_no) VALUES (?, ?)` :
                         `INSERT INTO app_departments (name) VALUES (?)`;
                         let insertValues = (tableName == 'requested_by') ?
-                        [req.body.val.dep_name, req.body.val.dep_no] : [req.body.val.dep_name]
+                        [req.body.val.name, req.body.val.department_no] : [req.body.val.name]
                         // let insertDeptQuery = `INSERT INTO departments (name, department_no) VALUES (?, ?)`;
                         // let insertValues = [req.body.val.dep_name, req.body.val.dep_no];
+
                         const [insertDeptResult] = await db.query(insertDeptQuery, insertValues);
 
                         let departmentId = insertDeptResult.insertId;

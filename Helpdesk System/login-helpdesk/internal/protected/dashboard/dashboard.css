@@ -190,8 +190,8 @@ label[for="check"]{
 .top-bar .top-bar-left {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding-left: 50px; 
+    padding-left: 35px; 
+    font-size: 14px;
 }
 
 .top-bar .top-bar-right {
@@ -591,6 +591,7 @@ label[for="check"]{
     position: relative;
     overflow-x: auto; 
     display: flex;
+    overflow-y: hidden;
 
     width: 100%;
     height: 85%;
@@ -617,17 +618,21 @@ label[for="check"]{
 }
 
 .task-table tbody tr {
-    transition: background-color 0.2s ease-in-out; /* Smooth transition */
+    transition: background-color 0.2s ease-in-out, filter 0.3s ease; /* Smooth transition */
 }
 
-.task-table tbody tr:hover {
-    filter: brightness(110%); /* Lightens the existing background color */
+.task-table tbody tr:hover,
+.task-table tbody tr:focus {
+    filter: brightness(110%); 
 }
 
+.task-table tbody tr:active {
+    filter: brightness(90%);
+}
 
 .task-table td {
     border: 1px solid var(--v2-gray);
-    padding: 11.8px 15px;
+    padding: 11.5px 15px;
     text-align: left;
     font-size: 0.85rem;
 }
@@ -636,6 +641,21 @@ label[for="check"]{
     content: "●"; 
     font-size: 13px;
     margin-right: 5px;
+    will-change: opacity;
+}
+
+.task-table tr:hover td.status::before {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.arrow-page {
+    font-size: 11px;
+    vertical-align: middle;
 }
 
 /* Status Row Colors */
@@ -668,24 +688,30 @@ label[for="check"]{
 .scroll::-webkit-scrollbar,
 .task-content::-webkit-scrollbar,
 .table::-webkit-scrollbar {
-    width: 4x;  /* Vertical scrollbar width */
-    height: 4px; /* Horizontal scrollbar height */
+    width: 4px;  
+    height: 4px;
 }
 
-.scroll::-webkit-scrollbar-thumb
+.scroll::-webkit-scrollbar-thumb,
 .task-content::-webkit-scrollbar-thumb,
 .table::-webkit-scrollbar-thumb{
-    border-radius: 5px; /* Rounded edges */
+    border-radius: 5px;
 }
 
-.scroll:hover::-webkit-scrollbar,
+.scroll {
+    padding-right: 5px;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+    background-color: var(--v2-gray);
+}
+
 .task-content:hover::-webkit-scrollbar,
 .table:hover::-webkit-scrollbar {
     width: 4px; 
     height: 4px; 
 }
 
-.scroll:hover::-webkit-scrollbar-thumb,
 .task-content:hover::-webkit-scrollbar-thumb,
 .table:hover::-webkit-scrollbar-thumb {
     background-color: var(--v2-gray);
@@ -723,26 +749,9 @@ label[for="check"]{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    width: 80%;
+    width: 70%;
     gap:clamp(1px, 2vw, 3px);
-}
-
-.legend-status::-webkit-scrollbar {
-    width: 4x;  
-    height: 4px;
-}
-
-.legend-status::-webkit-scrollbar-thumb{
-    border-radius: 5px; 
-}
-
-.legend-status:hover::-webkit-scrollbar {
-    width: 4px; 
-    height: 4px; 
-}
-
-.legend-status:hover::-webkit-scrollbar-thumb {
-    background-color: var(--v2-gray);
+    transition: width 1s ease, opacity 0.3s ease;
 }
 
 .legend-item {
@@ -776,8 +785,9 @@ label[for="check"]{
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 5px;
+    padding: 5px 8px;
     border-radius: 5px;
+    border: 1px solid var(--v2-gray);
 }
 
 .page-btn,
@@ -787,21 +797,35 @@ label[for="check"]{
     color: var(--v3-gray);
     cursor: pointer;
     font-size: 14px;
+    transition: transform 0.2s ease, color 0.5s ease;
 }
-
 
 .page-btn:hover,
 .pagination-button:hover {
     color: var(--hover-button);
-    transition: color 0.5s ease;
 }
 
 .pages {
-    padding: 0px 13px;
-    border: 1px solid var(--v2-gray);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 5px;
     border-radius: 5px;
-    background-color: var(--white);
     cursor: pointer;
+    gap: 4px;
+}
+
+.pages span {
+    font-size: 13px;
+}
+
+.page-btn:hover {
+    transform: scale(1.3);
+}
+
+.editable {
+    padding: 0px 5px;
 }
 
 /* If implemented na yung pagkuha ng mga tasks */
@@ -851,11 +875,11 @@ label[for="check"]{
     padding: 20px 25px;
     border-radius: 8px;
     width: 80%;
-    height: 91%;
     max-width: 1100px;
-    max-height: 850px;
+    max-height: calc(100vh - 18vh);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 10;
+    overflow: auto;
 }
 
 .edit-task-header,
@@ -897,7 +921,6 @@ label[for="check"]{
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 95%;
     overflow-x:hidden;
     overflow-y: auto;
     gap: 5px;
@@ -921,6 +944,7 @@ label[for="check"]{
 .column-one, .column-two {
     display: flex;
     flex-direction: column;
+    /* background-color: blue; */
 }
 
 .edit-column-one,
@@ -1000,18 +1024,26 @@ input[type="date"] {
     color: var(--text-color); 
 }
 
+
 .edit-task-footer,
 .add-task-footer {
     display: flex;
     flex-direction: column;
-    flex: auto;
-    gap: 20px;
+    width: 100%;
+}
+
+
+
+.outside {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: auto;
 }
 
 .outside textarea{
     padding: 8px;
     width: 100%;
-    height: 50px; 
     resize: vertical; 
     min-height: 50px;
 }
@@ -1025,7 +1057,6 @@ input[type="date"] {
     border-radius: 4px;
     font-size: 0.825rem;
     cursor: pointer;
-    margin-top: 10px;
 }
 
 .button-update,
@@ -2050,6 +2081,11 @@ body.dark-mode .task-table tbody tr:hover {
         width: 220px;
         transition: var(--tsm-l-w);
     }
+
+    #check:checked ~ .dashboard-container .legend-status {
+        width: 60%;
+        transition: width 0.5s ease;
+    }
 }
 
 @media (max-width: 700px) {
@@ -2061,7 +2097,13 @@ body.dark-mode .task-table tbody tr:hover {
         font-size: 0;
     }
 
-    .legend-status {
-        overflow: hidden;
+    #check:checked ~ .dashboard-container .legend-status {
+        width: 40%; 
+        transition: width 0.5s ease;
     }
+    
 }
+
+
+
+

@@ -63,23 +63,6 @@ const socket = io();
 // Get active user
 let activeUser = null;
 
-
-
-// function lookButtonHandler(event) {
-//     console.log('helloooooo');
-//     const button = event.target;
-//     const key = button.dataset.key; 
-//     const isEdit = button.dataset.edit === "true";      
-
-//     console.log(key);
-//     if (fetch_data[key]) {
-//         fetch_data[key](isEdit); 
-//     } else {
-//         console.error(`Function ${key} not found in fetch_data`);
-//     }
-// }
-
-
 // Layout Page Logic
 const layout = {
     dashboard_open: async function() {
@@ -446,6 +429,7 @@ const add = {
     
         // Create row
         let row = document.createElement("tr");
+        row.setAttribute("tabindex", "0");
     
         let statusClass = util.get_status_class(task.taskStatus);
         if (statusClass) row.classList.add(statusClass);
@@ -477,11 +461,21 @@ const add = {
         `;
     
         // Add event listener for row click
-        row.addEventListener('click', async function(event) {
+        async function row_action(event, row, task) {
             event.preventDefault();
+            row.blur();
             await add.open_task_modal(task);
+        }
+
+        row.addEventListener('click', async function(event) {
+            await row_action(event, row, task);
         });
-    
+        
+        row.addEventListener('keydown', async function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                await row_action(event, row, task);
+            }
+        });
         // Append row to the table body
         tableBody.appendChild(row);
     },
@@ -699,7 +693,21 @@ const add = {
         // taskModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'modalContent', 'taskModal'));
         pop.addEventListener('click', (event) => UI.close_outside_modal(event, 'popupContent', 'notificationPopup'));
 
-        if (closeButton) closeButton.addEventListener('click', () => UI.close_modal('taskModal', true));
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                const form = document.getElementById('newTaskForm');
+                const rotwo = document.getElementById('rowtwoulit')
+                const textarea = document.querySelector('.outside textarea');
+                if (taskModal) {
+                    taskModal.style.display = "none";
+                    textarea.style.height = '50px';
+                    if (form) {
+                        form.reset(); 
+                    }
+                }
+            })
+        }
+        // if (closeButton) closeButton.addEventListener('click', () => UI.close_modal('taskModal', true));
         if (closeTaskButton) {
             closeTaskButton.addEventListener('click', () => {
                 taskInfoModal.style.display = "none";
@@ -1006,7 +1014,15 @@ const load = {
             const tasks = await response.json();
             totalTasks = tasks.length;
             const tableBody = document.getElementById("taskTableBody");
-            const totalPages = Math.ceil(totalTasks / tasksPerPage);
+            const t_pages = Math.ceil(totalTasks / tasksPerPage);
+            totalPages = t_pages
+
+            if (currentPage > totalPages) {
+                currentPage = 1;
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set('page', currentPage);
+                window.history.pushState({}, '', newUrl);
+            }
     
             tableBody.innerHTML = ""; 
 
@@ -1034,7 +1050,7 @@ const load = {
                 add.add_to_table(task);
             });
 
-            page.update_pagination(totalPages);
+            page.update_pagination();
     
             // const newUrl = new URL(window.location.href);
             // newUrl.searchParams.set('page', currentPage); // Always update page number
@@ -1556,68 +1572,6 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
             searchInput.value = "";
         }
 
-        const confirm_edit = async () => {
-            try {
-                const updatedData = {};
-
-                columns.forEach((col, idx) => {
-                    const input = selectedRow.querySelectorAll("td")[idx].querySelector("input");
-                    if (input) updatedData[col] = input.value.trim();
-                });
-
-                const result = await edit_button(table, selectedId, updatedData);
-                if (result.success) {
-                    selectedRow.querySelectorAll("td").forEach((cell, index) => {
-                        if (cell.querySelector("input")) {
-                            cell.textContent = updatedData[columns[index]];
-                        }
-                    });
-
-                    const cells = selectedRow.querySelectorAll("td");
-                    // originalData = originalData.map(item => 
-                    //     item.id === selectedId ? { ...item, ...updatedData } : item
-                    // );
-
-
-                    editValues = [...cells].map(cell => cell.innerText.trim());
-                    editInProgress = false;
-
-                    body.querySelectorAll("tr").forEach(row => {
-                        row.style.pointerEvents = "auto";
-                        row.classList.remove("disabled-row");
-                    });
-
-                    confirmApply.style.display = 'none';
-                    confirmSelect.style.display = 'flex';
-
-                    if (originalRowName && select.value === originalRowName) {
-                        select.value = updatedData[columns[0]];
-                        // select.value = updatedData.name;
-                    }
-
-                    if (description && des && taskDescription.value === des) {
-                        taskDescription.value = updatedData.description;
-                    }
-
-                    if (departmentFields && depName && department.value === depName) {
-                        department.value = updatedData.dep_name;
-                    }
-                    if (departmentFields &&depNum && departmentNo.value === depNum) {
-                        departmentNo.value = updatedData.dep_no;
-                    }
-
-                    socket.emit('updateTable', true);
-                    await load.load_tasks();
-
-                } else {
-                    console.error("Error updating row:", result.error);
-                }
-                
-            } catch (err) {
-                console.error(`Error editing row:`, err);
-            }
-        }
-
         const cancel_select = () => {
             if (editInProgress) {
                 const cells = selectedRow.querySelectorAll("td");
@@ -1661,7 +1615,9 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                 form.addEventListener('submit', async function(event) {
                     event.preventDefault();
                     const success = await submit_task_type(modalId, form);
-                    if(!success) return;
+                    if(!success) {
+                        return alert('Failed to add task. Make sure it’s not a duplicate, or try again later.');
+                    };
 
                     socket.emit('updateTable', true);
                     // const data = await load.load_reference(table);
@@ -1726,6 +1682,70 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                     row.classList.add('disabled-row');
                 };
             });
+        }
+
+        const confirm_edit = async () => {
+            try {
+                const updatedData = {};
+
+                columns.forEach((col, idx) => {
+                    const input = selectedRow.querySelectorAll("td")[idx].querySelector("input");
+                    if (input) updatedData[col] = input.value.trim();
+                });
+
+                const result = await edit_button(table, selectedId, updatedData);
+                if (result.success) {
+                    selectedRow.querySelectorAll("td").forEach((cell, index) => {
+                        if (cell.querySelector("input")) {
+                            cell.textContent = updatedData[columns[index]];
+                        }
+                    });
+
+                    const cells = selectedRow.querySelectorAll("td");
+                    // originalData = originalData.map(item => 
+                    //     item.id === selectedId ? { ...item, ...updatedData } : item
+                    // );
+
+
+                    editValues = [...cells].map(cell => cell.innerText.trim());
+                    editInProgress = false;
+
+                    body.querySelectorAll("tr").forEach(row => {
+                        row.style.pointerEvents = "auto";
+                        row.classList.remove("disabled-row");
+                    });
+
+                    confirmApply.style.display = 'none';
+                    confirmSelect.style.display = 'flex';
+
+                    if (originalRowName && select.value === originalRowName) {
+                        select.value = updatedData[columns[0]];
+                        // select.value = updatedData.name;
+                    }
+
+                    if (description && des && taskDescription.value === des) {
+                        taskDescription.value = updatedData.description;
+                    }
+
+                    if (departmentFields && depName && department.value === depName) {
+                        department.value = updatedData.dep_name;
+                    }
+                    if (departmentFields &&depNum && departmentNo.value === depNum) {
+                        departmentNo.value = updatedData.dep_no;
+                    }
+
+                    remove_highlight();
+
+                    socket.emit('updateTable', true);
+                    await load.load_tasks();
+
+                } else {
+                    console.error("Error updating row:", result.error);
+                }
+                
+            } catch (err) {
+                console.error(`Error editing row:`, err);
+            }
         }
 
         const delete_row = async () => {
@@ -1897,6 +1917,8 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
 // ⠀⠀⠀⠀⠀⠀⠀⠀⡆⠰⡇⠀⡏⢸⠀⠀⠀⠀⠀⠀⠀⠀
 // ⠀⠀⠀⠀⠀⠀⠀⠀⠉⠚⠀⠀⠉⠉⠀⠀⠀⠀
 
+const currentPageSpan = document.getElementById('currentPage');
+const pagebox = document.getElementById('pagebox');
 
 // Database Logic -- Page
 const prevButton = document.getElementById("prevPage");
@@ -1905,6 +1927,36 @@ let resizeTimeout;
 let currentPage = 1;
 let tasksPerPage = 1;
 let totalTasks = 0;
+let totalPages = 0;
+
+pagebox.addEventListener('click', () => {
+    currentPageSpan.contentEditable = true;   
+    currentPageSpan.classList.add('editable');   
+    currentPageSpan.focus();
+});
+
+currentPageSpan.addEventListener('blur', async () => {
+    currentPageSpan.contentEditable = false; 
+    currentPageSpan.classList.remove('editable');
+    const newPage = parseInt(currentPageSpan.textContent, 10);
+
+
+    if (isNaN(newPage) || newPage < 1 || newPage > totalPages) {
+        currentPageSpan.textContent = `${currentPage}`;
+    } else {
+        currentPage = newPage;  
+        currentPageSpan.textContent = `${currentPage}`;
+    }
+
+    util.update_url();
+    await load.load_tasks();
+});
+
+currentPageSpan.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        currentPageSpan.blur();  // Trigger blur to save the page number
+    }
+});
 
 const page = {
     update_tasks_per_page: async function() {
@@ -1921,38 +1973,40 @@ const page = {
     
         if (!tableContainer) return 1; 
     
-        const containerHeight = tableContainer.clientHeight || 1;
-        const rowHeight = sampleRow ? sampleRow.clientHeight || 1 : 42;
-
-        console.log(containerHeight, rowHeight);
-    
+        const getMeasurements = () => {
+            const containerHeight = tableContainer.clientHeight || 1;
+            const rowHeight = 42;
+            return { containerHeight, rowHeight };
+        };
+       
+        const { containerHeight, rowHeight } = getMeasurements();
         return Math.max(1, Math.floor((containerHeight / rowHeight) - 1));
     },
 
-    update_pagination: function(totalPages) {
+    update_pagination: function() {
         const currentPageSpan = document.getElementById("currentPage");    
-        currentPageSpan.textContent = `${currentPage}`;
-    
+        const totalSpan = document.getElementById('totalPages');
+
+        currentPageSpan.textContent = `${currentPage} `;
+        totalSpan.textContent = `of ${totalPages}`;
+       
         prevButton.disabled = (currentPage <= 1);
         nextButton.disabled = (currentPage >= totalPages);
     },
+    
 
-    update_page_buttons: function() {
-        if (window.innerWidth <= 800) {
-            prevButton.textContent = "«";
-            prevButton.style.fontSize = "18px";
-            nextButton.textContent = "»";
-            nextButton.style.fontSize = "18px";
-        } else {
-            prevButton.textContent = "Previous";
-            nextButton.textContent = "Next";
-            prevButton.style.fontSize = "";
-            nextButton.style.fontSize = "";
-        }
-    },
+    // update_page_buttons: function() {
+    //     const currentPageSpan = document.getElementById("currentPage"); 
+
+    //     if (window.innerWidth <= 950) {
+    //         currentPageSpan.innerHTML = `${currentPage} of ${totalPages}`;
+    //     } else {
+    //         currentPageSpan.innerHTML = `${currentPage} of ${totalPages}`;
+    //     }
+    // },
 }
 
-setTimeout(page.update_tasks_per_page, 200);
+setTimeout(page.update_tasks_per_page, 150);
 
 function list_update_page() {
     console.log('Been here');
@@ -1961,7 +2015,8 @@ function list_update_page() {
     tableBody.innerHTML = "";
 
     const length = initialTasks.length;
-    const totalPages = Math.ceil(length / tasksPerPage);
+    const t_pages = Math.ceil(length / tasksPerPage);
+    totalPages = t_pages;
 
     const startInitial = (currentPage - 1) * tasksPerPage;
     const endInitial = startInitial + tasksPerPage;
@@ -1970,7 +2025,7 @@ function list_update_page() {
     paginatedInitial.forEach((task) => {
         add.add_to_table(task);
     });
-    page.update_pagination(totalPages);
+    page.update_pagination();
 }
 
 if (prevButton && nextButton) {
@@ -2149,11 +2204,13 @@ const util = {
     
                     await load.load_tasks();
                 }
-                page.update_page_buttons();
             }, 100);
         });
-    
-        window.addEventListener('load', page.update_page_buttons);
+        // window.addEventListener('resize', () => {
+        //     const currentPageSpan = document.getElementById("currentPage");  
+        //     currentPageSpan.textContent = (window.innerWidth >= 800) ? `${currentPage} of ${totalPages}` : `${currentPage}`;
+        // });
+        // window.addEventListener('load', page.update_page_buttons);
         
         // Fix back button issue (e.g., after login/logout)
         window.addEventListener('pageshow', function(event) {
