@@ -100,12 +100,12 @@
                                 <option value="cancelled">Cancelled</option>
                             </select>
                             
-                            <select class="date-options dropdown-filter" aria-label="Date Options">
+                            <!-- <select class="date-options dropdown-filter" aria-label="Date Options">
                                 <option value="filter" disabled selected>Choose</option>
                                 <option value="stop">Stop Filter</option>
                                 <option value="ASC">Ascending</option>
                                 <option value="DESC">Descending</option>
-                            </select>
+                            </select> -->
                             
                             <select class="severity-options dropdown-filter" aria-label="Severity Options">
                                 <option value="filter" disabled selected>Choose</option>
@@ -117,12 +117,12 @@
                                 <option value="5">5</option>
                             </select>
                             
-                            <select class="dept-options dropdown-filter" aria-label="Dept Options">
+                            <!-- <select class="dept-options dropdown-filter" aria-label="Dept Options">
                                 <option value="filter" disabled selected>Choose</option>
                                 <option value="stop">Stop Filter</option>
                                 <option value="ASC">Ascending</option>
                                 <option value="DESC">Descending</option>
-                            </select>
+                            </select> -->
                         </div>
                         <div class = "right-section">
                             <button type = "button" id = "new-task" class="new-task-button" onclick="openModal()">+ New Task</button>
@@ -139,7 +139,7 @@
 
                     <table class="task-table">
 
-                        <thead>
+                        <thead id ="taskTableHeader">
                             <tr>
                                 <th>ID</th>
                                 <th>Task Date</th>

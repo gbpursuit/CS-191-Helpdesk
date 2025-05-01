@@ -22,10 +22,49 @@ document.addEventListener("DOMContentLoaded", async function() {
             }
         }); 
 
-        // Modal Functions - Ensure global availability
-        // window.open_add_modal = open_add_modal;
-        // window.open_edit_modal = open_edit_modal;
-        // window.delete_entry = delete_entry;
+        document.getElementById('headerbar').addEventListener('click', () => {
+            localStorage.setItem('sidebarState', 'false');
+            window.location.reload();
+        })
+
+        const tableHeader = document.getElementById('taskTableHeader');
+        const thElements = tableHeader.querySelectorAll('th');
+        
+        // thElements.forEach((th, index) => {
+        //     th.addEventListener('click', () => {
+        //         console.log(`Header ${index} clicked: ${th.textContent}`);
+        //         const icon = document.createElement('i'); 
+        //         icon.classList.add('fas', 'fa-arrow-down');
+        //         th.appendChild(icon); 
+        //     });
+        // });
+
+        thElements.forEach((th, index) => {
+            let taskList = ['Task Type', 'Task Description', 'Task Date', 'Requested By', 'Status', 'Severity' ];
+            if (taskList.includes(th.textContent.trim())) {
+                
+                th.style.cursor = 'pointer';
+
+                th.addEventListener('click', () => {
+                    let icon = th.querySelector('i');
+    
+                    if(!icon) {
+                        icon = document.createElement('i');
+                        icon.classList.add('fa-solid', 'fa-sort-down');
+                        th.appendChild(icon);
+                    } else {
+                        if (icon.classList.contains('fa-sort-down')) {
+                            icon.classList.remove('fa-sort-down');
+                            icon.classList.add('fa-sort-up');
+                        } else {
+                            icon.classList.remove('fa-sort-up');
+                            th.removeChild(icon);
+                        }
+                    }
+                });
+            }
+        });
+
         window.close_modal = close_modal;
     
         // Layout Functions
@@ -343,9 +382,9 @@ const search = {
 
         const dropdowns = {
             taskStatus: document.querySelector(".status-options"),
-            taskDate: document.querySelector(".date-options"),
+            // taskDate: document.querySelector(".date-options"),
             severity: document.querySelector(".severity-options"),
-            department: document.querySelector(".dept-options"),
+            // department: document.querySelector(".dept-options"),
         };
 
         // Hide all dropdowns initially

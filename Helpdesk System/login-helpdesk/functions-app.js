@@ -726,6 +726,14 @@ export const task = {
         }
     },
 
+    search_and_filter: function(checking) {
+        let search_task = ['taskType', 'taskDescription', 'problemDetails', 'remarks'];
+        let filter_task = ['taskType', 'taskDescription', 'taskDate', 'requestedBy', 'taskStatus', 'severity' ];
+
+
+
+    },
+
     get_task: async function (db, req, res) {
         const { search, filterBy, value } = req.query; 
     
