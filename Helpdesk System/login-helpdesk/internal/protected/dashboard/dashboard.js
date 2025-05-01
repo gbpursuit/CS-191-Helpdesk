@@ -29,15 +29,6 @@ document.addEventListener("DOMContentLoaded", async function() {
 
         const tableHeader = document.getElementById('taskTableHeader');
         const thElements = tableHeader.querySelectorAll('th');
-        
-        // thElements.forEach((th, index) => {
-        //     th.addEventListener('click', () => {
-        //         console.log(`Header ${index} clicked: ${th.textContent}`);
-        //         const icon = document.createElement('i'); 
-        //         icon.classList.add('fas', 'fa-arrow-down');
-        //         th.appendChild(icon); 
-        //     });
-        // });
 
         thElements.forEach((th, index) => {
             let taskList = ['Task Type', 'Task Description', 'Task Date', 'Requested By', 'Status', 'Severity' ];
@@ -65,7 +56,12 @@ document.addEventListener("DOMContentLoaded", async function() {
             }
         });
 
+        const mediaQuery = window.matchMedia('(max-width: 850px)');
+        update.update_button_text(mediaQuery);
+        mediaQuery.addEventListener('change', update.update_button_text);
+
         window.close_modal = close_modal;
+        window.closePrintModal = closePrintModal;
     
         // Layout Functions
         layout.list_navigation();
@@ -290,68 +286,205 @@ const pdf = {
             console.log("Using generated PDF.");
             return generatedPDF;
         }
-
+    
         if (!window.jspdf) {
             console.error("jsPDF is not loaded!");
-            return null; // Return null if jsPDF is not loaded
+            return null;
         }
-
+    
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: [420, 594] }); // Large A2 format
-
-        // Add title
-        const title = document.getElementById("summaryTitle").textContent || "Summary Report";
-        doc.setFontSize(14);
-        doc.text(title, 20, 20);
-
-        // Fetch summary data from API
+        const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    
+        const currentDate = new Date();
+        const dateStr = currentDate.toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "2-digit" });
+    
+        // Header Section
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("PACIFIC PAINT (BOYSEN) PHILIPPINES, INC", 10, 15);
+    
+        doc.setFont("helvetica", "normal");
+        doc.text("IT MANAGEMENT - IT SUMMARY REPORT", 10, 22);
+        doc.text(`Date Ranged: 05-JAN-2025 to 05-JAN-2025`, 10, 29); // Static for now, you can make dynamic later
+        doc.text(`Requested By: GWEN CASTRILLON (05/01/2025 02:21 pm)`, 10, 36); // Same here
+    
+        doc.setFontSize(10);
+        doc.text(`Page 1 / 1`, 275, 15, { align: "right" }); // Adjust page logic if you paginate
+    
+        // Fetch summary data
         const tasks = await pdf.fetch_summary_data();
-
-        // Define table headers
-        const tableHeaders = [
-            "Task ID", "Task Type", "Task Description", "Requested By", "Approved By", "Department",
-            "Department No", "IT In Charge", "Device Name", "Item Name", "Application Name", "Status",
-            "Severity", "Transaction Date", "Date Requested", "Date Received", "Date Started", "Date Finished", "Problem Details", "Remarks"
-        ];
-
-        // Convert API data into table format
+    
+        // Table headers (based on image format)
+        const tableHeaders = [["Trx Date", "IT in Charge", "Task Type", "Task Description", "Department", "Status"]];
+    
+        // Prepare data rows
         const tableData = tasks.map(task => [
-            task.taskId, task.taskType, task.taskDescription, task.requestedBy, task.approvedBy,
-            task.department, task.departmentNo, task.itInCharge, task.deviceName, task.itemName,
-            task.applicationName, task.status, task.severity, task.transactionDate, task.dateRequested,
-            task.dateReceived, task.dateStarted, task.dateFinished, task.problemDetails, task.remarks
+            task.transactionDate || "", 
+            task.itInCharge || "", 
+            task.taskType || "", 
+            task.taskDescription || "", 
+            task.department || "", 
+            task.status || ""
         ]);
-
+    
+        // Generate Table
         if (doc.autoTable) {
             doc.autoTable({
-                head: [tableHeaders],
+                head: tableHeaders,
                 body: tableData,
-                startY: 30,
-                theme: "grid", 
-                styles: { fontSize: 10, cellPadding: 4 },
-                headStyles: { fillColor: [22, 160, 133], textColor: 255, fontStyle: "bold" },
-                columnStyles: { 
-                    2: { cellWidth: 80 }, // Task Description (wider)
-                    5: { cellWidth: 50 }, // Department
-                    6: { cellWidth: 50 }, // IT In Charge
-                    8: { cellWidth: 50 }, // Item Name
-                    11: { cellWidth: 30 } // Status
+                startY: 42,
+                theme: "grid",
+                styles: {
+                    fontSize: 9,
+                    cellPadding: 2
+                },
+                headStyles: {
+                    fillColor: [0, 0, 0],
+                    textColor: [255, 255, 255],
+                    fontStyle: "bold"
+                },
+                columnStyles: {
+                    0: { cellWidth: 25 },  // Trx Date
+                    1: { cellWidth: 35 },  // IT in Charge
+                    2: { cellWidth: 35 },  // Task Type
+                    3: { cellWidth: 90 },  // Task Description
+                    4: { cellWidth: 45 },  // Department
+                    5: { cellWidth: 25 }   // Status
                 }
             });
-
+    
             const pdfBlob = doc.output("blob");
             const pdfUrl = URL.createObjectURL(pdfBlob);
             document.getElementById("pdfPreview").src = pdfUrl;
-
+    
             generatedPDF = doc;
-
-            return doc; 
+            return doc;
         } else {
             console.error("jsPDF autoTable plugin is not loaded!");
             return null;
         }
     }
 }
+// ⡴⠒⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠉⠳⡆⠀
+// ⣇⠰⠉⢙⡄⠀⠀⣴⠖⢦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣆⠁⠙⡆
+// ⠘⡇⢠⠞⠉⠙⣾⠃⢀⡼⠀⠀⠀⠀⠀⠀⠀⢀⣼⡀⠄⢷⣄⣀⠀⠀⠀⠀⠀⠀⠀⠰⠒⠲⡄⠀⣏⣆⣀⡍
+// ⠀⢠⡏⠀⡤⠒⠃⠀⡜⠀⠀⠀⠀⠀⢀⣴⠾⠛⡁⠀⠀⢀⣈⡉⠙⠳⣤⡀⠀⠀⠀⠘⣆⠀⣇⡼⢋⠀⠀⢱
+// ⠀⠘⣇⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⡴⢋⡣⠊⡩⠋⠀⠀⠀⠣⡉⠲⣄⠀⠙⢆⠀⠀⠀⣸⠀⢉⠀⢀⠿⠀⢸
+// ⠀⠀⠸⡄⠀⠈⢳⣄⡇⠀⠀⢀⡞⠀⠈⠀⢀⣴⣾⣿⣿⣿⣿⣦⡀⠀⠀⠀⠈⢧⠀⠀⢳⣰⠁⠀⠀⠀⣠⠃
+// ⠀⠀⠀⠘⢄⣀⣸⠃⠀⠀⠀⡸⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠈⣇⠀⠀⠙⢄⣀⠤⠚⠁⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⢹⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⢘⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⢰⣿⣿⣿⡿⠛⠁⠀⠉⠛⢿⣿⣿⣿⣧⠀⠀⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡀⣸⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⡀⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡇⠹⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠁⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣤⣞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢢⣀⣠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠲⢤⣀⣀⠀⢀⣀⣀⠤⠒⠉⠀⠀⠀⠀⠀⠀
+let generatedTaskPDF;
+
+const taskPDF = {
+    generate_task_pdf: function (taskData) {
+        console.log(taskData);
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            console.error("jsPDF is not loaded.");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text("PACIFIC PAINT (BOYSEN) PHILIPPINES, INC.", 60, 10);
+        doc.text("IT HELPDESK FORM", 90, 18);
+
+        doc.setFontSize(10);
+
+        const leftFields = [
+            ["Task Type", taskData.taskType],
+            ["Task Description", taskData.taskDescription],
+            ["Requested By", taskData.requestedBy],
+            ["Approved By", taskData.approvedBy],
+            ["Department", taskData.department],
+            ["Application Name", taskData.applicationName],
+            ["IT in Charged", taskData.itInCharge],
+            ["Problem Details", taskData.problemDetails],
+        ];
+
+        const rightFields = [
+            ["Trx Date", taskData.trxDate],
+            ["Date Received", taskData.dateReceived],
+            ["Date Requested", taskData.dateRequested],
+            ["Severity", taskData.severity],
+            ["", ""],
+            ["", ""],
+            ["", ""],
+            ["Remarks", taskData.remarks],
+        ];
+
+        let y = 30;
+        const lineHeight = 5;
+        const maxWidth = 50;
+
+        for (let i = 0; i < leftFields.length; i++) {
+            // LEFT column
+            const leftLabel = leftFields[i][0];
+            const leftValue = leftFields[i][1] || "";
+            const leftLines = doc.splitTextToSize(leftValue, maxWidth);
+            const leftHeight = leftLines.length * lineHeight;
+
+            doc.setFont("helvetica", "bold");
+            doc.text(`${leftLabel}:`, 10, y + lineHeight - 1);
+            doc.setFont("helvetica", "normal");
+            doc.text(leftLines, 55, y + lineHeight - 1);
+            doc.line(55, y + leftHeight + 1, 105, y + leftHeight + 1); // adjusted underline
+
+            // RIGHT column
+            const rightLabel = rightFields[i][0];
+            const rightValue = rightFields[i][1] || "";
+            if (rightLabel) {
+                const rightLines = doc.splitTextToSize(rightValue, maxWidth);
+                const rightHeight = rightLines.length * lineHeight;
+
+                doc.setFont("helvetica", "bold");
+                doc.text(`${rightLabel}:`, 120, y + lineHeight - 1);
+                doc.setFont("helvetica", "normal");
+                doc.text(rightLines, 155, y + lineHeight - 1);
+                doc.line(155, y + rightHeight + 1, 205, y + rightHeight + 1); // adjusted underline
+
+                y += Math.max(leftHeight, rightHeight) + 4;
+            } else {
+                y += leftHeight + 4;
+            }
+        }
+
+        const pdfBlob = doc.output("blob");
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        document.getElementById("pdfPreviewTask").src = pdfUrl;
+        document.getElementById("taskInfoModal").style.display = "none";
+        document.getElementById("taskPDFPreviewModal").style.display = "block";
+    }
+};
+
+function closePrintModal() {
+    document.getElementById("printModal").style.display = "none";
+}
+
+// ⡴⠒⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠉⠳⡆⠀
+// ⣇⠰⠉⢙⡄⠀⠀⣴⠖⢦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣆⠁⠙⡆
+// ⠘⡇⢠⠞⠉⠙⣾⠃⢀⡼⠀⠀⠀⠀⠀⠀⠀⢀⣼⡀⠄⢷⣄⣀⠀⠀⠀⠀⠀⠀⠀⠰⠒⠲⡄⠀⣏⣆⣀⡍
+// ⠀⢠⡏⠀⡤⠒⠃⠀⡜⠀⠀⠀⠀⠀⢀⣴⠾⠛⡁⠀⠀⢀⣈⡉⠙⠳⣤⡀⠀⠀⠀⠘⣆⠀⣇⡼⢋⠀⠀⢱
+// ⠀⠘⣇⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⡴⢋⡣⠊⡩⠋⠀⠀⠀⠣⡉⠲⣄⠀⠙⢆⠀⠀⠀⣸⠀⢉⠀⢀⠿⠀⢸
+// ⠀⠀⠸⡄⠀⠈⢳⣄⡇⠀⠀⢀⡞⠀⠈⠀⢀⣴⣾⣿⣿⣿⣿⣦⡀⠀⠀⠀⠈⢧⠀⠀⢳⣰⠁⠀⠀⠀⣠⠃
+// ⠀⠀⠀⠘⢄⣀⣸⠃⠀⠀⠀⡸⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠈⣇⠀⠀⠙⢄⣀⠤⠚⠁⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⢹⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⢘⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⢰⣿⣿⣿⡿⠛⠁⠀⠉⠛⢿⣿⣿⣿⣧⠀⠀⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡀⣸⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⡀⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡇⠹⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠁⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣤⣞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢢⣀⣠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠲⢤⣀⣀⠀⢀⣀⣀⠤⠒⠉⠀⠀⠀⠀⠀⠀
 
 const search = {
     search_filter: function() {
@@ -595,14 +728,10 @@ const add = {
         // Set up cancel button event listener
         const cancelTask = document.getElementById('cancelTaskButton');
 
-        socket.on('cancelLoadTask', async() => {
-            console.log('Cancelling load task socket called.');
-            await load.load_tasks();
-        })
-
-        cancelTask.onclick = async () => {
-            await cancel.cancel_task(taskData.taskId);
-        };
+        // socket.on('cancelLoadTask', async() => {
+        //     console.log('Cancelling load task socket called.');
+        //     await load.load_tasks();
+        // })
 
         const editTaskButton = document.getElementById('editTaskButton');
         editTaskButton.onclick = async () => {
@@ -611,6 +740,20 @@ const add = {
             });
             taskInfoModal.style.display = 'none';
             await update.open_edit_modal(taskData);
+        };
+
+        const printForm = document.getElementById('printTaskButton');
+        printForm.onclick = () => {
+            taskPDF.generate_task_pdf(taskData);
+        };
+
+        const duplicateJob = document.getElementById('duplicateJobButton');       
+        duplicateJob.onclick = () => {
+            update.duplicate_job(taskData);
+        };
+
+        cancelTask.onclick = async () => {
+            await cancel.cancel_task(taskData.taskId);
         };
     },
 
@@ -648,12 +791,14 @@ const add = {
             }
         };
 
-        const statusField = document.getElementById("new-task");
+        const newTaskButton = document.getElementById("new-task");
         const dateReqField = document.getElementById("dateReq");
+        const dateRecField = document.getElementById("dateRec");
     
         // Listen for status changes to auto-fill Date Finished
-        statusField.addEventListener("click", function () {
+        newTaskButton.addEventListener("click", function () {
             dateReqField.value = currentDate;
+            dateRecField.value = currentDate;
         });
 
         // Load tasks to other receivers -- prolly mga admin
@@ -830,7 +975,7 @@ const cancel = {
                 console.log("Task cancelled successfully:", data);
                 alert(`Task ${taskId} cancelled successfully!`); 
                 socket.emit('updateTask', {check: 'cancel', user: activeUser});
-                // await load.load_tasks();
+                await load.load_tasks();
                 taskInfoModal.style.display = "none";
             } else {
                 console.error("Error cancelling task:", data.error);
@@ -869,6 +1014,8 @@ const cancel = {
 
 
 // Database Logic -- Updating
+
+
 const update = {
     open_edit_modal: async function(taskData){
         const editModal = document.getElementById('taskEditModal');
@@ -905,7 +1052,7 @@ const update = {
             event.preventDefault();
             await update.submit_edited_task(taskData.taskId);
         };
-    
+
         editModal.style.display = "flex";
     },
 
@@ -922,11 +1069,21 @@ const update = {
     
         statusField.addEventListener("change", function () {
             const currentDate = new Date().toISOString().split('T')[0];
-    
-            if (statusField.value === "Completed" && !dateFinField.value) {
+            const newStatus = statusField.value;
+
+            if (newStatus === "Completed") {
+                if (!dateStartField.value) {
+                    dateStartField.value = currentDate;
+                }
                 dateFinField.value = currentDate;
-            } else if (statusField.value === "In Progress" && !dateStartField.value) {
-                dateStartField.value = currentDate;
+            } else if (newStatus === "In Progress") {
+                if (!dateStartField.value) {
+                    dateStartField.value = currentDate;
+                }
+                dateFinField.value = "";
+            } else {
+                dateStartField.value = "";
+                dateFinField.value = "";
             }
         });
     },
@@ -958,6 +1115,8 @@ const update = {
             const field = document.getElementById(key);
             return field && field.getAttribute("data-set") === "true";
         });
+
+        // console.log(requiredFields);
     
         // Check if any required field is null
         const missingFields = requiredFields.filter(key => !formData[key]);
@@ -1013,6 +1172,70 @@ const update = {
                 : error.message
             );
         }
+    },
+
+    update_button_text: function(mediaQuery) {
+        const bottomId = document.getElementById('bottom');
+        const buttons = bottomId.querySelectorAll('.update-btn');
+        buttons.forEach(btn => {
+            if (mediaQuery.matches) {
+                if (btn.id.includes('edit')) btn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                if (btn.id.includes('print')) btn.innerHTML = '<i class="fa-solid fa-print"></i>';
+                if (btn.id.includes('duplicate')) btn.innerHTML = '<i class="fa-solid fa-copy"></i>';
+                if (btn.id.includes('cancel')) btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            } else {
+                if (btn.id.includes('edit')) btn.innerHTML = 'Edit Task';
+                if (btn.id.includes('print')) btn.innerHTML = 'Print Task';
+                if (btn.id.includes('duplicate')) btn.innerHTML = 'Duplicate Task';
+                if (btn.id.includes('cancel')) btn.innerHTML = 'Cancel Task';
+            }
+        });
+    },
+
+    duplicate_job: async function(taskData) {
+        const taskInfoModal = document.getElementById('taskInfoModal');
+
+        const { id, taskId, ...rest } = taskData;
+        const task_to_submit = {
+            ...rest,
+            taskId: util.generate_unique_id(),
+            taskStatus: "Pending"
+        };
+
+        try {
+            const response = await fetch('/api/tasks/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(task_to_submit)
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {  
+                throw new Error(data.error || "Failed to duplicate task");
+            }
+
+            if(!data.success) return;
+
+            alert('Task duplicated successfully');
+
+            const newTasksPerPage = page.task_per_page();
+            if (newTasksPerPage !== tasksPerPage) tasksPerPage = newTasksPerPage;
+    
+            initialTasks.unshift(task_to_submit);
+            socket.emit('addTask', { task: task_to_submit, user: activeUser });
+            list_update_page();
+            taskInfoModal.style.display = 'none';
+
+        } catch (error) {
+            console.error("Error:", error);
+            alert(error.message.includes("Failed to fetch") 
+                ? "Network error. Please check your connection and try again." 
+                : error.message
+            );
+        }
+        // update.update_task(taskId, task_to_submit);
+        // await update.submit_edited_task(taskData.taskId);
     }
 }
 
@@ -1673,6 +1896,7 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
 
         const edit_row = async (event) => {
             event.preventDefault();
+            alert('hello');
 
             editInProgress = true;
 
@@ -1838,55 +2062,47 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                         const data = await load.load_reference(table);
                         render_table(data);
                     }
-                }
+                };
+        
                 next.onclick = async () => {
                     current++;
                     const data = await load.load_reference(table);
                     render_table(data);
-    
-                }
-            }
-    
-            if (searchInput) {
-                searchInput.removeEventListener('input', search_table);
-                searchInput.addEventListener('input', search_table);
-            }
-
-            if (closeButton) {    
-                closeButton.removeEventListener('click', close_container);
-                closeButton.addEventListener('click', close_container);
-            }
-    
-            if (addButton) {   
-                addButton.removeEventListener('click', add_row);
-                addButton.addEventListener('click', add_row);
+                };
             }
         
-            if (editButton) {   
-                editButton.removeEventListener('click', edit_row);
-                editButton.addEventListener('click', edit_row);
+            if (searchInput) {
+                searchInput.oninput = search_table;
             }
-            
+        
+            if (closeButton) {
+                closeButton.onclick = close_container;
+            }
+        
+            if (addButton) {
+                addButton.onclick = add_row;
+            }
+        
+            if (editButton) {
+                editButton.onclick = edit_row;
+            }
+        
             if (confirmApply) {
-                confirmApply.removeEventListener('click', confirm_edit);
-                confirmApply.addEventListener('click', confirm_edit);
+                confirmApply.onclick = confirm_edit;
             }
-    
+        
             if (confirmSelect) {
-                confirmSelect.removeEventListener('click', confirm_row);
-                confirmSelect.addEventListener('click', confirm_row);
+                confirmSelect.onclick = confirm_row;
             }
-    
-            if (confirmCancel) {   
-                confirmCancel.removeEventListener('click', cancel_select);
-                confirmCancel.addEventListener('click', cancel_select);
+        
+            if (confirmCancel) {
+                confirmCancel.onclick = cancel_select;
             }
-    
-            if (deleteButton) {               
-                deleteButton.removeEventListener('click', delete_row);
-                deleteButton.addEventListener('click', delete_row);
+        
+            if (deleteButton) {
+                deleteButton.onclick = delete_row;
             }
-        }
+        }        
     } catch (err) {
         console.error(`Error loading ${table}:`, err);
     }

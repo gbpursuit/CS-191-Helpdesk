@@ -8,12 +8,28 @@
             <!-- Task details will be populated here -->
         </div>
         <div id="bottom" class="bottom-stuff">
-            <button type = "button" id="editTaskButton" class="edit-btn">Edit Task</button>
-            <button type = "button" id="printTaskButton" class="print-btn">Print Task</button>
-            <button type = "button" id="cancelTaskButton" class="cancel-btn">Cancel Task</button>
+            <div class="left-side">
+                <button type = "button" id="editTaskButton" class="edit-btn update-btn">Edit Task</button>
+                <button type = "button" id="printTaskButton" class="print-btn update-btn">Print Task</button>
+                <button type = "button" id="duplicateJobButton" class="duplicate-btn update-btn">Duplicate Task</button>
+            </div>
+            <div class="right-side">
+                <button type = "button" id="cancelTaskButton" class="cancel-btn update-btn">Cancel Task</button>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Task PDF Preview Modal -->
+<div id="taskPDFPreviewModal" class="print-modal" style="display: none;">
+    <div class="print-content">
+        <iframe title="PDF Task Preview" id="pdfPreviewTask" class="task-pdf-preview"></iframe>
+        <div class="footer">
+            <span onclick="document.getElementById('taskPDFPreviewModal').style.display='none';" class="close-print">&times</span>
+        </div>
+    </div>
+</div>
+
 
 <div id="taskEditModal" class="edit-modal">
     <div id="editModalContent" class="edit-modal-content" onclick="event.stopPropagation()">            
@@ -177,12 +193,10 @@
                             <label for="editTaskStatus">Status</label>
                             <select id="editTaskStatus" class="edit-dropdown">
                                 <option value="New">New</option>
-                                <option value="Open">Open</option>
                                 <option value="Pending">Pending</option>
                                 <option value="In Progress">In Progress</option>
                                 <option value="On Hold">On Hold</option>
                                 <option value="Completed">Completed</option>
-                                <option value="Closed">Closed</option>
                                 <option value="Cancelled">Cancelled</option>
                             </select>
                         </div>
