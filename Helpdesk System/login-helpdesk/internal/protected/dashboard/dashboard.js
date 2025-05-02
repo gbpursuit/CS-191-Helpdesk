@@ -103,6 +103,7 @@ const layout = {
     dashboard_open: async function() {
        layout.setup_elem(1);
        generatedPDF = null;
+       setTimeout(page.update_tasks_per_page, 50);
     //    await page.update_tasks_per_page();
     }, 
 
@@ -216,6 +217,7 @@ const layout = {
     },
 
     dropdown_toggle: function() {
+        console.log('hello');
         const logoutButton = document.querySelector(".logout-btn");
         const profile = document.querySelector(".user-profile");
         const dropdownMenu = document.getElementById("dropdownMenu");
@@ -223,11 +225,15 @@ const layout = {
 
         function toggle_dropdown(event) {
             event.stopPropagation();
+            console.log('hiiii');
             dropdownMenu.classList.toggle("show");
         }
 
-        logoutButton.addEventListener("click", toggle_dropdown);
-        profile.addEventListener("click", toggle_dropdown);
+        logoutButton.onclick = (event) => {toggle_dropdown(event)};
+        profile.onclick = (event) => {toggle_dropdown(event)};        
+
+        // logoutButton.addEventListener("click", toggle_dropdown);
+        // profile.addEventListener("click", toggle_dropdown);
 
         document.addEventListener("click", function(event) {
             if (!dropdownMenu.contains(event.target) && !logoutButton.contains(event.target)) {
@@ -305,6 +311,7 @@ const pdf = {
     
         doc.setFont("helvetica", "normal");
         doc.text("IT MANAGEMENT - IT SUMMARY REPORT", 10, 22);
+        
         doc.text(`Date Ranged: 05-JAN-2025 to 05-JAN-2025`, 10, 29); // Static for now, you can make dynamic later
         doc.text(`Requested By: GWEN CASTRILLON (05/01/2025 02:21 pm)`, 10, 36); // Same here
     
@@ -319,12 +326,12 @@ const pdf = {
     
         // Prepare data rows
         const tableData = tasks.map(task => [
-            task.transactionDate || "", 
+            task.taskDate || "", 
             task.itInCharge || "", 
             task.taskType || "", 
             task.taskDescription || "", 
             task.department || "", 
-            task.status || ""
+            task.taskStatus || ""
         ]);
     
         // Generate Table
@@ -412,9 +419,9 @@ const taskPDF = {
         ];
 
         const rightFields = [
-            ["Trx Date", taskData.trxDate],
-            ["Date Received", taskData.dateReceived],
-            ["Date Requested", taskData.dateRequested],
+            ["Trx Date", taskData.taskDate],
+            ["Date Received", taskData.dateRec],
+            ["Date Requested", taskData.dateReq],
             ["Severity", taskData.severity],
             ["", ""],
             ["", ""],
@@ -1183,11 +1190,13 @@ const update = {
                 if (btn.id.includes('print')) btn.innerHTML = '<i class="fa-solid fa-print"></i>';
                 if (btn.id.includes('duplicate')) btn.innerHTML = '<i class="fa-solid fa-copy"></i>';
                 if (btn.id.includes('cancel')) btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                btn.classList.remove('add-gap');
             } else {
-                if (btn.id.includes('edit')) btn.innerHTML = 'Edit Task';
-                if (btn.id.includes('print')) btn.innerHTML = 'Print Task';
-                if (btn.id.includes('duplicate')) btn.innerHTML = 'Duplicate Task';
-                if (btn.id.includes('cancel')) btn.innerHTML = 'Cancel Task';
+                if (btn.id.includes('edit')) btn.innerHTML = '<i class="fa-solid fa-pen"></i> Edit';
+                if (btn.id.includes('print')) btn.innerHTML = '<i class="fa-solid fa-print"></i> Print';
+                if (btn.id.includes('duplicate')) btn.innerHTML = '<i class="fa-solid fa-copy"></i> Duplicate';
+                if (btn.id.includes('cancel')) btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Cancel';
+                btn.classList.add('add-gap');
             }
         });
     },

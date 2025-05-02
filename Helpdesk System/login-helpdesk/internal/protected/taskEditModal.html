@@ -24,9 +24,10 @@
 <div id="taskPDFPreviewModal" class="print-modal" style="display: none;">
     <div class="print-content">
         <iframe title="PDF Task Preview" id="pdfPreviewTask" class="task-pdf-preview"></iframe>
-        <div class="footer">
+        <span onclick="document.getElementById('taskPDFPreviewModal').style.display='none';" class="close-print">&times</span>
+        <!-- <div id="teka" class="footer">
             <span onclick="document.getElementById('taskPDFPreviewModal').style.display='none';" class="close-print">&times</span>
-        </div>
+        </div> -->
     </div>
 </div>
 
