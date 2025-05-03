@@ -2056,12 +2056,13 @@ input[type="date"] {
 
 .pdf-preview {
     width: 100%;
-    height: 95%;
+    height: 100%;
 }
 
 .footer {
+    position: relative;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 10px; 
     width: 100%;
     height: 5%;

@@ -12,8 +12,10 @@
     <!-- Load jsPDF and AutoTable BEFORE dashboard.js -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>  
     <script src="/internal/protected/dashboard/dashboard.js" type="module" defer></script>
+
 </head>
 <body>
 
@@ -231,13 +233,13 @@
 
             <div id = "summaryElements" class = "sum-elements">
                 <iframe title="PDF Summary Preview" id="pdfPreview" class = "pdf-preview"></iframe>
-                <div class="footer">
+                <!-- <div class="footer">
                     <button id="printButton" class="print-button foot-btn">
                         <span >Print Summary PDF</span>
                     </button>
-                </div>
+                </div> -->
             </div>
-            
+
             <div id="summary-notificationPopup" class="notification-popup">
                 <div class="popup-content">
                     <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>

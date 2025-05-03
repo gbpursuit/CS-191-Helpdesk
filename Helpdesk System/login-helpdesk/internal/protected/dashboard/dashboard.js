@@ -12,15 +12,15 @@ document.addEventListener("DOMContentLoaded", async function() {
             }
         }, { passive: false });
     
-        document.getElementById("printButton").onclick = async function () {
-            if (!generatedPDF) {
-                console.log("Generating new PDF...");
-                generatedPDF = await pdf.generate_pdf();
-            }
-            if (generatedPDF) {
-                generatedPDF.save("summary_report.pdf");
-            }
-        }; 
+        // document.getElementById("printButton").onclick = async function () {
+        //     if (!generatedPDF) {
+        //         console.log("Generating new PDF...");
+        //         generatedPDF = await pdf.generate_pdf();
+        //     }
+        //     if (generatedPDF) {
+        //         generatedPDF.save("summary_report.pdf");
+        //     }
+        // }; 
 
         document.getElementById('headerbar').onclick = () => {
             localStorage.setItem('sidebarState', 'false');
@@ -98,6 +98,7 @@ const socket = io();
 
 // Get active user
 let activeUser = null;
+let requested_by = null;
 
 // Layout Page Logic
 const layout = {
@@ -210,6 +211,7 @@ const layout = {
                 document.getElementById("pagename").textContent = data.username;
             } 
             activeUser = data.username;
+            requested_by = data.fullName;
             socket.emit('updateSocket', data.username);
         } catch (err) {
             console.error('Error fetching session user:', err);
@@ -305,8 +307,8 @@ const pdf = {
         const currentDate = new Date();
         const testing = await pdf.fetch_summary_data();
     
-        const firstTask = testing[0] || {};
-        const requestedBy = (firstTask.itInCharge || "Unknown").toUpperCase();
+        // const firstTask = testing[0] || {};
+        const requestedBy = (requested_by|| "Unknown").toUpperCase();
         const requestTime = new Date(); // Use current time
     
         const taskDates = testing
@@ -344,6 +346,8 @@ const pdf = {
         ]);
     
         if (doc.autoTable) {
+            const totalPagesExp = "{total_pages_count_string}";
+            
             doc.autoTable({
                 head: tableHeaders,
                 body: tableData,
@@ -360,14 +364,16 @@ const pdf = {
                 },
                 columnStyles: {
                     0: { cellWidth: 25 },
-                    1: { cellWidth: 35 },
+                    1: { cellWidth: 45 },
                     2: { cellWidth: 35 },
                     3: { cellWidth: 90 },
                     4: { cellWidth: 45 },
                     5: { cellWidth: 25 }
                 },
                 margin: { top: 42 },
-                didDrawPage: function (data) {
+                didDrawPage: function () {
+                    const pageNumber = doc.internal.getNumberOfPages();
+                    
                     // Header
                     doc.setFontSize(12);
                     doc.setFont("helvetica", "bold");
@@ -377,12 +383,16 @@ const pdf = {
                     doc.text("IT MANAGEMENT - IT SUMMARY REPORT", 10, 22);
                     doc.text(`Date Ranged: ${formatDate(startDate)} to ${formatDate(endDate)}`, 10, 29);
                     doc.text(`Requested By: ${requestedBy} (${formatDate(requestTime)} ${formatTime(requestTime)})`, 10, 36);
-    
-                    const pageNumber = doc.internal.getNumberOfPages();
+
+                    // Page Number
                     doc.setFontSize(10);
-                    doc.text(`Page ${pageNumber}`, 275, 15, { align: "right" });
+                    doc.text(`Page ${pageNumber} / ${totalPagesExp}`, 325, 15, { align: "right" });
                 }
             });
+
+            if (typeof doc.putTotalPages === 'function') {
+                doc.putTotalPages(totalPagesExp);
+            }
     
             const pdfBlob = doc.output("blob");
             const pdfUrl = URL.createObjectURL(pdfBlob);
