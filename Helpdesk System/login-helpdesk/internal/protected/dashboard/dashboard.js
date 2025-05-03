@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             }
         }, { passive: false });
     
-        document.getElementById("printButton").addEventListener("click", async function () {
+        document.getElementById("printButton").onclick = async function () {
             if (!generatedPDF) {
                 console.log("Generating new PDF...");
                 generatedPDF = await pdf.generate_pdf();
@@ -20,12 +20,12 @@ document.addEventListener("DOMContentLoaded", async function() {
             if (generatedPDF) {
                 generatedPDF.save("summary_report.pdf");
             }
-        }); 
+        }; 
 
-        document.getElementById('headerbar').addEventListener('click', () => {
+        document.getElementById('headerbar').onclick = () => {
             localStorage.setItem('sidebarState', 'false');
             window.location.reload();
-        })
+        };
 
         const tableHeader = document.getElementById('taskTableHeader');
         const thElements = tableHeader.querySelectorAll('th');
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 
                 th.style.cursor = 'pointer';
 
-                th.addEventListener('click', () => {
+                th.onclick = () => {
                     let icon = th.querySelector('i');
     
                     if(!icon) {
@@ -52,13 +52,14 @@ document.addEventListener("DOMContentLoaded", async function() {
                             th.removeChild(icon);
                         }
                     }
-                });
+                };
             }
         });
 
-        const mediaQuery = window.matchMedia('(max-width: 850px)');
+        const mediaQuery = window.matchMedia('(max-width: 1070px)');
         update.update_button_text(mediaQuery);
-        mediaQuery.addEventListener('change', update.update_button_text);
+        mediaQuery.onchange = update.update_button_text;
+        // mediaQuery.addEventListener('change', update.update_button_text);
 
         window.close_modal = close_modal;
         window.closePrintModal = closePrintModal;
@@ -156,19 +157,19 @@ const layout = {
             layout.dashboard_open(); 
         }
 
-        summary.addEventListener('click', async function(event){
+        summary.onclick = async function(event) {
             event.preventDefault();
 
             dashboardContainer.style.display = 'none';
             await layout.summary_open();
-        });
+        };
         
-        dashboard.addEventListener('click', async function(event){
+        dashboard.onclick = async function(event){
             event.preventDefault();
 
             await layout.dashboard_open();
             summaryContainer.style.display = 'none';
-        });
+        };
     },
 
     notification_popup: function() {
@@ -541,7 +542,7 @@ const search = {
         }
 
         // Handle filter selection change
-        filterSelect.addEventListener("change", function () {
+        filterSelect.onchange = function() {
             const selectedFilter = this.value;
 
             // Hide all dropdowns and reset values
@@ -553,9 +554,9 @@ const search = {
             if (dropdowns[selectedFilter]) {
                 dropdowns[selectedFilter].style.display = "block";
             }
-        });
+        };
 
-        document.addEventListener("change", async function (event) {
+        document.onchange = async function(event) {
             const selectedDropdown = Object.values(dropdowns).find(dropdown => dropdown === event.target);
             if (!selectedDropdown) return;
 
@@ -582,7 +583,7 @@ const search = {
 
             window.history.pushState({}, "", newUrl);
             await load.load_tasks(null, true); 
-        });
+        };
     }
 }
 
@@ -646,15 +647,16 @@ const add = {
             await add.open_task_modal(task);
         }
 
-        row.addEventListener('click', async function(event) {
+        row.onclick = async function(event) {
             await row_action(event, row, task);
-        });
+        };
         
-        row.addEventListener('keydown', async function(event) {
+        row.onkeydown = async function(event) {
             if (event.key === 'Enter' || event.key === ' ') {
                 await row_action(event, row, task);
             }
-        });
+        };
+
         // Append row to the table body
         tableBody.appendChild(row);
     },
@@ -732,16 +734,13 @@ const add = {
     
         taskInfoModal.style.display = "flex";       
 
-        // Set up cancel button event listener
-        const cancelTask = document.getElementById('cancelTaskButton');
-
         // socket.on('cancelLoadTask', async() => {
         //     console.log('Cancelling load task socket called.');
         //     await load.load_tasks();
         // })
 
-        const editTaskButton = document.getElementById('editTaskButton');
-        editTaskButton.onclick = async () => {
+        const bottomId = document.getElementById('bottom');
+        bottomId.querySelector('.edit-btn').onclick = async () => {
             Object.values(fetch_data).forEach(fn => {
                 fn(true);      
             });
@@ -749,19 +748,31 @@ const add = {
             await update.open_edit_modal(taskData);
         };
 
-        const printForm = document.getElementById('printTaskButton');
-        printForm.onclick = () => {
+        bottomId.querySelector('.print-btn').onclick = () => {
             taskPDF.generate_task_pdf(taskData);
         };
 
-        const duplicateJob = document.getElementById('duplicateJobButton');       
-        duplicateJob.onclick = () => {
+        bottomId.querySelector('.duplicate-btn').onclick = () => {
             update.duplicate_job(taskData);
         };
 
-        cancelTask.onclick = async () => {
+        bottomId.querySelector('.cancel-btn').onclick = async () => {
             await cancel.cancel_task(taskData.taskId);
         };
+
+        bottomId.querySelector('.modified-btn').onclick = async () => {
+            const modifyContent = document.getElementById('modifyContent');
+            modifyContent.style.display = 'flex';
+
+            modifyContent.querySelector('.modifyName').textContent = `Last Modified By: ${taskData.itInCharge}`;
+            modifyContent.querySelector('.modifyTime').textContent = `Time Modified: `;
+
+            const closeTask = modifyContent.querySelector('.close-task');
+            closeTask.onclick = () => {
+                modifyContent.style.display = 'none';
+            }
+            
+        } 
     },
 
     modal_handling: function() {
@@ -880,12 +891,11 @@ const add = {
             }
         };
 
-        // taskInfoModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'submittedContent', 'taskInfoModal'));
-        // taskModal.addEventListener('click', (event) => UI.close_outside_modal(event, 'modalContent', 'taskModal'));
-        pop.addEventListener('click', (event) => UI.close_outside_modal(event, 'popupContent', 'notificationPopup'));
+        // pop.onclick = function(event) {UI.close_outside_modal(event, 'popupContent', 'notificationPopup')};
+        // pop.addEventListener('click', (event) => UI.close_outside_modal(event, 'popupContent', 'notificationPopup'));
 
         if (closeButton) {
-            closeButton.addEventListener('click', () => {
+            closeButton.onclick = () => {
                 const form = document.getElementById('newTaskForm');
                 const rotwo = document.getElementById('rowtwoulit')
                 const textarea = document.querySelector('.outside textarea');
@@ -896,49 +906,16 @@ const add = {
                         form.reset(); 
                     }
                 }
-            })
+            };
         }
-        // if (closeButton) closeButton.addEventListener('click', () => UI.close_modal('taskModal', true));
+
         if (closeTaskButton) {
-            closeTaskButton.addEventListener('click', () => {
+            closeTaskButton.onclick = () => {
                 taskInfoModal.style.display = "none";
-            });
+            };
         }
     }
 }
-
-// const mini_table = {
-//     it_modal: function() {
-//         const taskTypeBtn = document.getElementById('taskTypeBtn');
-
-//         taskTypeBtn.addEventListener("click", async (event) => {
-//             event.preventDefault();
-
-//             try {
-//                 const response = await fetch('/api/ref-table/task_types');
-//                 const data = await response.json();
-
-                
-            
-
-//             } catch(err) {
-//                 console.error("Error fetching data:", err);
-//             }
-
-
-//         } )
-//     },
-
-//     load_small_modal: async function(value) {
-//         try {
-//             console.e
-
-
-//         } catch (err) {
-//             console.error("Error loading data", err);
-//         }
-//     }
-// }
 
 // Database Logic -- Cancel / Delete
 const cancel = {
@@ -1074,7 +1051,7 @@ const update = {
         const selectedOption = statusField.querySelector(`option[value="${selectedStatus}"]`);
         if (selectedOption) selectedOption.disabled = true;
     
-        statusField.addEventListener("change", function () {
+        statusField.onchange = () => {
             const currentDate = new Date().toISOString().split('T')[0];
             const newStatus = statusField.value;
 
@@ -1092,7 +1069,7 @@ const update = {
                 dateStartField.value = "";
                 dateFinField.value = "";
             }
-        });
+        };
     },
 
     submit_edited_task: async function(taskId) {
@@ -1180,7 +1157,7 @@ const update = {
             );
         }
     },
-
+    // <i class="fa-solid fa-clipboard-list"></i>
     update_button_text: function(mediaQuery) {
         const bottomId = document.getElementById('bottom');
         const buttons = bottomId.querySelectorAll('.update-btn');
@@ -1189,12 +1166,14 @@ const update = {
                 if (btn.id.includes('edit')) btn.innerHTML = '<i class="fa-solid fa-pen"></i>';
                 if (btn.id.includes('print')) btn.innerHTML = '<i class="fa-solid fa-print"></i>';
                 if (btn.id.includes('duplicate')) btn.innerHTML = '<i class="fa-solid fa-copy"></i>';
+                if (btn.id.includes('modified')) btn.innerHTML = '<i class="fa-solid fa-clipboard-list"></i>';
                 if (btn.id.includes('cancel')) btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
                 btn.classList.remove('add-gap');
             } else {
                 if (btn.id.includes('edit')) btn.innerHTML = '<i class="fa-solid fa-pen"></i> Edit';
                 if (btn.id.includes('print')) btn.innerHTML = '<i class="fa-solid fa-print"></i> Print';
                 if (btn.id.includes('duplicate')) btn.innerHTML = '<i class="fa-solid fa-copy"></i> Duplicate';
+                if (btn.id.includes('modified')) btn.innerHTML = '<i class="fa-solid fa-clipboard-list"></i> Modified By';
                 if (btn.id.includes('cancel')) btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Cancel';
                 btn.classList.add('add-gap');
             }
@@ -1703,14 +1682,14 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                 selectedRow =  row;
             }
 
-            row.addEventListener('click', function () {
+            row.onclick = () => {
                 body.querySelectorAll("tr").forEach(r => r.classList.remove("highlight"));
                 row.classList.add("highlight");
 
                 selectedRow = row;
                 selectedId = data.id;
                 update_state();
-            });
+            };
 
             body.appendChild(row);
             body.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
@@ -1883,7 +1862,7 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
             const form = modal.querySelector('form');
 
             if(form) {
-                form.addEventListener('submit', async function(event) {
+                form.onsubmit = async function (event) {
                     event.preventDefault();
                     const success = await submit_task_type(modalId, form);
                     if(!success) {
@@ -1895,8 +1874,8 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                     // render_table(data);
                     
                     modal.style.display = 'none';
-                    form.reset();   
-                });
+                    form.reset(); 
+                }
             }
         }
 
@@ -1905,7 +1884,6 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
 
         const edit_row = async (event) => {
             event.preventDefault();
-            alert('hello');
 
             editInProgress = true;
 
@@ -1922,7 +1900,6 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                 depNum = departmentNo.value;
             }
 
-            // may ilalagay here for others
             editValues = [...cells].map(cell => cell.innerText.trim());
 
             cells.forEach((cell, index) => {
@@ -1932,13 +1909,13 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
                     input.value = editValues[index];
                     input.classList.add('editable-input');
 
-                    input.addEventListener("input", () => {
+                    input.oninput = () => {
                         const hasChanged = [...selectedRow.querySelectorAll("input")].some(
                             (inp, i) => inp.value.trim() !== editValues[i]
                         );
                         confirmApply.disabled = !hasChanged;
                         confirmApply.style.display = hasChanged ? 'flex' : 'none';
-                    });
+                    };
 
                     cell.textContent = "";
                     cell.appendChild(input);
@@ -2059,8 +2036,9 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
         }
 
         if (openButton) {        
-            openButton.removeEventListener('click', open_container);
-            openButton.addEventListener('click', open_container);
+            openButton.onclick = open_container;
+            // openButton.removeEventListener('click', open_container);
+            // openButton.addEventListener('click', open_container);
         }
 
         function add_event_listeners() {

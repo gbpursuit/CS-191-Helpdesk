@@ -1,21 +1,35 @@
 <div id="taskInfoModal" class="submitted-modal">
     <div id="submittedContent" class="submitted-content">
         <div id="top" class="top-stuff">
-            <span class="close-task">&times;</span>
             <h2 class="sub-task">Task Information</h2>
+            <span class="close-task">&times;</span>
         </div>
         <div id="taskInfoContent" class = "task-content">
             <!-- Task details will be populated here -->
         </div>
         <div id="bottom" class="bottom-stuff">
             <div class="left-side">
-                <button type = "button" id="editTaskButton" class="edit-btn update-btn">Edit Task</button>
-                <button type = "button" id="printTaskButton" class="print-btn update-btn">Print Task</button>
-                <button type = "button" id="duplicateJobButton" class="duplicate-btn update-btn">Duplicate Task</button>
+                <button type = "button" id="editTaskButton" class="edit-btn update-btn">Edit</button>
+                <button type = "button" id="printTaskButton" class="print-btn update-btn">Print</button>
+                <button type = "button" id="duplicateJobButton" class="duplicate-btn update-btn">Duplicate</button>
+                <button type = "button" id="modifiedButton" class="modified-btn update-btn">Modified By</button>
             </div>
             <div class="right-side">
                 <button type = "button" id="cancelTaskButton" class="cancel-btn update-btn">Cancel Task</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div id="modifyContent" class="modify-content">
+    <div class="another-container">
+        <div class="top-header">
+            <h2 class="sub-task">Modified By</h2>
+            <span class="close-task">&times;</span>
+        </div>
+        <div class="m-content">
+            <p class="modifyName"></p>
+            <p class="modifyTime"></p>
         </div>
     </div>
 </div>
