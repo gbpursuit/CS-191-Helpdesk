@@ -303,29 +303,37 @@ const pdf = {
         const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     
         const currentDate = new Date();
-        const dateStr = currentDate.toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "2-digit" });
+        const testing = await pdf.fetch_summary_data();
     
-        // Header Section
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
-        doc.text("PACIFIC PAINT (BOYSEN) PHILIPPINES, INC", 10, 15);
+        const firstTask = testing[0] || {};
+        const requestedBy = (firstTask.itInCharge || "Unknown").toUpperCase();
+        const requestTime = new Date(); // Use current time
     
-        doc.setFont("helvetica", "normal");
-        doc.text("IT MANAGEMENT - IT SUMMARY REPORT", 10, 22);
-        
-        doc.text(`Date Ranged: 05-JAN-2025 to 05-JAN-2025`, 10, 29); // Static for now, you can make dynamic later
-        doc.text(`Requested By: GWEN CASTRILLON (05/01/2025 02:21 pm)`, 10, 36); // Same here
+        const taskDates = testing
+            .map(task => new Date(task.taskDate))
+            .filter(date => !isNaN(date));
     
-        doc.setFontSize(10);
-        doc.text(`Page 1 / 1`, 275, 15, { align: "right" }); // Adjust page logic if you paginate
+        const startDate = new Date(Math.min(...taskDates));
+        const endDate = new Date(Math.max(...taskDates));
     
-        // Fetch summary data
+        const formatDate = (date) =>
+            date.toLocaleDateString("en-PH", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }).toUpperCase();
+    
+        const formatTime = (date) =>
+            date.toLocaleTimeString("en-PH", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true
+            }).toLowerCase();
+    
         const tasks = await pdf.fetch_summary_data();
     
-        // Table headers (based on image format)
         const tableHeaders = [["Trx Date", "IT in Charge", "Task Type", "Task Description", "Department", "Status"]];
     
-        // Prepare data rows
         const tableData = tasks.map(task => [
             task.taskDate || "", 
             task.itInCharge || "", 
@@ -335,7 +343,6 @@ const pdf = {
             task.taskStatus || ""
         ]);
     
-        // Generate Table
         if (doc.autoTable) {
             doc.autoTable({
                 head: tableHeaders,
@@ -352,12 +359,28 @@ const pdf = {
                     fontStyle: "bold"
                 },
                 columnStyles: {
-                    0: { cellWidth: 25 },  // Trx Date
-                    1: { cellWidth: 35 },  // IT in Charge
-                    2: { cellWidth: 35 },  // Task Type
-                    3: { cellWidth: 90 },  // Task Description
-                    4: { cellWidth: 45 },  // Department
-                    5: { cellWidth: 25 }   // Status
+                    0: { cellWidth: 25 },
+                    1: { cellWidth: 35 },
+                    2: { cellWidth: 35 },
+                    3: { cellWidth: 90 },
+                    4: { cellWidth: 45 },
+                    5: { cellWidth: 25 }
+                },
+                margin: { top: 42 },
+                didDrawPage: function (data) {
+                    // Header
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("PACIFIC PAINT (BOYSEN) PHILIPPINES, INC", 10, 15);
+    
+                    doc.setFont("helvetica", "normal");
+                    doc.text("IT MANAGEMENT - IT SUMMARY REPORT", 10, 22);
+                    doc.text(`Date Ranged: ${formatDate(startDate)} to ${formatDate(endDate)}`, 10, 29);
+                    doc.text(`Requested By: ${requestedBy} (${formatDate(requestTime)} ${formatTime(requestTime)})`, 10, 36);
+    
+                    const pageNumber = doc.internal.getNumberOfPages();
+                    doc.setFontSize(10);
+                    doc.text(`Page ${pageNumber}`, 275, 15, { align: "right" });
                 }
             });
     
