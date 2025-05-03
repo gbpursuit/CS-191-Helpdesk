@@ -784,7 +784,7 @@ const add = {
         const pop = document.querySelector('.notification-popup');
         const currentDate = new Date().toISOString().split('T')[0];
 
-        window.openModal = async function (event) {
+        window.openModal = async function () {
             try {
 
                 Object.values(fetch_data)
@@ -2553,7 +2553,11 @@ const get_name = (id) => {
 // Function to close modal
 const close_modal = (modalId) => {
     const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = 'none';
+    const form = modal.querySelector('form');
+    if (modal) {
+        modal.style.display = 'none';
+        form.reset();
+    }
 };
 
 // Function to submit task type and add row to table
