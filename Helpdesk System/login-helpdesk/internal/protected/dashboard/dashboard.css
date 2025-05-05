@@ -467,37 +467,32 @@ label[for="check"]{
 
 .search-filter {
     display: flex;
-    flex: 1;
-    /* justify-content: space-between; */
     align-items: center;
     width: 100%;
     height: 100%;
 }
 
 .left-section {
-    width: 50%;
+    width: 70%;
     display: flex;
     flex-direction: row;
     gap: 3px;
-    padding-left: 10px;
-    padding-right: 40px;
 }
 
 .search-input {
-    flex:0.7; 
+    flex: 0.6;
 }
 
 .dropdown-filter {
-    flex: 0.3; 
+    flex: 0.2;
 }
 
 .dropdown-filter option[value="stop"] {
     color: var(--hot-pink);
 }
 
-
 .right-section {
-    width: 50%;
+    width: 30%;
     /* width: 150px; */
     display: flex;
 }
@@ -691,7 +686,7 @@ label[for="check"]{
     white-space: nowrap; /* Prevents text from wrapping (clean look) */
     overflow: hidden;
     text-overflow: ellipsis; /* Adds "..." if text is too long */
-    max-width: 160px; /* Adjust as needed */
+    max-width: 160px; 
 }
 
 .scroll::-webkit-scrollbar,

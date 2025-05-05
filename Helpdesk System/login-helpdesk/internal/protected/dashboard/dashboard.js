@@ -29,29 +29,60 @@ document.addEventListener("DOMContentLoaded", async function() {
 
         const tableHeader = document.getElementById('taskTableHeader');
         const thElements = tableHeader.querySelectorAll('th');
+        let taskList = ['Task Type', 'Task Description', 'Task Date', 'Requested By', 'Severity', 'Status', 'Department', 'IT in Charge'];
 
         thElements.forEach((th, index) => {
-            let taskList = ['Task Type', 'Task Description', 'Task Date', 'Requested By', 'Status', 'Severity' ];
             if (taskList.includes(th.textContent.trim())) {
-                
                 th.style.cursor = 'pointer';
 
                 th.onclick = () => {
+                    const removeFilter = th.textContent.trim();
+                    const filterBy = th.getAttribute('data-column');
+                    const url = new URL(window.location.href);
+                    const currentSort = url.searchParams.get("sort");
+                    const currentDir = url.searchParams.get("dir");
+
+                    thElements.forEach(otherTh => {
+                        if (otherTh !== th) {
+                            const otherIcon = otherTh.querySelector('i');
+                            if (otherIcon) {
+                                otherTh.removeChild(otherIcon);
+                            }
+                        }
+                    });
+
                     let icon = th.querySelector('i');
     
-                    if(!icon) {
+                    if(!icon || currentSort !== filterBy) {
+                        // DESCENDING
                         icon = document.createElement('i');
                         icon.classList.add('fa-solid', 'fa-sort-down');
                         th.appendChild(icon);
+
+                        url.searchParams.set("sort", filterBy);
+                        url.searchParams.set("dir", "DESC");
+                        window.history.pushState({}, "", url);
+                        search.filter_header(true, true);
                     } else {
+                        // ASCENDING 
                         if (icon.classList.contains('fa-sort-down')) {
                             icon.classList.remove('fa-sort-down');
                             icon.classList.add('fa-sort-up');
+
+                            url.searchParams.set("sort", filterBy);
+                            url.searchParams.set("dir", "ASC");
+                            window.history.pushState({}, "", url);
+                            search.filter_header(true, true);
                         } else {
-                            icon.classList.remove('fa-sort-up');
-                            th.removeChild(icon);
+                            // NORMAL
+                            icon.remove();
+                            url.searchParams.delete("sort");
+                            url.searchParams.delete("dir");
+                            window.history.pushState({}, "", url);
+                            search.filter_header();
                         }
                     }
+                    // window.history.pushState({}, "", url);
                 };
             }
         });
@@ -70,9 +101,6 @@ document.addEventListener("DOMContentLoaded", async function() {
     
         // Add Functions
         add.modal_handling();
-    
-        // Load Functions
-        // await load.load_tasks();
     
         // Filter Functions
         search.search_filter();
@@ -99,6 +127,7 @@ const socket = io();
 // Get active user
 let activeUser = null;
 let requested_by = null;
+let activeFilters = {};
 
 // Layout Page Logic
 const layout = {
@@ -546,7 +575,7 @@ const search = {
                 queryValue ? newUrl.searchParams.set("search", queryValue) : newUrl.searchParams.delete("search");
 
                 window.history.pushState({}, "", newUrl);
-                await load.load_tasks(null, true); // Reload tasks with the new search query
+                search.filter_header(true, true);
             }, 500);
         });
     },
@@ -556,9 +585,7 @@ const search = {
 
         const dropdowns = {
             taskStatus: document.querySelector(".status-options"),
-            // taskDate: document.querySelector(".date-options"),
             severity: document.querySelector(".severity-options"),
-            // department: document.querySelector(".dept-options"),
         };
 
         // Hide all dropdowns initially
@@ -615,9 +642,57 @@ const search = {
             }
 
             window.history.pushState({}, "", newUrl);
-            await load.load_tasks(null, true); 
+            search.filter_header(true, true);
         };
+    },
+
+    filter_header: function(pass = false, check = false) {
+        const url = new URLSearchParams(window.location.search);
+        const sort = url.get('sort');
+        const dir = url.get('dir');
+        const filterBy = url.get("filterBy");
+        const value = url.get("value");
+        const search = url.get('search');
+
+        if (pass === false && !filterBy && !search) {
+            list_update_page();
+            return;
+        } else {
+            let taskCopy = initialTasks.map(task => ({ ...task })); // deepcopy
+            let type = ['taskType', 'taskDescription', 'problemDetails', 'remarks'];
+
+            if (search) {
+                taskCopy = taskCopy.filter(task => {
+                    return type.some(field => 
+                        String(task[field]).toLowerCase().includes(search.toLowerCase())  
+                    );
+                });
+            }
+
+            if (filterBy && value !== null) {
+                taskCopy = taskCopy.filter(task => String(task[filterBy]).toLowerCase() === value);
+                console.log('been here');
+            }
+            
+            if (sort) {
+                taskCopy.sort((a, b) => {
+                    if (a[sort] < b[sort]) return dir === 'ASC' ? -1 : 1;
+                    if (a[sort] > b[sort]) return dir === 'ASC' ? 1 : -1;
+                    return 0;
+                });
+                console.log('been hereeee');
+            }
+
+            if (check === true) {
+                list_update_page(taskCopy);
+                return;
+            }
+
+            return taskCopy;
+        }
+        
     }
+    
 }
 
 // Database Logic -- Adding
@@ -857,7 +932,6 @@ const add = {
             console.log('Ading load task socket called.');
             initialTasks.unshift(file.taskFile);
             list_update_page();
-            // await load.load_tasks();
         })
 
         window.addTask = async (event) => {
@@ -916,7 +990,6 @@ const add = {
                 initialTasks.unshift(updatedTaskFile);
                 socket.emit('addTask', { task: updatedTaskFile, user: activeUser });
                 list_update_page();
-                // await load.load_tasks();
 
                 UI.close_modal('taskModal', true);
             } else {
@@ -1265,6 +1338,7 @@ let initialTasks = [];
 const load = {
     load_tasks: async function(query = null, resetPage = false) {
         try {
+            console.log('hello');
             const urlParams = new URLSearchParams(window.location.search);
             const searchQuery = query || urlParams.get('search') || '';
             const filterBy = urlParams.get('filterBy');
@@ -2283,19 +2357,30 @@ const page = {
 
 setTimeout(page.update_tasks_per_page, 150);
 
-function list_update_page() {
-    console.log('Been here');
-
+function list_update_page(value = null) {
     const tableBody = document.getElementById("taskTableBody");
+    const table = document.querySelector('.task-table');
+    const noData = document.getElementById('noData');
     tableBody.innerHTML = "";
 
-    const length = initialTasks.length;
+    const length = (value !== null) ? value.length : initialTasks.length;
     const t_pages = Math.ceil(length / tasksPerPage);
     totalPages = t_pages;
 
+    if (length === 0) {
+        table.style.display = 'none';
+        noData.style.display = 'flex';  
+        document.querySelector('.fixed-bottom').style.display = 'none';
+    } else {
+        table.style.display = 'table';
+        noData.style.display = 'none';  
+        document.querySelector('.fixed-bottom').style.display = 'flex';
+    }
+
     const startInitial = (currentPage - 1) * tasksPerPage;
     const endInitial = startInitial + tasksPerPage;
-    const paginatedInitial = initialTasks.slice(startInitial, endInitial);
+
+    const paginatedInitial = (value !== null) ? value.slice(startInitial, endInitial) : initialTasks.slice(startInitial, endInitial);
 
     paginatedInitial.forEach((task) => {
         add.add_to_table(task);
@@ -2308,14 +2393,18 @@ if (prevButton && nextButton) {
         if (currentPage > 1) {
             currentPage--;
             util.update_url();
-            await load.load_tasks();
+            let value = search.filter_header(true);
+            list_update_page(value);
         }
     };
 
     nextButton.onclick = async () => {
-        currentPage++;
-        util.update_url();
-        await load.load_tasks();
+        if (currentPage < totalPages) {
+            currentPage++;
+            util.update_url();
+            let value = search.filter_header(true);
+            list_update_page(value);
+        }
     };
 }
 
@@ -2477,7 +2566,8 @@ const util = {
                         util.update_url();
                     }
     
-                    await load.load_tasks();
+                    // await load.load_tasks();
+                    list_update_page();
                 }
             }, 100);
         });
