@@ -100,8 +100,8 @@ body.dark-mode {
     --new-white: var(--v1-gray);
 
     --table-b-shadow: rgba(255, 255, 255, 0.05);
-    --overlay-dark: rgba(28, 34, 30, 0.5);
-    --overlay-light: rgba(28, 34, 30, 0.15);
+    --overlay-dark: rgba(49, 51, 50, 0.5);
+    --overlay-light: rgba(110, 118, 112, 0.15);
     --txt-shadow: rgba(0, 0, 0, 0.6);
     --green-overlay: rgba(22, 66, 52, 0.5);
 

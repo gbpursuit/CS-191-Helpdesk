@@ -61,8 +61,8 @@ export const server = {
                 socket.on('registerUser', (userId) => {
                     let sockets = users.get(userId);
                     if (!sockets) {
-                        sockets = new Set();  // Create a new Set if no socket IDs exist for this user
-                        users.set(userId, sockets);  // Add the user with an empty Set
+                        sockets = new Set(); 
+                        users.set(userId, sockets);  
                     }
             
                     sockets.add(socket.id);

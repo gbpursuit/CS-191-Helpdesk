@@ -27,66 +27,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             window.location.reload();
         };
 
-        const tableHeader = document.getElementById('taskTableHeader');
-        const thElements = tableHeader.querySelectorAll('th');
-        let taskList = ['Task Type', 'Task Description', 'Task Date', 'Requested By', 'Severity', 'Status', 'Department', 'IT in Charge'];
-
-        thElements.forEach((th, index) => {
-            if (taskList.includes(th.textContent.trim())) {
-                th.style.cursor = 'pointer';
-
-                th.onclick = () => {
-                    const removeFilter = th.textContent.trim();
-                    const filterBy = th.getAttribute('data-column');
-                    const url = new URL(window.location.href);
-                    const currentSort = url.searchParams.get("sort");
-                    const currentDir = url.searchParams.get("dir");
-
-                    thElements.forEach(otherTh => {
-                        if (otherTh !== th) {
-                            const otherIcon = otherTh.querySelector('i');
-                            if (otherIcon) {
-                                otherTh.removeChild(otherIcon);
-                            }
-                        }
-                    });
-
-                    let icon = th.querySelector('i');
-    
-                    if(!icon || currentSort !== filterBy) {
-                        // DESCENDING
-                        icon = document.createElement('i');
-                        icon.classList.add('fa-solid', 'fa-sort-down');
-                        th.appendChild(icon);
-
-                        url.searchParams.set("sort", filterBy);
-                        url.searchParams.set("dir", "DESC");
-                        window.history.pushState({}, "", url);
-                        search.filter_header(true, true);
-                    } else {
-                        // ASCENDING 
-                        if (icon.classList.contains('fa-sort-down')) {
-                            icon.classList.remove('fa-sort-down');
-                            icon.classList.add('fa-sort-up');
-
-                            url.searchParams.set("sort", filterBy);
-                            url.searchParams.set("dir", "ASC");
-                            window.history.pushState({}, "", url);
-                            search.filter_header(true, true);
-                        } else {
-                            // NORMAL
-                            icon.remove();
-                            url.searchParams.delete("sort");
-                            url.searchParams.delete("dir");
-                            window.history.pushState({}, "", url);
-                            search.filter_header();
-                        }
-                    }
-                    // window.history.pushState({}, "", url);
-                };
-            }
-        });
-
         const mediaQuery = window.matchMedia('(max-width: 1070px)');
         update.update_button_text(mediaQuery);
         mediaQuery.onchange = update.update_button_text;
@@ -97,15 +37,13 @@ document.addEventListener("DOMContentLoaded", async function() {
     
         // Layout Functions
         layout.list_navigation();
-        layout.notification_popup();
+        // layout.notification_popup();
     
         // Add Functions
         add.modal_handling();
     
         // Filter Functions
-        search.search_filter();
-        search.filter_dropdown();
-    
+   
         // Period Functions
         // period.setup_updates();
 
@@ -117,8 +55,6 @@ document.addEventListener("DOMContentLoaded", async function() {
         UI.handle_darkmode(".toggle-switch");
         // UI.dropdown_toggle();
         UI.handle_sidebar();
-        // UI.show_profile();
-        // await UI.reflect_username();
     });
 })
 
@@ -127,15 +63,18 @@ const socket = io();
 // Get active user
 let activeUser = null;
 let requested_by = null;
-let activeFilters = {};
+let modifiedDate = null;
+let modifiedBy = null;
 
 // Layout Page Logic
 const layout = {
     dashboard_open: async function() {
        layout.setup_elem(1);
        generatedPDF = null;
-       setTimeout(page.update_tasks_per_page, 50);
-    //    await page.update_tasks_per_page();
+       await page.update_tasks_per_page();
+       search.search_filter();
+       search.filter_dropdown();
+       search.filter_header(); 
     }, 
 
     summary_open: async function() {
@@ -249,7 +188,6 @@ const layout = {
     },
 
     dropdown_toggle: function() {
-        console.log('hello');
         const logoutButton = document.querySelector(".logout-btn");
         const profile = document.querySelector(".user-profile");
         const dropdownMenu = document.getElementById("dropdownMenu");
@@ -575,7 +513,7 @@ const search = {
                 queryValue ? newUrl.searchParams.set("search", queryValue) : newUrl.searchParams.delete("search");
 
                 window.history.pushState({}, "", newUrl);
-                search.filter_header(true, true);
+                search.filter_logic(true, true);
             }, 500);
         });
     },
@@ -642,11 +580,78 @@ const search = {
             }
 
             window.history.pushState({}, "", newUrl);
-            search.filter_header(true, true);
+            search.filter_logic(true, true);
         };
     },
 
-    filter_header: function(pass = false, check = false) {
+    filter_header: function() {
+        const tableHeader = document.getElementById('taskTableHeader');
+        const thElements = tableHeader.querySelectorAll('th');
+        let taskList = ['Task Type', 'Task Description', 'Task Date', 'Requested By', 'Severity', 'Status', 'Department', 'IT in Charge'];
+
+        const savedSort = localStorage.getItem('sort');
+        const savedDir = localStorage.getItem('dir');
+
+        if (savedSort && savedDir) {
+            thElements.forEach(th => {
+                if (th.getAttribute('data-column') === savedSort) {
+                    const icon = document.createElement('i');
+                    icon.classList.add('fa-solid', savedDir === 'ASC' ? 'fa-sort-up' : 'fa-sort-down');
+                    th.appendChild(icon);
+                }
+            });
+            // Trigger data sorting logic after restoring state
+            search.filter_logic(true, true);
+        }
+
+        thElements.forEach((th) => {
+            if (taskList.includes(th.textContent.trim())) {
+                th.style.cursor = 'pointer';
+                const filterBy = th.getAttribute('data-column');
+        
+                th.onclick = () => {
+                    const url = new URL(window.location.href);
+                    const currentSort = url.searchParams.get("sort");
+        
+                    // Clear all icons first
+                    thElements.forEach(otherTh => {
+                        if (otherTh !== th) {
+                            const otherIcon = otherTh.querySelector('i');
+                            if (otherIcon) {
+                                otherTh.removeChild(otherIcon);
+                            }
+                        }
+                    });
+        
+                    let icon = th.querySelector('i');
+        
+                    if (!icon || currentSort !== filterBy) {
+                        // DESC
+                        icon = document.createElement('i');
+                        icon.classList.add('fa-solid', 'fa-sort-down');
+                        th.appendChild(icon);
+        
+                        search.update_sort(filterBy, 'DESC', true);
+                        search.filter_logic(true, true);
+                    } else if (icon.classList.contains('fa-sort-down')) {
+                        // ASC
+                        icon.classList.remove('fa-sort-down');
+                        icon.classList.add('fa-sort-up');
+        
+                        search.update_sort(filterBy, 'ASC', true);
+                        search.filter_logic(true, true);
+                    } else {
+                        // NORMAL
+                        icon.remove();
+                        search.update_sort(null, null, false);
+                        search.filter_logic();
+                    }
+                };
+            }
+        });
+    },
+
+    filter_logic: function(pass = false, check = false) {
         const url = new URLSearchParams(window.location.search);
         const sort = url.get('sort');
         const dir = url.get('dir');
@@ -676,23 +681,44 @@ const search = {
             
             if (sort) {
                 taskCopy.sort((a, b) => {
-                    if (a[sort] < b[sort]) return dir === 'ASC' ? -1 : 1;
-                    if (a[sort] > b[sort]) return dir === 'ASC' ? 1 : -1;
+                    if (String(a[sort]).toLowerCase() < String(b[sort]).toLowerCase()) return dir === 'ASC' ? -1 : 1;
+                    if (String(a[sort]).toLowerCase() > String(b[sort]).toLowerCase()) return dir === 'ASC' ? 1 : -1;
                     return 0;
                 });
-                console.log('been hereeee');
+                // console.log('been hereeee');
+                console.log(taskCopy);
             }
 
             if (check === true) {
                 list_update_page(taskCopy);
                 return;
             }
-
-            return taskCopy;
         }
         
-    }
+    },
+
+    update_sort: function(sort, dir, store = true) {
+        const url = new URL(window.location.href);
+        if (sort && dir) {
+            url.searchParams.set("sort", sort);
+            url.searchParams.set("dir", dir);
+            window.history.pushState({}, "", url);
     
+            if (store) {
+                localStorage.setItem('sort', sort);
+                localStorage.setItem('dir', dir);
+            }
+        } else {
+            url.searchParams.delete("sort");
+            url.searchParams.delete("dir");
+            window.history.pushState({}, "", url);
+    
+            if (!store) {
+                localStorage.removeItem('sort');
+                localStorage.removeItem('dir');
+            }
+        }
+    }
 }
 
 // Database Logic -- Adding
@@ -872,14 +898,26 @@ const add = {
             const modifyContent = document.getElementById('modifyContent');
             modifyContent.style.display = 'flex';
 
-            modifyContent.querySelector('.modifyName').textContent = `Last Modified By: ${taskData.itInCharge}`;
-            modifyContent.querySelector('.modifyTime').textContent = `Time Modified: `;
+            if (!modifiedDate) modifiedDate = 'No modification yet';
+            if (!modifiedBy) modifiedBy = 'No modification yet';
+        
+            const updateContent = () => {
+                if (window.innerWidth <= 700) {
+                    modifyContent.querySelector('.modifyName').textContent = `${modifiedBy}`;
+                    modifyContent.querySelector('.modifyTime').textContent = `${modifiedDate}`;
+                } else {
+                    modifyContent.querySelector('.modifyName').textContent = `Last Modified By: ${modifiedBy}`;
+                    modifyContent.querySelector('.modifyTime').textContent = `Time Modified: ${modifiedDate}`;
+                }
+            };
+        
+            updateContent(); 
+            window.addEventListener('resize', updateContent);
 
             const closeTask = modifyContent.querySelector('.close-task');
             closeTask.onclick = () => {
                 modifyContent.style.display = 'none';
             }
-            
         } 
     },
 
@@ -1246,7 +1284,27 @@ const update = {
             alert(data.message);
     
             if (!data.success) return;
-            console.log(data.message, data);
+            // console.log(data.message, data);
+
+            const now = new Date();
+            const optionsDate = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            
+            const optionsTime = {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            
+            const date = now.toLocaleDateString('en-US', optionsDate); 
+            const time = now.toLocaleTimeString('en-US', optionsTime); 
+            const modified = `${date} | ${time}`;
+            modifiedDate = modified;
+            modifiedBy = formData.itInCharge;
+
 
             const newTasksPerPage = page.task_per_page();
             if (newTasksPerPage !== tasksPerPage) tasksPerPage = newTasksPerPage;
@@ -1338,7 +1396,6 @@ let initialTasks = [];
 const load = {
     load_tasks: async function(query = null, resetPage = false) {
         try {
-            console.log('hello');
             const urlParams = new URLSearchParams(window.location.search);
             const searchQuery = query || urlParams.get('search') || '';
             const filterBy = urlParams.get('filterBy');
@@ -2144,8 +2201,6 @@ async function fetch_ref_table_full({ table, containerId, bodyId, selectId, open
 
         if (openButton) {        
             openButton.onclick = open_container;
-            // openButton.removeEventListener('click', open_container);
-            // openButton.addEventListener('click', open_container);
         }
 
         function add_event_listeners() {
@@ -2298,7 +2353,8 @@ currentPageSpan.addEventListener('blur', async () => {
     }
 
     util.update_url();
-    await load.load_tasks();
+    list_update_page();
+    // await load.load_tasks();
 });
 
 currentPageSpan.addEventListener('keydown', (event) => {
@@ -2355,7 +2411,7 @@ const page = {
     // },
 }
 
-setTimeout(page.update_tasks_per_page, 150);
+// setTimeout(page.update_tasks_per_page, 150);
 
 function list_update_page(value = null) {
     const tableBody = document.getElementById("taskTableBody");
@@ -2393,7 +2449,7 @@ if (prevButton && nextButton) {
         if (currentPage > 1) {
             currentPage--;
             util.update_url();
-            let value = search.filter_header(true);
+            let value = search.filter_logic(true);
             list_update_page(value);
         }
     };
@@ -2402,7 +2458,7 @@ if (prevButton && nextButton) {
         if (currentPage < totalPages) {
             currentPage++;
             util.update_url();
-            let value = search.filter_header(true);
+            let value = search.filter_logic(true);
             list_update_page(value);
         }
     };
