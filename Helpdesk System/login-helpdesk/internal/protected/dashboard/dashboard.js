@@ -214,7 +214,7 @@ const layout = {
         logoutText.addEventListener("click", async function(event) {
             event.preventDefault();
             await layout.logout_function();
-            ["searchQuery", "filterBy", "filterValue"].forEach(item => localStorage.removeItem(item));
+            ["searchQuery", "filterBy", "filterValue", "sort", "dir"].forEach(item => localStorage.removeItem(item));
         });
 
     },
@@ -606,7 +606,6 @@ const search = {
 
         thElements.forEach((th) => {
             if (taskList.includes(th.textContent.trim())) {
-                th.style.cursor = 'pointer';
                 const filterBy = th.getAttribute('data-column');
         
                 th.onclick = () => {
@@ -932,7 +931,6 @@ const add = {
 
         window.openModal = async function () {
             try {
-
                 Object.values(fetch_data)
                 .filter(fn => fn !== fetch_data.it_datalist) 
                 .forEach(fn => fn());       
@@ -947,6 +945,8 @@ const add = {
                 }
 
                 taskModal.style.display = "flex";
+                document.getElementById("dateReq").value = currentDate;
+                document.getElementById("dateRec").value = currentDate ;
                 document.getElementById('taskDate').value = currentDate;
                 document.getElementById('taskId').value = util.generate_unique_id();
 
@@ -955,15 +955,30 @@ const add = {
             }
         };
 
-        const newTaskButton = document.getElementById("new-task");
-        const dateReqField = document.getElementById("dateReq");
-        const dateRecField = document.getElementById("dateRec");
+        const statusField = document.getElementById("taskStatus");
+        const dateStartField = document.getElementById("dateStart");
+        const dateFinField = document.getElementById("dateFin");
     
-        // Listen for status changes to auto-fill Date Finished
-        newTaskButton.addEventListener("click", function () {
-            dateReqField.value = currentDate;
-            dateRecField.value = currentDate;
-        });
+        statusField.onchange = () => {
+            const newStatus = statusField.value;
+
+            if (newStatus === "Completed") {
+                if (!dateStartField.value) {
+                    dateStartField.value = currentDate;
+                }
+                dateFinField.value = currentDate;
+            } else if (newStatus === "In Progress") {
+                if (!dateStartField.value) {
+                    dateStartField.value = currentDate;
+                }
+                dateFinField.value = "";
+            } else {
+                dateStartField.value = "";
+                dateFinField.value = "";
+            }
+        }
+
+
 
         // Load tasks to other receivers -- prolly mga admin
         socket.on('loadTask', (file) => {

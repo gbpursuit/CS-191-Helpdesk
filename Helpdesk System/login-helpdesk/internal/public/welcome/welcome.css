@@ -415,14 +415,15 @@ img {
     width: 100%;
 }
 
-.login-container {
+.login-container,
+.admin-cont{
     background-color: var(--v1-gray);
     box-shadow: 0px 2px 6px var(--shadow);
     box-sizing: border-box;
     border-radius: 20px;
     padding: 35px;
     width: 72%;
-    max-width: 480px;
+    max-width: 350px;
     min-width: 290px;
     height: auto;
     display: flex;
@@ -488,6 +489,10 @@ img {
 
 .abled:active {
     transform: none;
+}
+
+.login-form {
+    width: 100%;
 }
 
 .login-form label {
@@ -571,25 +576,55 @@ img {
     gap: 20px;
 }
 
-.admin-cont,
+/* .admin-cont,
 .new-cont {
     display: none;
     flex-direction: column;
-    gap: 10px;
-}
-
-
-.admin-form,
-.new-container {
+    align-items: center;
+    justify-content: center;
     background-color: var(--v1-gray);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
     border-radius: 10px;
     padding: 35px;
-    width: 90%;
-    min-width: 350px;
+    min-width: 280px;
     max-width: 350px;
     text-align: center;
+    gap: 10px;
+} */
+
+
+.new-cont {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+ .admin-cont, .new-cont {
+    display:none;
+ }
+
+.admin-form,
+.new-form {
+    width: 100%;
+}
+
+.new-container {
+    background-color: var(--v1-gray);
+    box-shadow: 0px 2px 6px var(--shadow);
+    box-sizing: border-box;
+    border-radius: 20px;
+    padding: 35px;
+    width: 100%;
+    max-width: 350px;
+    min-width: 350px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: width 1.5s ease, padding 0.4s ease, box-shadow 0.4s ease;
 }
 
 .admin-form label,
@@ -888,6 +923,11 @@ body.dark-mode .overlay-right {
     .boysen {
         font-size: clamp(1.5rem, 4vw, 60px);
     }
+
+    .new-container {
+        min-width: 290px;
+    }
+
 }
 
 @media (max-width: 900px) {
@@ -908,6 +948,8 @@ body.dark-mode .overlay-right {
     .form-container {
         width: 100%;
     }
+
+
 }
 
 @media (max-width: 600px) {

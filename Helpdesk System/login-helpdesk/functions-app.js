@@ -340,7 +340,7 @@ export const account = {
                 [username, first_name, last_name, hashedPassword]
             );
 
-            req.session.username = username;
+            // req.session.username = username;
             return res.status(200).json({ success: true, message: 'Account created successfully' });
     
         } catch (err) {

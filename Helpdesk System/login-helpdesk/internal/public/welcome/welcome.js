@@ -392,6 +392,8 @@ function handle_new_account() {
                 throw new Error ('Invalid credentials. Please try again.');
             }
 
+            const createPage = document.getElementById('createAccountPage');
+            createPage.querySelector('.admin-header').style.display = 'none';
             toggle_cont('adminContainer', 'newCont');
             adminName.value = "";
             adminPass.value = "";
@@ -438,7 +440,8 @@ function handle_new_account() {
             });
             
             if(!response.ok) throw new Error ('Invalid credentials. Please try again.');
-            window.location.replace('/internal/login/logged-in');
+            alert('Account Created Successfully! Please Login to Continue.');
+            window.location.replace('/internal/welcome');
 
         } catch (err) {
             console.error('Error:', err);
